@@ -8,64 +8,63 @@ from sqlalchemy import create_engine
 Base = declarative_base()
 
 
-class Users(Base):
-    __tablename__ = 'users'
-    userName = Column(String(250), primary_key=True)
+class User(Base):
+    __tablename__ = 'user'
+    username = Column(String(250), primary_key=True)
     password = Column(String(250), nullable=False)
     salt = Column(String(250), nullable=False)
 
 
-class Businesses(Base):
-    __tablename__ = 'businesses'
-    busNo = Column(Integer, primary_key=True)
-    busName = Column(String(250), nullable=False)
-    userName = Column(String(250), ForeignKey('users.userName'))
-    users = relationship(Users, cascade="all, delete-orphan") # ON UPDATE CASCADE ON DELETE CASCADE 
+class Business(Base):
+    __tablename__ = 'business'
+    busno = Column(Integer, primary_key=True)
+    busname = Column(String(250), nullable=False)
+    username = Column(String(250), ForeignKey('user.username'))
+    user = relationship(User, cascade="all, delete-orphan") # ON UPDATE CASCADE ON DELETE CASCADE 
   
 
-class Categories(Base):
-    __tablename__ = 'categories'
-    catNo = Column(Integer, primary_key=True)
-    catName = Column(String(250), nullable=False)
-    catType = Column(String(250), nullable=False)
-    userName = Column(String(250), ForeignKey('users.userName'), nullable=False)    
-    users = relationship(Users, cascade="all, delete-orphan") # ON UPDATE CASCADE ON DELETE CASCADE    
+class Category(Base):
+    __tablename__ = 'category'
+    catno = Column(Integer, primary_key=True)
+    catname = Column(String(250), nullable=False)
+    cattype = Column(String(250), nullable=False)
+    username = Column(String(250), ForeignKey('user.username'), nullable=False)    
+    user = relationship(User, cascade="all, delete-orphan") # ON UPDATE CASCADE ON DELETE CASCADE    
 
 
-class Accounts(Base):
-    __tablename__ = 'accounts'
-    accNo = Column(Integer, primary_key=True)
-    accName = Column(String(250), nullable=False)
+class Account(Base):
+    __tablename__ = 'account'
+    accno = Column(Integer, primary_key=True)
+    accname = Column(String(250), nullable=False)
     balance = Column(Integer, nullable=False)
 
 
-class Transactions(Base):
-    __tablename__ = 'transactions'
-    transNo = Column(Integer, primary_key=True)
+class Transaction(Base):
+    __tablename__ = 'transaction'
+    transno = Column(Integer, primary_key=True)
     amount = Column(Integer, nullable=False)
     date = Column(DATE, nullable=False)  
-    busNo = Column(Integer, ForeignKey('businesses.busNo'), nullable=False)
-    businesses = relationship(Businesses, cascade="all, delete-orphan") # ON UPDATE CASCADE ON DELETE CASCADE
-    catNo = Column(Integer, ForeignKey('categories.catNo'), nullable=False, )
-    categories = relationship(Categories, cascade="all, delete-orphan") # ON UPDATE CASCADE ON DELETE CASCADE    
-    accNo = Column(Integer, ForeignKey('accounts.accNo'), nullable=False)
-    accounts = relationship(Accounts, cascade="all, delete-orphan") # ON UPDATE CASCADE ON DELETE CASCADE    
-    userName = Column(String(250), ForeignKey('users.userName'))        
-    users = relationship(Users, cascade="all, delete-orphan") # ON UPDATE CASCADE ON DELETE CASCADE    
+    busno = Column(Integer, ForeignKey('business.busno'), nullable=False)
+    business = relationship(Business, cascade="all, delete-orphan") # ON UPDATE CASCADE ON DELETE CASCADE
+    catno = Column(Integer, ForeignKey('category.catno'), nullable=False, )
+    category = relationship(Category, cascade="all, delete-orphan") # ON UPDATE CASCADE ON DELETE CASCADE    
+    accno = Column(Integer, ForeignKey('account.accno'), nullable=False)
+    account = relationship(Account, cascade="all, delete-orphan") # ON UPDATE CASCADE ON DELETE CASCADE    
+    username = Column(String(250), ForeignKey('user.username'))        
+    user = relationship(User, cascade="all, delete-orphan") # ON UPDATE CASCADE ON DELETE CASCADE    
 
 
-class AccountsUsers(Base):
-    __tablename__ = 'accountsusers'
-    userName = Column(String(250), ForeignKey('users.userName'), primary_key=True)
-    users = relationship(Users, cascade="all, delete-orphan") # ON UPDATE CASCADE ON DELETE CASCADE    
-    accNo = Column(Integer, ForeignKey('accounts.accNo'), primary_key=True)
-    accounts = relationship(Accounts, cascade="all, delete-orphan") # ON UPDATE CASCADE ON DELETE CASCADE
+class AccountUser(Base):
+    __tablename__ = 'accountuser'
+    username = Column(String(250), ForeignKey('user.username'), primary_key=True)
+    user = relationship(User, cascade="all, delete-orphan") # ON UPDATE CASCADE ON DELETE CASCADE    
+    accNo = Column(Integer, ForeignKey('account.accno'), primary_key=True)
+    account = relationship(Account, cascade="all, delete-orphan") # ON UPDATE CASCADE ON DELETE CASCADE
 
 
 engine = create_engine('sqlite:///bam.db')
 
 
 Base.metadata.create_all(engine)
-
 
 
