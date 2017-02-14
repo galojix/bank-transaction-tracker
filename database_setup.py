@@ -56,7 +56,6 @@ class Transactions(Base):
 
 class AccountsUsers(Base):
     __tablename__ = 'accountsusers'
-
     userName = Column(String(250), ForeignKey('users.userName'), primary_key=True)
     users = relationship(Users, cascade="all, delete-orphan") # ON UPDATE CASCADE ON DELETE CASCADE    
     accNo = Column(Integer, ForeignKey('accounts.accNo'), primary_key=True)
