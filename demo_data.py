@@ -1,22 +1,15 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from database_setup import Base, User, Business, Category, Account, Transaction, AccountUser, session, empty_database 
+from lib_common import hash_password, password_verified
 
-from database_setup import Base, User, Business, Category, Account, Transaction, AccountUser 
-
-engine = create_engine('sqlite:///bam.db')
-Base.metadata.bind = engine
-Base.metadata.drop_all(engine) # Drop all existing tables
-Base.metadata.create_all(engine) # Create new tables 
-
-DBSession = sessionmaker(bind=engine)
-session = DBSession()
+# Start with an empty database
+empty_database()
 
 # Create users
-user1 = User(username="demo", password="demo", salt="tba")
+user1 = User(username="demo", password=hash_password("demo"))
 session.add(user1)
 session.commit()
 
-user2 = User(username="normal", password="normal", salt="tba")
+user2 = User(username="normal", password=hash_password("normal"))
 session.add(user2)
 session.commit()
 
@@ -28,3 +21,4 @@ session.commit()
 business2 = Business(busname="Caltex", username="demo")
 session.add(business2)
 session.commit()
+

@@ -4,6 +4,7 @@ from sqlalchemy import Column, ForeignKey, Integer, String, DATE
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 
 Base = declarative_base()
@@ -13,9 +14,7 @@ class User(Base):
     __tablename__ = 'user'
     username = Column(String(250), primary_key=True)
     password = Column(String(250), nullable=False)
-    salt = Column(String(250), nullable=False)
-
-
+    
 class Business(Base):
     __tablename__ = 'business'
     busno = Column(Integer, autoincrement=True, primary_key=True)
@@ -67,4 +66,10 @@ engine = create_engine('sqlite:///bam.db')
 
 Base.metadata.create_all(engine) 
 
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
+
+def empty_database():
+    Base.metadata.drop_all(engine) # Drop all existing tables
+    Base.metadata.create_all(engine) # Create new tables 
 
