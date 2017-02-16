@@ -1,0 +1,468 @@
+/* The following applies to screens only */
+@media only screen {
+
+   /* Include padding and border in all 
+      element's total width and height */
+   * {
+       box-sizing: border-box;
+   }
+
+   /* Set default font to a normal font
+      Set font size to user's chosen font size
+      Set font family to sans-serif
+      Remove margin and padding from page body */ 
+   body {
+      font: normal 100% sans-serif;
+      margin: 0;
+      padding: 0;
+      color: black;
+      background-color: #d9d9d9; 
+   }
+
+   /* Heading banner */
+   header {
+      color: black;
+      background-color: #d9d9d9; /* light grey */
+      margin: 0;
+      padding: 0px;
+      width: 100%;
+      overflow: auto; /* Ensure buttons are always placed within banner */ 
+   }
+
+   /* Banner text */
+   header h1 {
+      font-size: 1.5em;    
+      padding: 8px;  
+      margin: 0;
+   }
+
+   /* Banner logo */
+   header h1 img {
+      vertical-align: middle;
+      width: 30px;
+      height: 28px;
+      padding: 0px;
+   }
+
+   /* Banner button ie. "Log Out" */
+   button.banner {
+      font-size: 0.6em;      
+      color: black;   
+      background-color: #d9d9d9;  /* light grey */
+      border: 1px;
+      border-style: solid;
+      border-radius: 3px;
+      border-color: black;
+      padding: 5px 5px;
+      text-align: center;
+      text-decoration: none; /* No link underlines */
+      margin: 2px;
+      float: right; /* Place buttons on right hand side */
+   }
+
+   /* Main heading of each section */
+   section h1 {
+      font-size: 1.5em;
+   }  
+
+   /* Secondary heading of each section */   
+   section h2 {
+      font-size: 1.3em;
+   }
+
+   /* Ensure content following a row starts on a new line */  
+   .row::after {
+      content: "";
+      clear: both;
+      display: block;
+   }
+
+   /* Paragraphs */
+   p {
+      font-size: 1em;
+   }
+
+   /* Navigation bar */
+   ul.menu {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      color: black;   
+      background-color: #4d94ff; /* light blue */    
+   }
+
+   ul.menu li {
+      float: left;
+   }
+
+   /* Set foreground and background colour 
+      of navigation bar items */      
+   ul.menu li a {
+      font-size: 1em;
+      color: black;
+      background-color: #4d94ff; /* blue */ 
+      display: block; /* Make whole link area clickable and allow padding to be set */
+      padding: 8px 8px;
+      text-decoration: none; /* No link underlines */
+      text-align: center;
+   }
+
+   /* Set foreground and background colour 
+      of navigation bar items over which the 
+      mouse pointer is hovering */
+   ul.menu li a:hover {
+      color: white;   
+      background-color: #000066; /* dark blue */   
+   }
+
+   /* Set foreground and background colour 
+      of active navigation bar items */
+   ul.menu li a.active {
+      color: white;
+      background-color: #0033cc; /* blue */
+   }
+
+   /* For less important but related messages */
+   aside {
+      color: white; 
+      background-color: #404040;
+      padding: 15px;
+      color: #ffffff;
+      text-align: center;
+      font-size: 0.9em;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+   }
+
+   /* Fix footer at bottom of page */
+   footer {
+      color: white;
+      background-color: #404040;
+      text-align: center;
+      font-size: 1em;
+      padding: 25px;
+      width: 100%;
+      height: 70px;
+      position: fixed;
+      bottom: 0;
+   }
+
+   /* Footer navigation */
+   footer a {
+      color: white;
+      background-color: #404040;
+      text-decoration: none;
+   }
+
+   /* Highlight footer navigation when mouse hovers over */
+   footer a:hover {
+      color: white;
+      background-color: #404040;
+      text-decoration: underline;
+   }
+
+   /* Adds some extra space above fixed footer 
+      so that can scroll to all of the content
+      that appears above it */
+   div.footermargin {
+      width: 100%;   
+      height: 70px;
+   }
+
+   /* Display area for graphs and tables */
+   section.display {
+      max-width: 95%;
+      margin-left: auto;
+      margin-right: auto;
+      border: 1px solid grey;
+      border-radius: 3px;
+      margin-top: 20px;
+      margin-bottom: 5px;
+      padding: 5px;
+      overflow-x: auto;
+      overflow-y: auto;
+   }
+
+   /* Form text field, password fields and numbers fields */
+   input[type=text], input[type=password], input[type=number] {
+       width: 100%;
+       padding: 12px 20px;
+       margin: 8px 0;
+       box-sizing: border-box;
+   }
+
+   /* Change background colour when field is in focus */
+   input[type=text]:focus, input[type=password]:focus , input[type=number]:focus {
+       background-color:  #cceeff; /* light blue */
+   }
+
+   /* Form submit buttons */
+   input[type=button], input[type=submit], input[type=reset] {
+      font-size: 1em; 
+      color: black;    
+      background-color: #4d94ff; /* blue */
+      border: none;
+      padding: 10px 20px;
+      text-decoration: none;
+      margin: 4px 2px;
+      cursor: pointer;
+   }
+
+   /* Form within table cell */
+   input.cell[type=submit] {
+      font-size: 1em; 
+      color: black;    
+      background-color: transparent;
+      border: none;
+      padding: 0px;
+      text-decoration: none;
+      margin: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+   }
+
+   /* Change background colour when hover over transaction number */
+   td.transNo:hover, td.accNo:hover, td.catNo:hover, td.busNo:hover {
+      color: black;
+      background-color: #ffff99;      
+   }
+
+   /* Change background colour when hover over transaction number */   
+   input.cell[type=submit]:hover {
+      color: black;
+      background-color: #ffff99;      
+      text-decoration: underline;   
+   }   
+
+   /* Form inside table cell */   
+   form.cell {
+      margin: 0px;   
+   }
+
+   /* Form selection inputs */
+   select {
+      margin: 5px 0px 8px 0px;
+      padding: 10px;  
+   }
+   
+   /* Form labels */   
+   label {
+      display: block;
+      margin-top: 5px;   
+   }
+
+   /* Ensure all columns float left */    
+   [class*="col-"] {
+      float: left;
+      padding: 0px;
+   }
+
+   /* Set default column width to 100%
+      This suits small devices such as mobile phones: */
+   [class*="col-"] {
+      width: 100%;
+   }
+
+   /* Used for centering text */   
+   .centre {
+      text-align: center;
+   }
+   
+   /* Display tables */
+   table {
+      width: 100%;
+      color: black;
+      background-color: white;
+   }
+ 
+   table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+   }
+   
+   td {
+      text-align: center;   
+   }  
+   
+   td.right, th.right {
+      text-align: right;
+      padding-right: 3px;
+   }  
+   
+   /* Alternate background colour of table rows */
+   tr:nth-child(even) {
+      background-color: #cccccc;      
+   }
+
+   /* Alternate background colour of table rows */
+   tr:nth-child(odd) {
+      background-color: white;      
+   }
+
+   /* Control buttons (Search, Add etc) */   
+   button.control {
+      font-size: 1em;      
+      color: black;   
+      background-color: #ffff99;
+      padding: 5px 5px;
+      text-align: center;
+   }
+
+   /* Highlight control buttons when hovering */
+   button.control:hover {
+      color: white;   
+      background-color: #000066; /* dark blue */   
+   }
+
+   /* Highlight currently active control button */
+   button.control.active {
+      color: white;   
+      background-color: #0033cc; /* blue */
+   }
+   
+   /* Report buttons */
+   button.report {
+      height: 70px;   
+   }
+   
+
+   /* Pie graphs display size */   
+   div.pie {
+      max-width: 600px;
+      height: auto;
+   }
+      
+   /* Line charts display size */
+   div.chart {
+      max-width: 1100px;
+      height: auto;   
+   }
+   
+   
+   /* Highlight form input errors */
+   span.error {
+      color: red;   
+   }
+
+   /* Highlight form input successes */
+   span.success {
+      color: green;   
+   }
+   
+   /* One form input selector per line */ 
+   select {
+      display: block;   
+   }
+
+   /* Form file chooser */
+   input[type=file] {
+      display: block;
+      margin-top: 5px;
+      margin-bottom: 5px;   
+   }
+
+   /* CSV file format example */
+   ul.csv {
+      list-style-type:none;   
+   }
+
+   /* Add padding to SVG graphics */
+   svg {
+      padding: 5px;   
+   }
+   
+   /* Hidden field for storing session token */
+   span.token {
+      display: none;   
+   }
+   
+   /* Turn element off */
+   .off {
+      display: none;
+   }
+   
+   /* Turn element on */
+   .on {
+      display: block;   
+   }
+   
+   /* Display area in banner for indicating which user is logged in */
+   span.user {
+      font-size: 0.6em;
+      font-style: normal;
+      font-weight: normal;
+      float: right;
+      padding: 7px;
+      
+   }
+}
+
+
+/* Set column sizes for screens that are at least 800px in width. 
+   Smaller screens will default to one column. */
+@media only screen and (min-width: 800px) {
+   .col-1 {width: 8.33%;}
+   .col-2 {width: 16.66%;}
+   .col-3 {width: 25%;}
+   .col-4 {width: 33.33%;}
+   .col-5 {width: 41.66%;}
+   .col-6 {width: 50%;}
+   .col-7 {width: 58.33%;}
+   .col-8 {width: 66.66%;}
+   .col-9 {width: 75%;}
+   .col-10 {width: 83.33%;}
+   .col-11 {width: 91.66%;}
+   .col-12 {width: 100%;}
+}
+
+/* The following applies to print formatting only */ 
+@media only print {
+   body { 
+      margin: 0mm 0mm 0mm 0mm; /* Remove all margins */
+      padding: 0mm; /* Remove all padding */
+      font-family: serif; /* Font suitable for printing */
+   	font-size: 12pt; /* Set absolute font size */
+   	color: black;
+   	background-color: white;
+   }   
+   
+   /* Do not print navigation controls, images, footers or buttons */
+   nav, img, footer, button, span.token {
+      display: none;   
+   }
+
+   /* Ensure graphs print without overlap */
+   section.display {
+      margin: 20px;   
+   }
+   
+   /* Ensure graphs print without overlap */   
+   svg {
+      padding: 10px;   
+   }
+
+   /* Links */
+   a { 
+      font-weight: bold; 
+      text-decoration: none;; 
+   	color: black;
+   	background-color: white;
+   }
+
+   /* Show URL in brackets after link */
+   a:link:after { 
+      content: " (" attr(href) ") "; 
+   } 
+
+   /* Turn element off */
+   .off {
+      display: none;
+   }
+   
+   /* Turn element on */
+   .on {
+      display: block;   
+   }
+   
+}
