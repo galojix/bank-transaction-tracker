@@ -1,6 +1,6 @@
 import os
 import sys
-from sqlalchemy import Column, ForeignKey, Integer, String, DATE
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
@@ -40,10 +40,10 @@ class Account(Base):
 
 
 class Transaction(Base):
-    __tablename__ = 'transaction'
+    __tablename__ = 'tranzaction'
     transno = Column(Integer, primary_key=True)
     amount = Column(Integer, nullable=False)
-    date = Column(DATE, nullable=False)  
+    date = Column(DateTime, nullable=False)  
     busno = Column(Integer, ForeignKey('business.busno'), nullable=False)
     business = relationship(Business, single_parent=True, cascade="all, delete-orphan") # ON UPDATE CASCADE ON DELETE CASCADE
     catno = Column(Integer, ForeignKey('category.catno'), nullable=False, )

@@ -1,5 +1,6 @@
 from passlib.hash import pbkdf2_sha256
 from database_setup import User, Business, Category, Account, Transaction, AccountUser, session
+import dateutil.parser
 
 def hash_password(password):
     # generate new salt, and hash a password    
@@ -36,3 +37,11 @@ def add_account(acc_name, balance, user):
     session.add(account_user)
     session.commit()
     
+    
+def add_transaction(amount, date, busno, catno, accno, user):
+    date = dateutil.parser.parse(date)
+    transaction = Transaction(amount=amount, date=date, busno=busno, catno=catno, accno=accno, username=user)
+    session.add(transaction)
+    session.commit()
+
+
