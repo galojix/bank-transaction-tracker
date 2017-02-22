@@ -14,13 +14,18 @@ class User(Base):
     __tablename__ = 'user'
     username = Column(String(250), primary_key=True)
     password = Column(String(250), nullable=False)
+    businesses = relationship("Business", order_by="Business.busname", back_populates="user", cascade="all, delete-orphan") 
+    categories = relationship("Category", order_by="Category.catname", back_populates="user", cascade="all, delete-orphan")
+    accounts = relationship("Account", order_by="Account.accname", back_populates="user", cascade="all, delete-orphan")
+    transactions = relationship("Transaction", order_by="Transaction.date", back_populates="user", cascade="all, delete-orphan")    
     
 class Business(Base):
     __tablename__ = 'business'
     busno = Column(Integer, autoincrement=True, primary_key=True)
     busname = Column(String(250), nullable=False)
     username = Column(String(250), ForeignKey('user.username'))
-    user = relationship(User, single_parent=True, cascade="all, delete-orphan") # ON UPDATE CASCADE ON DELETE CASCADE 
+    user = relationship("User", back_populates="businesses")
+    transactions = relationship("Transaction", order_by="Transaction.date", back_populates="business", cascade="all, delete-orphan")  
   
 
 class Category(Base):
@@ -29,15 +34,17 @@ class Category(Base):
     catname = Column(String(250), nullable=False)
     cattype = Column(String(250), nullable=False)
     username = Column(String(250), ForeignKey('user.username'), nullable=False)    
-    user = relationship(User, single_parent=True, cascade="all, delete-orphan") # ON UPDATE CASCADE ON DELETE CASCADE    
-
+    user = relationship(User, back_populates="categories")    
+    transactions = relationship("Transaction", order_by="Transaction.date", back_populates="category", cascade="all, delete-orphan")
 
 class Account(Base):
     __tablename__ = 'account'
     accno = Column(Integer, primary_key=True)
     accname = Column(String(250), nullable=False)
     balance = Column(Integer, nullable=False)
-
+    username = Column(String(250), ForeignKey('user.username'), nullable=False)    
+    user = relationship(User, back_populates="accounts")     
+    transactions = relationship("Transaction", order_by="Transaction.date", back_populates="account", cascade="all, delete-orphan")
 
 class Transaction(Base):
     __tablename__ = 'tranzaction'
@@ -45,22 +52,13 @@ class Transaction(Base):
     amount = Column(Integer, nullable=False)
     date = Column(DateTime, nullable=False)  
     busno = Column(Integer, ForeignKey('business.busno'), nullable=False)
-    business = relationship(Business, single_parent=True, cascade="all, delete-orphan") # ON UPDATE CASCADE ON DELETE CASCADE
+    business = relationship(Business, back_populates="transactions") 
     catno = Column(Integer, ForeignKey('category.catno'), nullable=False, )
-    category = relationship(Category, single_parent=True, cascade="all, delete-orphan") # ON UPDATE CASCADE ON DELETE CASCADE    
+    category = relationship(Category, back_populates="transactions")     
     accno = Column(Integer, ForeignKey('account.accno'), nullable=False)
-    account = relationship(Account, single_parent=True, cascade="all, delete-orphan") # ON UPDATE CASCADE ON DELETE CASCADE    
+    account = relationship(Account, back_populates="transactions")     
     username = Column(String(250), ForeignKey('user.username'))        
-    user = relationship(User, single_parent=True, cascade="all, delete-orphan") # ON UPDATE CASCADE ON DELETE CASCADE    
-
-
-class AccountUser(Base):
-    __tablename__ = 'accountuser'
-    username = Column(String(250), ForeignKey('user.username'), primary_key=True)
-    user = relationship(User, single_parent=True, cascade="all, delete-orphan") # ON UPDATE CASCADE ON DELETE CASCADE    
-    accno = Column(Integer, ForeignKey('account.accno'), primary_key=True)
-    account = relationship(Account, single_parent=True, cascade="all, delete-orphan") # ON UPDATE CASCADE ON DELETE CASCADE
-
+    user = relationship(User, back_populates="transactions")     
 
 engine = create_engine('sqlite:///bam.db')
 

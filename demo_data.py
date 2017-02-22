@@ -1,4 +1,4 @@
-from database_setup import User, Business, Category, Account, Transaction, AccountUser, session, empty_database 
+from database_setup import User, Business, Category, Account, Transaction, session, empty_database 
 from lib_common import add_user, add_business, add_category, add_account, add_transaction
 
 # Start with an empty database
