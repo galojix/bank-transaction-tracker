@@ -1,2 +1,2 @@
-# BAM
-Bank Account Manager
+# PFT
+Personal Finance Tracker
