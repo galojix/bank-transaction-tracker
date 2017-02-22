@@ -1,0 +1,39 @@
+{% include 'header.xhtml' %}
+
+<div class="row">   
+<section class="col-12">
+<section class="display">
+<h2>Latest Transactions:</h2>
+
+<table>
+    <tr>     
+        <th>Trans No.</th>
+        <th>Date</th> 
+        <th>Category</th>
+        <th>Type</th>
+        <th>Business</th>
+        <th>Account</th>
+        <th class="right">Amount</th>
+    </tr>
+            
+   {% for transaction in transactions %}         
+
+   <tr>
+       <td class="transNo">{{transaction.transno}}</td>
+       <td>{{transaction.date}}</td>
+       <td>{{transaction.catno}}</td>
+       <td></td>
+       <td>{{transaction.busno}}</td>
+       <td>{{transaction.accno}}</td>
+       <td class="right">{{transaction.amount}}</td>
+    </tr>
+
+   {% endfor %}         
+
+</table>         
+       
+</section>
+</section>
+</div>
+</body>
+</html>
