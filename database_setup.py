@@ -17,7 +17,11 @@ class User(Base):
     businesses = relationship("Business", order_by="Business.busname", back_populates="user", cascade="all, delete-orphan") 
     categories = relationship("Category", order_by="Category.catname", back_populates="user", cascade="all, delete-orphan")
     accounts = relationship("Account", order_by="Account.accname", back_populates="user", cascade="all, delete-orphan")
-    transactions = relationship("Transaction", order_by="Transaction.date", back_populates="user", cascade="all, delete-orphan")    
+    transactions = relationship("Transaction", order_by="Transaction.date", back_populates="user", cascade="all, delete-orphan")
+    
+    def add_business(self, busname):
+        self.businesses.append(Business(busname=busname))
+                    
     
 class Business(Base):
     __tablename__ = 'business'
