@@ -1,162 +1,73 @@
 from database_setup import User, Business, Category, Account, Transaction, session, empty_database 
-from lib_common import add_user, add_business, add_category, add_account, add_transaction
+from lib_common import hash_password
 
 # Start with an empty database
 empty_database()
 
-# Create users
-add_user("demo", "demo")
-add_user("normal", "normal")
+# Create user
+user = User(username="demo", password=hash_password("demo"))
+session.add(user)
+
+# Create user's businesses
+businesses = ("Acme", "Wonka", "ABC Corp", "Bupa", "Coles", "Galojix", "Lowes", "Caltex", "Unknown")
+for business in businesses:
+    user.add_business(busname=business)
+
+# Create user's categories
+categories = ( ("Food", "Expense"), 
+               ("Entertainment", "Expense"), 
+               ("Insurance", "Expense"), 
+               ("Unspecified Expense", "Expense"),
+               ("Unspecified Income", "Income")  )
+for catname, cattype in categories:
+    user.add_category(catname=catname, cattype=cattype)
+
+# Create user's accounts
+accounts = ( ("NAB", 50000), ("ANZ", 20000), ("Unknown", 0) )
+for accname, balance in accounts:
+    user.add_account(accname=accname, balance=balance)
+
+session.commit() # Need this because adding transactions requires business, category and account primary keys to exist
+    
+# Create user's transactions    
+transactions = ( (7007, "2016-10-01T08:05", "Bupa", "Insurance", "NAB"), 
+                 (6007, "2016-10-01T08:06", "ABC Corp", "Entertainment", "NAB") )  
+for amount, date, busname, catname, accname in transactions:
+    user.add_transaction(amount=amount, date=date, busname=busname, catname=catname, accname=accname)
+
+session.commit()
 
 
-# Create businesses
-add_business("Acme", "demo")
-add_business("Wonka", "demo")
-add_business("ABC Corp", "demo")
-add_business("Bupa", "demo")
-add_business("Coles", "demo")
-add_business("Galojix", "demo")
-add_business("Lowes", "demo")
-add_business("Caltex", "demo")
-add_business("Unknown", "demo")
+# Create user
+user = User(username="normal", password=hash_password("normal"))
+session.add(user)
 
-add_business("BigCorp", "normal")
-add_business("Tip Top", "normal")
-add_business("Nine Corp", "normal")
-add_business("Medibank", "normal")
-add_business("Woolworths", "normal")
-add_business("Telstra", "normal")
-add_business("Best and Less", "normal")
-add_business("Shell", "normal")
-add_business("Unknown", "normal")
+# Create user's businesses
+businesses = ("Acme", "Wonka", "ABC Corp", "Bupa", "Coles", "Galojix", "Lowes", "Caltex", "Unknown")
+for business in businesses:
+    user.add_business(busname=business)
 
-# Create categories
-add_category("Food", "Expense", "demo")
-add_category("Entertainment", "Expense", "demo")
-add_category("Insurance", "Expense", "demo")
-add_category("Salary", "Income", "demo")
-add_category("Wages", "Income", "demo")
-add_category("Rent", "Expense", "demo")
-add_category("Fuel", "Expense", "demo")
-add_category("Clothing", "Expense", "demo")
-add_category("Unspecified Expense", "Expense", "demo")
-add_category("Unspecified Income", "Income", "demo")
-add_category("Entertainment", "Expense", "demo")
+# Create user's categories
+categories = ( ("Food", "Expense"), 
+               ("Entertainment", "Expense"), 
+               ("Insurance", "Expense"), 
+               ("Unspecified Expense", "Expense"),
+               ("Unspecified Income", "Income")  )
+for catname, cattype in categories:
+    user.add_category(catname=catname, cattype=cattype)
 
-add_category("Food", "Expense", "normal")
-add_category("Entertainment", "Expense", "normal")
-add_category("Insurance", "Expense", "normal")
-add_category("Salary", "Income", "normal")
-add_category("Wages", "Income", "normal")
-add_category("Rent", "Expense", "normal")
-add_category("Fuel", "Expense", "normal")
-add_category("Clothing", "Expense", "normal")
-add_category("Unspecified Expense", "Expense", "normal")
-add_category("Unspecified Income", "Income", "normal")
-add_category("Entertainment", "Expense", "normal")
+# Create user's accounts
+accounts = ( ("NAB", 50000), ("ANZ", 20000), ("Unknown", 0) )
+for accname, balance in accounts:
+    user.add_account(accname=accname, balance=balance)
 
-# Create accounts
-add_account("NAB", 50000, "demo")
-add_account("ANZ", 20000, "demo")
-add_account("Suncorp", 10000, "demo")
-add_account("Unknown", 0, "demo")
+session.commit() # Need this because adding transactions requires business, category and account primary keys to exist
+    
+# Create user's transactions    
+transactions = ( (8007, "2016-10-01T08:05", "Bupa", "Insurance", "NAB"), 
+                 (9007, "2016-10-01T08:06", "ABC Corp", "Entertainment", "NAB") )  
+for amount, date, busname, catname, accname in transactions:
+    user.add_transaction(amount=amount, date=date, busname=busname, catname=catname, accname=accname)
 
-add_account("Westpac", 20000, "normal")
-add_account("Commonwealth", 30000, "normal")
-add_account("Bank of Queensland", 40000, "normal")
-add_account("Unknown", 0, "normal")
-
-# Create transactions
-add_transaction(7007, "2016-10-01T08:05", 8, 7, 3, "demo")
-add_transaction(1005, "2016-10-01T01:05", 3, 2, 2, "demo")
-add_transaction(2015, "2016-10-02T02:05", 1, 6, 3, "demo")
-add_transaction(3005, "2016-10-03T03:05", 2, 1, 1, "demo")
-add_transaction(4005, "2016-10-04T04:05", 4, 3, 2, "demo")
-add_transaction(3405, "2016-10-05T05:05", 5, 1, 3, "demo")
-add_transaction(23007, "2016-10-06T06:05", 6, 4, 1, "demo")
-add_transaction(5005, "2016-10-07T07:05", 7, 8, 2, "demo")
-add_transaction(3905, "2016-10-09T04:05", 4, 3, 2, "demo")
-add_transaction(4405, "2016-10-10T05:05", 5, 1, 3, "demo")
-add_transaction(7007, "2016-10-11T08:05", 8, 7, 3, "demo")
-add_transaction(1005, "2016-10-12T01:05", 3, 2, 2, "demo")
-add_transaction(2015, "2016-10-13T02:05", 1, 6, 3, "demo")
-add_transaction(4005, "2016-10-15T04:05", 4, 3, 2, "demo")
-add_transaction(3405, "2016-10-16T05:05", 5, 1, 3, "demo")
-add_transaction(23007, "2016-10-17T06:05", 6, 4, 1, "demo")
-add_transaction(5005, "2016-10-18T07:05", 7, 8, 2, "demo")
-add_transaction(2105, "2016-10-19T03:05", 2, 1, 1, "demo")
-add_transaction(3905, "2016-10-20T04:05", 4, 3, 2, "demo")
-add_transaction(7007, "2016-10-22T08:05", 8, 7, 3, "demo")
-add_transaction(1005, "2016-10-23T01:05", 3, 2, 2, "demo")
-add_transaction(2015, "2016-10-24T02:05", 1, 6, 3, "demo")
-add_transaction(3005, "2016-10-25T03:05", 2, 1, 1, "demo")
-add_transaction(4005, "2016-10-26T04:05", 4, 3, 2, "demo")
-add_transaction(3405, "2016-10-27T05:05", 5, 1, 3, "demo")
-add_transaction(5005, "2016-10-29T07:05", 7, 8, 2, "demo")
-add_transaction(2105, "2016-10-30T03:05", 2, 1, 1, "demo")
-add_transaction(3905, "2016-10-31T04:05", 4, 3, 2, "demo")
-add_transaction(7007, "2016-11-01T08:05", 8, 7, 3, "demo")
-add_transaction(1005, "2016-11-01T01:05", 3, 2, 2, "demo")
-add_transaction(2015, "2016-11-02T02:05", 1, 6, 3, "demo")
-add_transaction(3005, "2016-11-03T03:05", 2, 1, 1, "demo")
-add_transaction(4005, "2016-11-04T04:05", 4, 3, 2, "demo")
-add_transaction(3405, "2016-11-05T05:05", 5, 1, 3, "demo")
-add_transaction(23007, "2016-11-06T06:05", 6, 4, 1, "demo")
-add_transaction(5005, "2016-11-07T07:05", 7, 8, 2, "demo")
-add_transaction(2105, "2016-11-08T03:05", 2, 1, 1, "demo")
-add_transaction(4405, "2016-11-10T05:05", 5, 1, 3, "demo")
-add_transaction(4405, "2016-11-11T05:05", 5, 1, 3, "demo")
-add_transaction(7007, "2016-11-12T08:05", 8, 7, 3, "demo")
-add_transaction(1005, "2016-11-13T01:05", 3, 2, 2, "demo")
-add_transaction(2015, "2016-11-14T02:05", 1, 6, 3, "demo")
-add_transaction(3005, "2016-11-15T03:05", 2, 1, 1, "demo")
-
-
-add_transaction(7007, "2016-10-01T08:05", 17, 17, 7, "normal")
-add_transaction(1005, "2016-10-01T01:05", 12, 12, 6, "normal")
-add_transaction(2015, "2016-10-02T02:05", 10, 16, 5, "normal")
-add_transaction(3005, "2016-10-03T03:05", 11, 11, 5, "normal")
-add_transaction(4005, "2016-10-04T04:05", 13, 13, 6, "normal")
-add_transaction(3405, "2016-10-05T05:05", 14, 11, 7, "normal")
-add_transaction(23007, "2016-10-06T06:05", 15, 14, 5, "normal")
-add_transaction(5005, "2016-10-07T07:05", 16, 18, 6, "normal")
-add_transaction(2105, "2016-10-08T03:05", 11, 11, 7, "normal")
-add_transaction(3905, "2016-10-09T04:05", 13, 13, 6, "normal")
-add_transaction(4405, "2016-10-10T05:05", 14, 11, 7, "normal")
-add_transaction(7007, "2016-10-11T08:05", 17, 17, 7, "normal")
-add_transaction(1005, "2016-10-12T01:05", 12, 12, 6, "normal")
-add_transaction(2015, "2016-10-13T02:05", 10, 16, 5, "normal")
-add_transaction(3005, "2016-10-14T03:05", 11, 11, 5, "normal")
-add_transaction(4005, "2016-10-15T04:05", 13, 13, 6, "normal")
-add_transaction(3405, "2016-10-16T05:05", 14, 11, 7, "normal")
-add_transaction(23007, "2016-10-17T06:05", 15, 14, 5, "normal")
-add_transaction(5005, "2016-10-18T07:05", 16, 18, 6, "normal")
-add_transaction(2105, "2016-10-19T03:05", 11, 11, 7, "normal")
-add_transaction(3905, "2016-10-20T04:05", 13, 13, 6, "normal")
-add_transaction(4405, "2016-10-21T05:05", 14, 11, 7, "normal")
-add_transaction(7007, "2016-10-22T08:05", 17, 17, 7, "normal")
-add_transaction(1005, "2016-10-23T01:05", 12, 12, 6, "normal")
-add_transaction(2015, "2016-10-24T02:05", 10, 16, 5, "normal")
-add_transaction(3005, "2016-10-25T03:05", 11, 11, 5, "normal")
-add_transaction(4005, "2016-10-26T04:05", 13, 13, 6, "normal")
-add_transaction(3405, "2016-10-27T05:05", 14, 11, 7, "normal")
-add_transaction(23007, "2016-10-28T06:05", 15, 14, 5, "normal")
-add_transaction(5005, "2016-10-29T07:05", 16, 18, 6, "normal")
-add_transaction(2105, "2016-10-30T03:05", 11, 11, 7, "normal")
-add_transaction(3905, "2016-10-31T04:05", 13, 13, 6, "normal")
-add_transaction(4405, "2016-11-01T05:05", 14, 11, 7, "normal")
-add_transaction(7007, "2016-11-02T08:05", 17, 17, 7, "normal")
-add_transaction(1005, "2016-11-03T01:05", 12, 12, 6, "normal")
-add_transaction(2015, "2016-11-04T02:05", 10, 16, 5, "normal")
-add_transaction(3005, "2016-11-05T03:05", 11, 11, 5, "normal")
-add_transaction(4005, "2016-11-06T04:05", 13, 13, 6, "normal")
-add_transaction(3405, "2016-11-07T05:05", 14, 11, 7, "normal")
-add_transaction(23007, "2016-11-08T06:05", 15, 14, 5, "normal")
-add_transaction(5005, "2016-11-09T07:05", 16, 18, 6, "normal")
-add_transaction(2105, "2016-11-10T03:05", 11, 11, 7, "normal")
-add_transaction(3905, "2016-11-11T04:05", 13, 13, 6, "normal")
-add_transaction(4405, "2016-11-12T05:05", 14, 11, 7, "normal")
-add_transaction(7007, "2016-11-13T08:05", 17, 17, 7, "normal")
-add_transaction(1005, "2016-11-14T01:05", 12, 12, 6, "normal")
-add_transaction(2015, "2016-11-15T02:05", 10, 16, 5, "normal")
+session.commit()
 

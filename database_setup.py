@@ -5,7 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
+import dateutil.parser
 
 Base = declarative_base()
 
@@ -14,14 +14,32 @@ class User(Base):
     __tablename__ = 'user'
     username = Column(String(250), primary_key=True)
     password = Column(String(250), nullable=False)
-    businesses = relationship("Business", order_by="Business.busname", back_populates="user", cascade="all, delete-orphan") 
-    categories = relationship("Category", order_by="Category.catname", back_populates="user", cascade="all, delete-orphan")
-    accounts = relationship("Account", order_by="Account.accname", back_populates="user", cascade="all, delete-orphan")
-    transactions = relationship("Transaction", order_by="Transaction.date", back_populates="user", cascade="all, delete-orphan")
+    businesses = relationship("Business", order_by="Business.busname", back_populates="user", cascade="all, delete, delete-orphan") 
+    categories = relationship("Category", order_by="Category.catname", back_populates="user", cascade="all, delete, delete-orphan")
+    accounts = relationship("Account", order_by="Account.accname", back_populates="user", cascade="all, delete, delete-orphan")
+    transactions = relationship("Transaction", order_by="Transaction.date", back_populates="user", cascade="all, delete, delete-orphan")
     
     def add_business(self, busname):
         self.businesses.append(Business(busname=busname))
-                    
+   
+    def add_category(self, catname, cattype):
+        self.categories.append(Category(catname=catname, cattype=cattype))             
+
+    def add_account(self, accname, balance):
+        self.accounts.append(Account(accname=accname, balance=balance))
+        
+    def add_transaction(self, amount, date, busname, catname, accname):
+        date = dateutil.parser.parse(date)
+        for business in self.businesses:
+            if business.busname == busname:
+                busno = business.busno
+        for category in self.categories:
+            if category.catname == catname:
+                catno = category.catno
+        for account in self.accounts:
+            if account.accname == accname:
+                accno = account.accno
+        self.transactions.append(Transaction(amount=amount, date=date, busno=busno, catno=catno, accno=accno))
     
 class Business(Base):
     __tablename__ = 'business'
