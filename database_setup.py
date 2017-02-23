@@ -30,16 +30,17 @@ class User(Base):
         
     def add_transaction(self, amount, date, busname, catname, accname):
         date = dateutil.parser.parse(date)
+        transaction = Transaction(amount=amount, date=date)        
         for business in self.businesses:
             if business.busname == busname:
-                busno = business.busno
+                business.transactions.append(transaction)
         for category in self.categories:
             if category.catname == catname:
-                catno = category.catno
+                category.transactions.append(transaction)
         for account in self.accounts:
             if account.accname == accname:
-                accno = account.accno
-        self.transactions.append(Transaction(amount=amount, date=date, busno=busno, catno=catno, accno=accno))
+                account.transactions.append(transaction)
+        self.transactions.append(transaction)
     
 class Business(Base):
     __tablename__ = 'business'

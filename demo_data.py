@@ -6,7 +6,6 @@ empty_database()
 
 # Create user
 user = User(username="demo", password=hash_password("demo"))
-session.add(user)
 
 # Create user's businesses
 businesses = ("Acme", "Wonka", "ABC Corp", "Bupa", "Coles", "Galojix", "Lowes", "Caltex", "Unknown")
@@ -27,20 +26,17 @@ accounts = ( ("NAB", 50000), ("ANZ", 20000), ("Unknown", 0) )
 for accname, balance in accounts:
     user.add_account(accname=accname, balance=balance)
 
-session.commit() # Need this because adding transactions requires business, category and account primary keys to exist
-    
 # Create user's transactions    
 transactions = ( (7007, "2016-10-01T08:05", "Bupa", "Insurance", "NAB"), 
                  (6007, "2016-10-01T08:06", "ABC Corp", "Entertainment", "NAB") )  
 for amount, date, busname, catname, accname in transactions:
     user.add_transaction(amount=amount, date=date, busname=busname, catname=catname, accname=accname)
 
+session.add(user)
 session.commit()
-
 
 # Create user
 user = User(username="normal", password=hash_password("normal"))
-session.add(user)
 
 # Create user's businesses
 businesses = ("Acme", "Wonka", "ABC Corp", "Bupa", "Coles", "Galojix", "Lowes", "Caltex", "Unknown")
@@ -61,13 +57,11 @@ accounts = ( ("NAB", 50000), ("ANZ", 20000), ("Unknown", 0) )
 for accname, balance in accounts:
     user.add_account(accname=accname, balance=balance)
 
-session.commit() # Need this because adding transactions requires business, category and account primary keys to exist
-    
 # Create user's transactions    
 transactions = ( (8007, "2016-10-01T08:05", "Bupa", "Insurance", "NAB"), 
                  (9007, "2016-10-01T08:06", "ABC Corp", "Entertainment", "NAB") )  
 for amount, date, busname, catname, accname in transactions:
     user.add_transaction(amount=amount, date=date, busname=busname, catname=catname, accname=accname)
 
+session.add(user)
 session.commit()
-
