@@ -1,0 +1,31 @@
+{% include 'header.xhtml' %}
+
+<div class="row">   
+<section class="col-12">
+<section class="display">
+<h2>Categories:</h2>
+
+<table>
+    <tr>     
+        <th>Category No.</th>
+        <th>Category Name</th> 
+        <th>Category Type</th>
+    </tr>
+
+   {% for category in categories %}         
+
+   <tr>
+       <td class="catNo">{{category.catno}}</td>
+       <td>{{category.catname}}</td>
+       <td>{{category.cattype}}</td>
+    </tr>
+
+   {% endfor %}         
+
+</table>         
+       
+</section>
+</section>
+</div>
+</body>
+</html>

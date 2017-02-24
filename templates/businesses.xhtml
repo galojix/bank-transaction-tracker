@@ -1,0 +1,29 @@
+{% include 'header.xhtml' %}
+
+<div class="row">   
+<section class="col-12">
+<section class="display">
+<h2>Businesses:</h2>
+
+<table>
+    <tr>     
+        <th>Business No.</th>
+        <th>Business Name</th> 
+    </tr>
+
+   {% for business in businesses %}         
+
+   <tr>
+       <td class="busNo">{{business.busno}}</td>
+       <td>{{business.busname}}</td>
+   </tr>
+
+   {% endfor %}         
+
+</table>         
+       
+</section>
+</section>
+</div>
+</body>
+</html>

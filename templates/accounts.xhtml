@@ -1,0 +1,31 @@
+{% include 'header.xhtml' %}
+
+<div class="row">   
+<section class="col-12">
+<section class="display">
+<h2>Accounts:</h2>
+
+<table>
+    <tr>     
+        <th>Account No.</th>
+        <th>Account Name</th> 
+        <th class="right">Initial Balance</th>
+    </tr>
+
+   {% for account in accounts %}         
+
+   <tr>
+       <td class="accNo">{{account.accno}}</td>
+       <td>{{account.accname}}</td>
+       <td class="right">{{account.balance}}</td>
+    </tr>
+
+   {% endfor %}         
+
+</table>         
+       
+</section>
+</section>
+</div>
+</body>
+</html>

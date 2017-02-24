@@ -83,7 +83,7 @@ class Transaction(Base):
     username = Column(String(250), ForeignKey('user.username'))        
     user = relationship(User, back_populates="transactions")     
 
-engine = create_engine('sqlite:///bam.db')
+engine = create_engine('sqlite:///bam.db', echo=True)
 
 Base.metadata.create_all(engine) 
 

@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-<?php
-   session_start();
-   if(!isset($_SESSION['user'])) { // If user is not logged in
-      header("Location: login.php"); // Redirect to login page
-   }
-?>
+    Put something here for handling sessions.
+    If user not logged in then redirect to login page.
 -->
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -18,81 +14,31 @@
    <script src="jquery-3.1.0.min.js"></script>
    <script src="jquery-funcs.js"></script>
    <!-- Set title for browser toolbar etc -->   
-   <title>BAM</title>
+   <title>PFT</title>
 </head>
 <body>
    <!-- Heading banner with logo, text and buttons -->   
    <header>   
       <h1>
          <img class="logo" src="/static/logo.png" width="30" height="28" alt="$"/>
-         Bank Account Manager 
-         <a href="logout.php"><button class="banner">Log Out</button></a>
+         Personal Finance Tracker 
+         <a href="logout.xhtml"><button class="banner">Log Out</button></a>
 <!--
-         <?php 
-            $user = $_SESSION['user']; 
-            if ($user == 'demo') {
-               echo '<span class="user" >Logged in as ' . htmlentities($user) . ' (50 transactions, 4 accounts only)</span>';
-            }
-            else {
-               echo '<span class="user" >Logged in as ' . htmlentities($user) . '</span>';
-            } 
-         ?>
+        Put something here to indicate which user is logged in and any demo account restrictions.         
 -->         
       </h1>
    </header>
 
-<!--
-
-<?php
-   $index = $accounts = $transactions = $businesses = $categories = $reports = "";   
-   
-   $script = htmlspecialchars($_SERVER['PHP_SELF']);
-   
-   // Use CSS to highlight the relevant menu item for the page being displayed
-   if (preg_match("/index.php/", $script)) {
-      $index = 'class="active"';
-   }
-   else if (preg_match("/accounts.php/", $script)) {
-      $accounts = 'class="active"';
-   }
-   else if (preg_match("/transactions.php/", $script)) {
-      $transactions = 'class="active"';
-   }   
-   else if (preg_match("/addTransaction.php/", $script)) {
-      $transactions = 'class="active"';
-   }   
-   else if (preg_match("/modTransaction.php/", $script)) {
-      $transactions = 'class="active"';
-   }   
-   else if (preg_match("/uploadTransactions.php/", $script)) {
-      $transactions = 'class="active"';
-   }   
-   else if (preg_match("/businesses.php/", $script)) {
-      $businesses = 'class="active"';
-   }   
-   else if (preg_match("/categories.php/", $script)) {
-      $categories = 'class="active"';
-   }   
-   else if (preg_match("/reports.php/", $script)) {
-      $reports = 'class="active"';
-   }   
-
-// Navigation menu   
-print <<<EOT
-   <div class="row">
-   <nav>   
-      <ul class="menu">
-         <li class="col-1"><a {$index} href="index.php">Home</a></li>
-         <li class="col-1"><a {$accounts} href="accounts.php">Accounts</a></li>
-         <li class="col-1"><a {$transactions} href="transactions.php">Transactions</a></li>
-         <li class="col-1"><a {$businesses} href="businesses.php">Businesses</a></li>
-         <li class="col-1"><a {$categories} href="categories.php">Categories</a></li>
-         <li class="col-1"><a {$reports} href="reports.php">Reports</a></li>
-      </ul>
-   </nav>  
-   </div>
-EOT;
-
-?>
-
--->
+<!-- Navigation menu -->   
+<div class="row">
+<nav>   
+<ul class="menu">
+    <li class="col-1"><a {% if menu == "home" %} class="active" {% endif %} href="/home">Home</a></li>
+    <li class="col-1"><a {% if menu == "accounts" %} class="active" {% endif %} href="/accounts">Accounts</a></li>
+    <li class="col-1"><a {% if menu == "transactions" %} class="active" {% endif %} href="/transactions">Transactions</a></li>
+    <li class="col-1"><a {% if menu == "businesses" %} class="active" {% endif %} href="/businesses">Businesses</a></li>
+    <li class="col-1"><a {% if menu == "categories" %} class="active" {% endif %} href="/categories">Categories</a></li>
+    <li class="col-1"><a {% if menu == "reports" %} class="active" {% endif %} href="/reports">Reports</a></li>
+</ul>
+</nav>  
+</div>
