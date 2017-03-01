@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, url_for, request, redirect
 from database_setup import User, Transaction, Category, Business, Account, session
 
 app = Flask(__name__)
@@ -30,6 +30,26 @@ def transactions_page():
                            all()
     return render_template('transactions.xhtml',transactions=transactions, menu="transactions")
 
+
+@app.route('/transactions/modify/<int:transno>/', methods=['GET', 'POST'])
+def modify_transaction(transno):
+    transaction = session.query(Transaction).\
+                           filter(Transaction.transno == transno).\
+                           one()
+    businesses = session.query(Business).all()
+    categories = session.query(Category).all()
+    accounts = session.query(Account).all()
+        
+    if request.method == 'POST':
+        if request.form['amount']:
+            transaction.amount = request.form['amount']
+        session.add(transaction)
+        session.commit()
+        return redirect(url_for('transactions_page'))
+    else:
+        return render_template('modify_transaction.xhtml',transaction=transaction,\
+                                businesses=businesses, categories=categories,\
+                                accounts=accounts, menu="transactions")
 
 @app.route('/businesses')
 def businesses_page():

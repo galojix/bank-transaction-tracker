@@ -1,0 +1,68 @@
+{% include 'header.xhtml' %}
+
+<div class="row">   
+<section class="col-12">
+<section class="display">
+<h2>Modify Transaction {{transaction.transno}}: </h2>
+
+
+<fieldset>
+
+<form action= "{{url_for('modify_transaction', transno=transaction.transno)}}" method = 'POST'>
+
+
+<!-- Date -->
+<label for="date">Date:</label> 
+<input type="datetime-local" id="date" name="date" value="{{transaction.date}}" required="required" maxlength="20" autofocus="autofocus"/>
+<span class="error"></span>
+               
+<!-- Business -->
+<label for="busName">Business:</label>
+<select name="busName">
+    {% for business in businesses %}
+<!--    <option value="{{business.busname}}" selected="selected">{{business.busname}}</option> -->
+    <option value="{{business.busname}}">{{business.busname}}</option>
+    {% endfor %}               
+</select>   
+<span class="error"></span>                           
+
+<!-- Category -->
+<label for="catName">Category:</label>
+<select name="catName">
+    {% for category in categories %}
+<!--    <option value="{{category.catname}}" selected="selected">{{category.catname}}</option> -->
+    <option value="{{category.catname}}">{{category.catname}}</option>
+    {% endfor %}               
+</select>   
+<span class="error"></span>                           
+
+<!-- Account -->
+<label for="accName">Account:</label>
+<select name="accName">
+    {% for account in accounts %}
+<!--    <option value="{{account.accname}}" selected="selected">{{account.accname}}</option> -->
+    <option value="{{account.accname}}">{{account.accname}}</option>
+    {% endfor %}               
+</select>   
+<span class="error"></span>                           
+
+<!-- Amount -->
+<label for="amount">Amount: <span class="error"></span></label>
+<input type="number" id="amount" name="amount" value="{{transaction.amount}}"  min="-10000000" max="10000000" required="required"  step="0.01" autocomplete="off" maxlength="20" />
+
+
+    
+<input type="submit" name="modSubmit" value="Modify"/>
+<input type="submit" name="delSubmit" value="Delete"/>   
+<input type="submit" name="cancelSubmit" value="Cancel"/>         
+
+</form>
+<a href= '{{url_for('transactions_page')}}'>Cancel</a>
+
+</fieldset>
+       
+</section>
+</section>
+</div>
+</body>
+</html>

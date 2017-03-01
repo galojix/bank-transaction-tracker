@@ -19,7 +19,7 @@
    {% for transaction, category, business, account in transactions %}         
 
    <tr>
-       <td class="transNo">{{transaction.transno}}</td>
+       <td class="transNo"><a href="{{url_for('modify_transaction', transno=transaction.transno)}}">{{transaction.transno}}</a></td>
        <td>{{transaction.date}}</td>
        <td>{{category.catname}}</td>
        <td>{{category.cattype}}</td>
