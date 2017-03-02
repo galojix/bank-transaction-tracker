@@ -14,13 +14,13 @@ def home_page():
                            filter(Transaction.busno == Business.busno).\
                            filter(Transaction.accno == Account.accno).\
                            all()
-    return render_template('home.xhtml',transactions=transactions, menu="home")
+    return render_template('home.html',transactions=transactions, menu="home")
 
 
 @app.route('/accounts')
 def accounts_page():
     accounts = session.query(Account).all()
-    return render_template('accounts.xhtml',accounts=accounts, menu="accounts")
+    return render_template('accounts.html',accounts=accounts, menu="accounts")
 
 
 @app.route('/transactions')
@@ -30,7 +30,7 @@ def transactions_page():
                            filter(Transaction.busno == Business.busno).\
                            filter(Transaction.accno == Account.accno).\
                            all()
-    return render_template('transactions.xhtml',transactions=transactions, menu="transactions")
+    return render_template('transactions.html',transactions=transactions, menu="transactions")
 
 
 @app.route('/transactions/modify/<int:transno>/', methods=['GET', 'POST'])
@@ -79,7 +79,7 @@ def modify_transaction(transno):
 
         return redirect(url_for('transactions_page'))
     else:
-        return render_template('modify_transaction.xhtml',transaction=transaction,\
+        return render_template('modify_transaction.html',transaction=transaction,\
                                 businesses=businesses, categories=categories,\
                                 accounts=accounts, current_business=transaction.business.busname,\
                                 current_category=transaction.category.catname,\
@@ -88,18 +88,18 @@ def modify_transaction(transno):
 @app.route('/businesses')
 def businesses_page():
     businesses = session.query(Business).all()
-    return render_template('businesses.xhtml',businesses=businesses, menu="businesses")
+    return render_template('businesses.html',businesses=businesses, menu="businesses")
 
 
 @app.route('/categories')
 def categories_page():
     categories = session.query(Category).all()
-    return render_template('categories.xhtml',categories=categories, menu="categories")
+    return render_template('categories.html',categories=categories, menu="categories")
 
 
 @app.route('/reports')
 def reports_page():
-    return render_template('reports.xhtml',menu="reports")
+    return render_template('reports.html',menu="reports")
 
 
 if __name__ == '__main__':
