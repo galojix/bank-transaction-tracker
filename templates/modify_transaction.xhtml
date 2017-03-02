@@ -13,15 +13,18 @@
 
 <!-- Date -->
 <label for="date">Date:</label> 
-<input type="datetime-local" id="date" name="date" value="{{transaction.date}}" required="required" maxlength="20" autofocus="autofocus"/>
+<input type="datetime-local" id="date" name="date" value="{{transaction.date.isoformat()}}" required="required" maxlength="20" autofocus="autofocus"/>
 <span class="error"></span>
                
 <!-- Business -->
 <label for="busName">Business:</label>
 <select name="busName">
     {% for business in businesses %}
-<!--    <option value="{{business.busname}}" selected="selected">{{business.busname}}</option> -->
-    <option value="{{business.busname}}">{{business.busname}}</option>
+        {% if business.busname == current_business %}
+            <option value="{{business.busname}}" selected="selected">{{business.busname}}</option>
+        {% else %}    
+            <option value="{{business.busname}}">{{business.busname}}</option>
+        {% endif %}
     {% endfor %}               
 </select>   
 <span class="error"></span>                           
@@ -30,8 +33,11 @@
 <label for="catName">Category:</label>
 <select name="catName">
     {% for category in categories %}
-<!--    <option value="{{category.catname}}" selected="selected">{{category.catname}}</option> -->
-    <option value="{{category.catname}}">{{category.catname}}</option>
+        {% if category.catname == current_category %}
+            <option value="{{category.catname}}" selected="selected">{{category.catname}}</option>
+        {% else %}    
+            <option value="{{category.catname}}">{{category.catname}}</option>
+        {% endif %}
     {% endfor %}               
 </select>   
 <span class="error"></span>                           
@@ -40,8 +46,11 @@
 <label for="accName">Account:</label>
 <select name="accName">
     {% for account in accounts %}
-<!--    <option value="{{account.accname}}" selected="selected">{{account.accname}}</option> -->
-    <option value="{{account.accname}}">{{account.accname}}</option>
+        {% if account.accname == current_account %}
+            <option value="{{account.accname}}" selected="selected">{{account.accname}}</option>
+        {% else %}    
+            <option value="{{account.accname}}">{{account.accname}}</option>
+        {% endif %}
     {% endfor %}               
 </select>   
 <span class="error"></span>                           
@@ -52,12 +61,12 @@
 
 
     
-<input type="submit" name="modSubmit" value="Modify"/>
-<input type="submit" name="delSubmit" value="Delete"/>   
-<input type="submit" name="cancelSubmit" value="Cancel"/>         
+<input type="submit" name="submit" value="Modify"/>
+<input type="submit" name="submit" value="Delete"/>   
+<input type="submit" name="submit" value="Cancel"/>         
 
 </form>
-<a href= '{{url_for('transactions_page')}}'>Cancel</a>
+
 
 </fieldset>
        
