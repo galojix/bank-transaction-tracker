@@ -1,6 +1,9 @@
-from flask import Flask, render_template, url_for, request, redirect
-from database_setup import User, Transaction, Category, Business, Account, session
+from flask import Flask, render_template, url_for, request, redirect, session, abort, flash
+from database_setup import User, Transaction, Category, Business, Account, sqlsession
+from lib_common import password_verified
 import dateutil.parser
+import os
+import sqlalchemy.orm.exc
 
 
 app = Flask(__name__)
@@ -9,38 +12,77 @@ app = Flask(__name__)
 @app.route('/')
 @app.route('/home')
 def home_page():
-    transactions = session.query(Transaction, Category, Business, Account).\
-                           filter(Transaction.catno == Category.catno).\
-                           filter(Transaction.busno == Business.busno).\
-                           filter(Transaction.accno == Account.accno).\
-                           all()
+    if not session.get('logged_in'):
+        return render_template('login.html')
+    transactions = sqlsession.query(Transaction, Category, Business, Account).\
+                        filter(Transaction.username == session['user']).\
+                        filter(Transaction.catno == Category.catno).\
+                        filter(Transaction.busno == Business.busno).\
+                        filter(Transaction.accno == Account.accno).\
+                        all()
     return render_template('home.html',transactions=transactions, menu="home")
+
+
+@app.route('/login', methods=['POST'])
+def login():
+    try:    
+        user = sqlsession.query(User).filter(User.username == request.form['username']).one()
+    except sqlalchemy.orm.exc.NoResultFound:
+        flash('*Invalid login, please try again.')
+        return home_page()
+    if password_verified(request.form['password'], user.password):
+        session['logged_in'] = True
+        session['user'] = user.username
+    else:
+        flash('*Invalid login, please try again.')
+    return home_page()
+
+
+@app.route("/logout")
+def logout():
+    session['logged_in'] = False
+    return home_page()
 
 
 @app.route('/accounts')
 def accounts_page():
-    accounts = session.query(Account).all()
+    if not session.get('logged_in'):
+        return render_template('login.html')
+    accounts = sqlsession.query(Account).\
+                    filter(Account.username == session['user']).\
+                    all()
     return render_template('accounts.html',accounts=accounts, menu="accounts")
 
 
 @app.route('/transactions')
 def transactions_page():
-    transactions = session.query(Transaction, Category, Business, Account).\
-                           filter(Transaction.catno == Category.catno).\
-                           filter(Transaction.busno == Business.busno).\
-                           filter(Transaction.accno == Account.accno).\
-                           all()
+    if not session.get('logged_in'):
+        return render_template('login.html')
+    transactions = sqlsession.query(Transaction, Category, Business, Account).\
+                        filter(Transaction.username == session['user']).\
+                        filter(Transaction.catno == Category.catno).\
+                        filter(Transaction.busno == Business.busno).\
+                        filter(Transaction.accno == Account.accno).\
+                        all()
     return render_template('transactions.html',transactions=transactions, menu="transactions")
 
 
 @app.route('/transactions/modify/<int:transno>/', methods=['GET', 'POST'])
 def modify_transaction(transno):
-    transaction = session.query(Transaction).\
+    if not session.get('logged_in'):
+        return render_template('login.html')
+    transaction = sqlsession.query(Transaction).\
                     filter(Transaction.transno == transno).\
                     one()
-    businesses = session.query(Business).all()
-    categories = session.query(Category).all()
-    accounts = session.query(Account).all()
+    businesses = sqlsession.query(Business).\
+                    filter(Business.username == session['user']).\
+                    all()
+    categories = sqlsession.query(Category).\
+                    filter(Category.username == session['user']).\
+                    all()
+    accounts = sqlsession.query(Account).\
+                    filter(Account.username == session['user']).\
+                    all()
     
     if request.method == 'POST':
 
@@ -54,25 +96,25 @@ def modify_transaction(transno):
 
             if request.form['busName']:
                 for business in businesses:
-                    if business.busname == request.form['busName'] and business.username == 'demo':
+                    if business.busname == request.form['busName'] and business.username == session['user']:
                         transaction.business = business
 
             if request.form['catName']:
                 for category in categories:
-                    if category.catname == request.form['catName'] and category.username == 'demo':
+                    if category.catname == request.form['catName'] and category.username == session['user']:
                         transaction.category = category
 
             if request.form['accName']:
                 for account in accounts:
-                    if account.accname == request.form['accName'] and account.username == 'demo':
+                    if account.accname == request.form['accName'] and account.username == session['user']:
                         transaction.account = account
 
-            session.add(transaction)
-            session.commit()
+            sqlsession.add(transaction)
+            sqlsession.commit()
 
         if request.form['submit'] == 'Delete':
-            session.delete(transaction)
-            session.commit()
+            sqlsession.delete(transaction)
+            sqlsession.commit()
 
         if request.form['submit'] == 'Cancel':
             pass
@@ -87,21 +129,32 @@ def modify_transaction(transno):
 
 @app.route('/businesses')
 def businesses_page():
-    businesses = session.query(Business).all()
+    if not session.get('logged_in'):
+        return render_template('login.html')
+    businesses = sqlsession.query(Business).\
+                    filter(Business.username == session['user']).\
+                    all()
     return render_template('businesses.html',businesses=businesses, menu="businesses")
 
 
 @app.route('/categories')
 def categories_page():
-    categories = session.query(Category).all()
+    if not session.get('logged_in'):
+        return render_template('login.html')
+    categories = sqlsession.query(Category).\
+                    filter(Category.username == session['user']).\
+                    all()
     return render_template('categories.html',categories=categories, menu="categories")
 
 
 @app.route('/reports')
 def reports_page():
+    if not session.get('logged_in'):
+        return render_template('login.html')
     return render_template('reports.html',menu="reports")
 
 
 if __name__ == '__main__':
+    app.secret_key = os.urandom(12)    
     app.debug = True
     app.run(port=5000)

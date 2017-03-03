@@ -364,7 +364,7 @@
 
    /* CSV file format example */
    ul.csv {
-      list-style-type:none;   
+      list-style-type: none;   
    }
 
    /* Add padding to SVG graphics */
@@ -396,6 +396,12 @@
       padding: 7px;
       
    }
+   
+   /* Flash/error messages */
+   ul.flash {
+      list-style-type: none;         
+   }
+
 }
 
 

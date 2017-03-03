@@ -1,4 +1,4 @@
-from database_setup import User, Business, Category, Account, Transaction, session, empty_database 
+from database_setup import User, Business, Category, Account, Transaction, sqlsession, empty_database 
 from lib_common import hash_password
 
 # Start with an empty database
@@ -32,8 +32,8 @@ transactions = ( (7007, "2016-10-01T08:05", "Bupa", "Insurance", "NAB"),
 for amount, date, busname, catname, accname in transactions:
     user.add_transaction(amount=amount, date=date, busname=busname, catname=catname, accname=accname)
 
-session.add(user)
-session.commit()
+sqlsession.add(user)
+sqlsession.commit()
 
 # Create user
 user = User(username="normal", password=hash_password("normal"))
@@ -63,5 +63,5 @@ transactions = ( (8007, "2016-10-01T08:05", "Bupa", "Insurance", "NAB"),
 for amount, date, busname, catname, accname in transactions:
     user.add_transaction(amount=amount, date=date, busname=busname, catname=catname, accname=accname)
 
-session.add(user)
-session.commit()
+sqlsession.add(user)
+sqlsession.commit()

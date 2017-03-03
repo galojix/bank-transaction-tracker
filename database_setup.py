@@ -88,7 +88,7 @@ engine = create_engine('sqlite:///bam.db', echo=True)
 Base.metadata.create_all(engine) 
 
 DBSession = sessionmaker(bind=engine)
-session = DBSession()
+sqlsession = DBSession()
 
 def empty_database():
     Base.metadata.drop_all(engine) # Drop all existing tables
