@@ -153,8 +153,7 @@ def reports_page():
         return render_template('login.html')
     return render_template('reports.html',menu="reports")
 
-
 if __name__ == '__main__':
-    app.secret_key = os.urandom(12)    
+    app.secret_key = os.urandom(24) # Required for sessions, used for signing cookies
     app.debug = True
     app.run(port=5000)
