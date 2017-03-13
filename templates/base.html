@@ -9,23 +9,28 @@
 {% endblock %}
 
 {% block navbar %}
-<div class="navbar navbar-inverse" role="navigation">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="/">PFT</a>
-        </div>
-        <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-                <li><a href="/">Home</a></li>
-            </ul>
-        </div>
-    </div>
+<!-- Heading banner with logo, text and buttons -->   
+<div class="row">
+    <div class="col-sm-1"><img src="{{ url_for('static', filename='logo.png') }}" width="30" height="28" alt="$"/></div>
+    <div class="col-sm-5">Personal Finance Tracker</div>
+    <div class="col-sm-5">Who is logged in ?</div>    
+    <div class="col-sm-1"><a href="{{ url_for('logout') }}"><button class="btn btn-default">Log Out</button></a></div>   
+</div>
+
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <ul class="nav navbar-nav">
+      <li {% if menu == "home" %}class="active"{% endif %}><a href="{{url_for('home_page')}}">Home</a></li>
+      <li {% if menu == "accounts" %}class="active"{% endif %}><a href="{{url_for('accounts_page')}}">Accounts</a></li>
+      <li {% if menu == "transactions" %}class="active"{% endif %}><a href="{{url_for('transactions_page')}}">Transactions</a></li>
+      <li {% if menu == "businesses" %}class="active"{% endif %}><a href="{{url_for('businesses_page')}}">Businesses</a></li>
+      <li {% if menu == "categories" %}class="active"{% endif %}><a href="{{url_for('categories_page')}}">Categories</a></li>
+      <li {% if menu == "reports" %}class="active"{% endif %}><a href="{{url_for('reports_page')}}">Reports</a></li>
+    </ul>
+  </div>
+</nav>
+
+
 </div>
 {% endblock %}
 
