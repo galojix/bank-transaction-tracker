@@ -1,12 +1,106 @@
 from flask import Flask, render_template, url_for, request, redirect, session, abort, flash
-from database_setup import User, Transaction, Category, Business, Account, sqlsession
+from flask_script import Manager, Shell
+from flask_bootstrap import Bootstrap
+from flask_moment import Moment
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField
+from wtforms.validators import Required
+from flask_sqlalchemy import SQLAlchemy
 from lib_common import password_verified
 import dateutil.parser
 import os
-import sqlalchemy.orm.exc
 
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'hard to guess string'
+app.config['SQLALCHEMY_DATABASE_URI'] =\
+    'sqlite:///' + os.path.join(basedir, 'pft.db')
+app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+manager = Manager(app)
+bootstrap = Bootstrap(app)
+moment = Moment(app)
+db = SQLAlchemy(app)
+
+class User(db.Model):
+    __tablename__ = 'users'
+    username = db.Column(db.String(250), primary_key=True)
+    password = db.Column(db.String(250), nullable=False)
+    businesses = db.relationship("Business", order_by="Business.busname", back_populates="user", cascade="all, delete, delete-orphan") 
+    categories = db.relationship("Category", order_by="Category.catname", back_populates="user", cascade="all, delete, delete-orphan")
+    accounts = db.relationship("Account", order_by="Account.accname", back_populates="user", cascade="all, delete, delete-orphan")
+    transactions = db.relationship("Transaction", order_by="Transaction.date", back_populates="user", cascade="all, delete, delete-orphan")
+    
+    def add_business(self, busname):
+        self.businesses.append(Business(busname=busname))
+   
+    def add_category(self, catname, cattype):
+        self.categories.append(Category(catname=catname, cattype=cattype))             
+
+    def add_account(self, accname, balance):
+        self.accounts.append(Account(accname=accname, balance=balance))
+        
+    def add_transaction(self, amount, date, busname, catname, accname):
+        date = dateutil.parser.parse(date)
+        transaction = Transaction(amount=amount, date=date)        
+        for business in self.businesses:
+            if business.busname == busname:
+                business.transactions.append(transaction)
+        for category in self.categories:
+            if category.catname == catname:
+                category.transactions.append(transaction)
+        for account in self.accounts:
+            if account.accname == accname:
+                account.transactions.append(transaction)
+        self.transactions.append(transaction)
+    
+class Business(db.Model):
+    __tablename__ = 'businesses'
+    busno = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    busname = db.Column(db.String(250), nullable=False)
+    username = db.Column(db.String(250), db.ForeignKey('users.username'))
+    user = db.relationship("User", back_populates="businesses")
+    transactions = db.relationship("Transaction", order_by="Transaction.date", back_populates="business", cascade="all, delete-orphan")  
+  
+
+class Category(db.Model):
+    __tablename__ = 'categories'
+    catno = db.Column(db.Integer, primary_key=True)
+    catname = db.Column(db.String(250), nullable=False)
+    cattype = db.Column(db.String(250), nullable=False)
+    username = db.Column(db.String(250), db.ForeignKey('users.username'), nullable=False)    
+    user = db.relationship(User, back_populates="categories")    
+    transactions = db.relationship("Transaction", order_by="Transaction.date", back_populates="category", cascade="all, delete-orphan")
+
+class Account(db.Model):
+    __tablename__ = 'accounts'
+    accno = db.Column(db.Integer, primary_key=True)
+    accname = db.Column(db.String(250), nullable=False)
+    balance = db.Column(db.Integer, nullable=False)
+    username = db.Column(db.String(250), db.ForeignKey('users.username'), nullable=False)    
+    user = db.relationship(User, back_populates="accounts")     
+    transactions = db.relationship("Transaction", order_by="Transaction.date", back_populates="account", cascade="all, delete-orphan")
+
+class Transaction(db.Model):
+    __tablename__ = 'transactions'
+    transno = db.Column(db.Integer, primary_key=True)
+    amount = db.Column(db.Integer, nullable=False)
+    date = db.Column(db.DateTime, nullable=False)  
+    busno = db.Column(db.Integer, db.ForeignKey('businesses.busno'), nullable=False)
+    business = db.relationship(Business, back_populates="transactions") 
+    catno = db.Column(db.Integer, db.ForeignKey('categories.catno'), nullable=False, )
+    category = db.relationship(Category, back_populates="transactions")     
+    accno = db.Column(db.Integer, db.ForeignKey('accounts.accno'), nullable=False)
+    account = db.relationship(Account, back_populates="transactions")     
+    username = db.Column(db.String(250), db.ForeignKey('users.username'))        
+    user = db.relationship(User, back_populates="transactions")     
+
+
+def empty_database():
+    db.drop_all() # Drop all existing tables
+    db.create_all() # Create new tables 
 
 
 @app.route('/')
@@ -14,7 +108,7 @@ app = Flask(__name__)
 def home_page():
     if not session.get('logged_in'):
         return render_template('login.html')
-    transactions = sqlsession.query(Transaction, Category, Business, Account).\
+    transactions = db.session.query(Transaction, Category, Business, Account).\
                         filter(Transaction.username == session['user']).\
                         filter(Transaction.catno == Category.catno).\
                         filter(Transaction.busno == Business.busno).\
@@ -26,7 +120,7 @@ def home_page():
 @app.route('/login', methods=['POST'])
 def login():
     try:    
-        user = sqlsession.query(User).filter(User.username == request.form['username']).one()
+        user = db.session.query(User).filter(User.username == request.form['username']).one()
     except sqlalchemy.orm.exc.NoResultFound:
         flash('*Invalid login, please try again.')
         return home_page()
@@ -48,7 +142,7 @@ def logout():
 def accounts_page():
     if not session.get('logged_in'):
         return render_template('login.html')
-    accounts = sqlsession.query(Account).\
+    accounts = db.session.query(Account).\
                     filter(Account.username == session['user']).\
                     all()
     return render_template('accounts.html',accounts=accounts, menu="accounts")
@@ -58,7 +152,7 @@ def accounts_page():
 def transactions_page():
     if not session.get('logged_in'):
         return render_template('login.html')
-    transactions = sqlsession.query(Transaction, Category, Business, Account).\
+    transactions = db.session.query(Transaction, Category, Business, Account).\
                         filter(Transaction.username == session['user']).\
                         filter(Transaction.catno == Category.catno).\
                         filter(Transaction.busno == Business.busno).\
@@ -71,16 +165,16 @@ def transactions_page():
 def modify_transaction(transno):
     if not session.get('logged_in'):
         return render_template('login.html')
-    transaction = sqlsession.query(Transaction).\
+    transaction = db.session.query(Transaction).\
                     filter(Transaction.transno == transno).\
                     one()
-    businesses = sqlsession.query(Business).\
+    businesses = db.session.query(Business).\
                     filter(Business.username == session['user']).\
                     all()
-    categories = sqlsession.query(Category).\
+    categories = db.session.query(Category).\
                     filter(Category.username == session['user']).\
                     all()
-    accounts = sqlsession.query(Account).\
+    accounts = db.session.query(Account).\
                     filter(Account.username == session['user']).\
                     all()
     
@@ -109,12 +203,12 @@ def modify_transaction(transno):
                     if account.accname == request.form['accName'] and account.username == session['user']:
                         transaction.account = account
 
-            sqlsession.add(transaction)
-            sqlsession.commit()
+            db.session.add(transaction)
+            db.session.commit()
 
         if request.form['submit'] == 'Delete':
-            sqlsession.delete(transaction)
-            sqlsession.commit()
+            db.session.delete(transaction)
+            db.session.commit()
 
         if request.form['submit'] == 'Cancel':
             pass
@@ -131,7 +225,7 @@ def modify_transaction(transno):
 def businesses_page():
     if not session.get('logged_in'):
         return render_template('login.html')
-    businesses = sqlsession.query(Business).\
+    businesses = db.session.query(Business).\
                     filter(Business.username == session['user']).\
                     all()
     return render_template('businesses.html',businesses=businesses, menu="businesses")
@@ -141,7 +235,7 @@ def businesses_page():
 def categories_page():
     if not session.get('logged_in'):
         return render_template('login.html')
-    categories = sqlsession.query(Category).\
+    categories = db.session.query(Category).\
                     filter(Category.username == session['user']).\
                     all()
     return render_template('categories.html',categories=categories, menu="categories")
