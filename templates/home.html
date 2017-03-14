@@ -1,11 +1,12 @@
-{% include 'header.html' %}
+{% extends "base.html" %}
 
-<div class="row">   
-<section class="col-12">
-<section class="display">
+{% block title %}PFT{% endblock %}
+
+{% block page_content %}
+
+<div class="container-fluid">   
 <h2>Transactions:</h2>
-
-<table>
+<table class="table table-striped table-bordered table-hover table-responsive">
     <tr>     
         <th>Trans No.</th>
         <th>Date</th> 
@@ -31,9 +32,10 @@
    {% endfor %}         
 
 </table>         
-       
-</section>
-</section>
 </div>
-</body>
-</html>
+
+{% endblock %}
+
+
+
+
