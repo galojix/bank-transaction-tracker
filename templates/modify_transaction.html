@@ -1,77 +1,12 @@
-{% include 'header.html' %}
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
 
-<div class="row">   
-<section class="col-12">
-<section class="display">
+{% block title %}PFT{% endblock %}
+
+{% block page_content %}
+
 <h2>Modify Transaction {{transaction.transno}}: </h2>
+{{ wtf.quick_form(form) }}
 
+{% endblock %}
 
-<fieldset>
-
-<form action= "{{url_for('modify_transaction', transno=transaction.transno)}}" method = 'POST'>
-
-
-<!-- Date -->
-<label for="date">Date:</label> 
-<input type="datetime-local" id="date" name="date" value="{{transaction.date.isoformat()}}" required="required" maxlength="20" autofocus="autofocus"/>
-<span class="error"></span>
-               
-<!-- Business -->
-<label for="busName">Business:</label>
-<select name="busName">
-    {% for business in businesses %}
-        {% if business.busname == current_business %}
-            <option value="{{business.busname}}" selected="selected">{{business.busname}}</option>
-        {% else %}    
-            <option value="{{business.busname}}">{{business.busname}}</option>
-        {% endif %}
-    {% endfor %}               
-</select>   
-<span class="error"></span>                           
-
-<!-- Category -->
-<label for="catName">Category:</label>
-<select name="catName">
-    {% for category in categories %}
-        {% if category.catname == current_category %}
-            <option value="{{category.catname}}" selected="selected">{{category.catname}}</option>
-        {% else %}    
-            <option value="{{category.catname}}">{{category.catname}}</option>
-        {% endif %}
-    {% endfor %}               
-</select>   
-<span class="error"></span>                           
-
-<!-- Account -->
-<label for="accName">Account:</label>
-<select name="accName">
-    {% for account in accounts %}
-        {% if account.accname == current_account %}
-            <option value="{{account.accname}}" selected="selected">{{account.accname}}</option>
-        {% else %}    
-            <option value="{{account.accname}}">{{account.accname}}</option>
-        {% endif %}
-    {% endfor %}               
-</select>   
-<span class="error"></span>                           
-
-<!-- Amount -->
-<label for="amount">Amount: <span class="error"></span></label>
-<input type="number" id="amount" name="amount" value="{{transaction.amount}}"  min="-10000000" max="10000000" required="required"  step="0.01" autocomplete="off" maxlength="20" />
-
-
-    
-<input type="submit" name="submit" value="Modify"/>
-<input type="submit" name="submit" value="Delete"/>   
-<input type="submit" name="submit" value="Cancel"/>         
-
-</form>
-
-
-</fieldset>
-       
-</section>
-</section>
-</div>
-</body>
-</html>

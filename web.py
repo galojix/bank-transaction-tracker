@@ -3,7 +3,7 @@ from flask_script import Manager, Shell
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
+from wtforms import StringField, SubmitField, DateTimeField, DecimalField
 from wtforms.validators import Required
 from flask_sqlalchemy import SQLAlchemy
 from lib_common import password_verified
@@ -105,6 +105,11 @@ def empty_database():
     db.create_all() # Create new tables 
 
 
+class ModifyTransactionForm(FlaskForm):
+    date = DateTimeField('Date:', validators=[Required()])
+    amount = DecimalField('Amount:', validators=[Required()])
+    
+    
 @app.route('/')
 @app.route('/home')
 def home_page():
@@ -179,7 +184,34 @@ def modify_transaction(transno):
     accounts = db.session.query(Account).\
                     filter(Account.username == session['user']).\
                     all()
+ 
+    form = ModifyTransactionForm()
+    #form.date.data = str(transaction.date.isoformat())
+    form.amount.data = transaction.amount
     
+    if form.validate_on_submit():
+        pass
+    return render_template('modify_transaction.html',form=form, transaction=transaction,\
+                                businesses=businesses, categories=categories,\
+                                accounts=accounts, current_business=transaction.business.busname,\
+                                current_category=transaction.category.catname,\
+                                current_account = transaction.account.accname, menu="transactions")
+        
+"""
+        user = User.query.filter_by(username=form.name.data).first()
+        if user is None:
+            user = User(username=form.name.data)
+            db.session.add(user)
+            session['known'] = False
+        else:
+            session['known'] = True
+        session['name'] = form.name.data
+        return redirect(url_for('index'))
+"""
+
+                                
+"""
+ 
     if request.method == 'POST':
 
         if request.form['submit'] == 'Modify':
@@ -222,6 +254,8 @@ def modify_transaction(transno):
                                 accounts=accounts, current_business=transaction.business.busname,\
                                 current_category=transaction.category.catname,\
                                 current_account = transaction.account.accname, menu="transactions")
+                                
+"""                                
 
 @app.route('/businesses')
 def businesses_page():
