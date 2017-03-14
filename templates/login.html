@@ -1,55 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-   <meta charset="UTF-8">   
-   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-   <link rel="stylesheet" title="Site Style" href="/static/style.css" type="text/css"/>
-   <title>PFT: Login</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-<header>   
-   <h1><img class="logo" src="/static/logo.png"  width="30" height="28" alt="$"/> Personal Finance Tracker</h1>
-</header>
+{% block title %}PFT{% endblock %}
+
+{% block page_content %}
 
 <!-- Form for entering login details -->
-<div class="row">
-   <div class="col-3">&#160;</div>
-   <!-- Login form -->
-   <div class="col-6">
-   
 
-    {% if session['logged_in'] %}
-    <p>You're logged in already!</p>
-    {% else %}
-    <form action="/login" method="post">
-      <fieldset>
-         <legend>Login:</legend>
-         <label for="username">Username</label>
-         <input type="text" id="username" name="username" value="" autocomplete="off" autofocus="autofocus" required="required" maxlength="20" />
-         <label for="password">Password</label>
-         <input type="password" id="password" name="password" value="" required="required" maxlength="20" />
-         <input type="submit" value="Login" />
-      </fieldset>
-    </form>
-    {% endif %}
-
-    <p class="centre">
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul class="flash">
-            {% for message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        {% endwith %}
-    </p>
+{% if session['logged_in'] %}
+<p>You're logged in already!</p>
+{% else %}
+<h2>Login:</h2>
+<form class="form-horizontal" action="/login" method="post">
+    <div class="form-group">
+        <label class="control-label col-sm-2" for="username">Username:</label>
+        <div class="col-sm-10">        
+            <input type="text" class="form-control" id="username" name="username" value="" autocomplete="off" autofocus="autofocus" required="required" maxlength="20" />
+        </div>    
+    </div>
+    <div class="form-group">
+        <label class="control-label col-sm-2" for="password">Password:</label>
+        <div class="col-sm-10">
+            <input type="password" class="form-control col-sm-10" id="password" name="password" value="" required="required" maxlength="20" />
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">Submit</button>
+        </div>
+    </div>
+</form>
+{% endif %}
 
 
-   </div>
-   <div class="col-3">&#160;</div>
-</div>
+{% endblock %}
 
-</body>
-</html>
+
+
+
+

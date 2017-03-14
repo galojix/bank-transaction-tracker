@@ -9,6 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 from lib_common import password_verified
 import dateutil.parser
 import os
+from sqlalchemy.orm.exc import NoResultFound
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -122,14 +123,14 @@ def home_page():
 def login():
     try:    
         user = db.session.query(User).filter(User.username == request.form['username']).one()
-    except sqlalchemy.orm.exc.NoResultFound:
-        flash('*Invalid login, please try again.')
+    except NoResultFound:
+        flash('Invalid login, please try again.')
         return home_page()
     if password_verified(request.form['password'], user.password):
         session['logged_in'] = True
         session['user'] = user.username
     else:
-        flash('*Invalid login, please try again.')
+        flash('Invalid login, please try again.')
     return home_page()
 
 
