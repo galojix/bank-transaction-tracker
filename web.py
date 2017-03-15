@@ -3,7 +3,8 @@ from flask_script import Manager, Shell
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, DateTimeField, DecimalField
+from wtforms import StringField, SubmitField, SelectField, IntegerField
+from wtforms.fields.html5 import DateTimeLocalField
 from wtforms.validators import Required
 from flask_sqlalchemy import SQLAlchemy
 from lib_common import password_verified
@@ -25,6 +26,7 @@ manager = Manager(app)
 bootstrap = Bootstrap(app)
 moment = Moment(app)
 db = SQLAlchemy(app)
+
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -106,8 +108,14 @@ def empty_database():
 
 
 class ModifyTransactionForm(FlaskForm):
-    date = DateTimeField('Date:', validators=[Required()])
-    amount = DecimalField('Amount:', validators=[Required()])
+    #date = DateTimeLocalField('Date:', validators=[Required()])
+    business_name = SelectField('Business Name:', validators=[Required()])
+    category_name = SelectField('Category Name:', validators=[Required()])
+    account_name = SelectField('Account Name:', validators=[Required()])
+    amount = IntegerField('Amount:', validators=[Required()])
+    modify = SubmitField('Modify')
+    delete = SubmitField('Delete')
+    cancel = SubmitField('Cancel')
     
     
 @app.route('/')
@@ -172,6 +180,7 @@ def transactions_page():
 def modify_transaction(transno):
     if not session.get('logged_in'):
         return render_template('login.html')
+
     transaction = db.session.query(Transaction).\
                     filter(Transaction.transno == transno).\
                     one()
@@ -185,77 +194,48 @@ def modify_transaction(transno):
                     filter(Account.username == session['user']).\
                     all()
  
+    business_names = [(business.busname, business.busname) for business in businesses]
+    category_names = [(category.catname, category.catname) for category in categories]
+    account_names = [(account.accname, account.accname) for account in accounts]
+
     form = ModifyTransactionForm()
-    #form.date.data = str(transaction.date.isoformat())
-    form.amount.data = transaction.amount
-    
+    #form.date.default = transaction.date
+    form.business_name.choices = business_names
+    form.business_name.default = transaction.business.busname
+    form.category_name.choices = category_names
+    form.category_name.default = transaction.category.catname
+    form.account_name.choices = account_names
+    form.account_name.default = transaction.account.accname
+    form.amount.default = transaction.amount
+
+
     if form.validate_on_submit():
-        pass
-    return render_template('modify_transaction.html',form=form, transaction=transaction,\
-                                businesses=businesses, categories=categories,\
-                                accounts=accounts, current_business=transaction.business.busname,\
-                                current_category=transaction.category.catname,\
-                                current_account = transaction.account.accname, menu="transactions")
-        
-"""
-        user = User.query.filter_by(username=form.name.data).first()
-        if user is None:
-            user = User(username=form.name.data)
-            db.session.add(user)
-            session['known'] = False
-        else:
-            session['known'] = True
-        session['name'] = form.name.data
-        return redirect(url_for('index'))
-"""
-
-                                
-"""
- 
-    if request.method == 'POST':
-
-        if request.form['submit'] == 'Modify':
-
-            if request.form['date']:
-                transaction.date = dateutil.parser.parse(request.form['date'])
-
-            if request.form['amount']:
-                transaction.amount = request.form['amount']
-
-            if request.form['busName']:
-                for business in businesses:
-                    if business.busname == request.form['busName'] and business.username == session['user']:
-                        transaction.business = business
-
-            if request.form['catName']:
-                for category in categories:
-                    if category.catname == request.form['catName'] and category.username == session['user']:
-                        transaction.category = category
-
-            if request.form['accName']:
-                for account in accounts:
-                    if account.accname == request.form['accName'] and account.username == session['user']:
-                        transaction.account = account
-
+        if form.modify.data:        
+            #transaction.date = form.date.data
+            for business in businesses:
+                if business.busname == form.business_name.data:
+                    transaction.business = business 
+            for category in categories:
+                if category.catname == form.category_name.data:
+                    transaction.category = category 
+            for account in accounts:
+                if account.accname == form.account_name.data:
+                    transaction.account = account 
+            transaction.amount = form.amount.data
             db.session.add(transaction)
             db.session.commit()
-
-        if request.form['submit'] == 'Delete':
+        elif form.delete.data:
             db.session.delete(transaction)
             db.session.commit()
-
-        if request.form['submit'] == 'Cancel':
+        elif form.cancel.data:
             pass
-
         return redirect(url_for('transactions_page'))
-    else:
-        return render_template('modify_transaction.html',transaction=transaction,\
-                                businesses=businesses, categories=categories,\
-                                accounts=accounts, current_business=transaction.business.busname,\
-                                current_category=transaction.category.catname,\
-                                current_account = transaction.account.accname, menu="transactions")
-                                
-"""                                
+    
+    form.process() # Have to do this after validate_on_submit or breaks CSRF token
+
+    return render_template('modify_transaction.html',form=form, transno=transaction.transno,\
+                            menu="transactions")
+        
 
 @app.route('/businesses')
 def businesses_page():
