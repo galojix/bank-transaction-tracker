@@ -108,7 +108,7 @@ def empty_database():
 
 
 class ModifyTransactionForm(FlaskForm):
-    #date = DateTimeLocalField('Date:', validators=[Required()])
+    date = DateTimeLocalField('Date:', format='%Y-%m-%dT%H:%M', validators=[Required()])
     business_name = SelectField('Business Name:', validators=[Required()])
     category_name = SelectField('Category Name:', validators=[Required()])
     account_name = SelectField('Account Name:', validators=[Required()])
@@ -116,7 +116,7 @@ class ModifyTransactionForm(FlaskForm):
     modify = SubmitField('Modify')
     delete = SubmitField('Delete')
     cancel = SubmitField('Cancel')
-    
+   
     
 @app.route('/')
 @app.route('/home')
@@ -199,7 +199,7 @@ def modify_transaction(transno):
     account_names = [(account.accname, account.accname) for account in accounts]
 
     form = ModifyTransactionForm()
-    #form.date.default = transaction.date
+    form.date.default = transaction.date
     form.business_name.choices = business_names
     form.business_name.default = transaction.business.busname
     form.category_name.choices = category_names
@@ -211,7 +211,7 @@ def modify_transaction(transno):
 
     if form.validate_on_submit():
         if form.modify.data:        
-            #transaction.date = form.date.data
+            transaction.date = form.date.data
             for business in businesses:
                 if business.busname == form.business_name.data:
                     transaction.business = business 
