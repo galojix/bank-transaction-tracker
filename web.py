@@ -1,9 +1,10 @@
-from flask import Flask, render_template, url_for, request, redirect, session, abort, flash
-from flask_script import Manager, Shell
+from flask import Flask, render_template, url_for, request, redirect, session,\
+    flash
+from flask_script import Manager
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, SelectField, IntegerField
+from wtforms import SubmitField, SelectField, IntegerField
 from wtforms.fields.html5 import DateTimeLocalField
 from wtforms.validators import Required
 from flask_sqlalchemy import SQLAlchemy
@@ -32,23 +33,31 @@ class User(db.Model):
     __tablename__ = 'users'
     username = db.Column(db.String(250), primary_key=True)
     password = db.Column(db.String(250), nullable=False)
-    businesses = db.relationship("Business", order_by="Business.busname", back_populates="user", cascade="all, delete, delete-orphan") 
-    categories = db.relationship("Category", order_by="Category.catname", back_populates="user", cascade="all, delete, delete-orphan")
-    accounts = db.relationship("Account", order_by="Account.accname", back_populates="user", cascade="all, delete, delete-orphan")
-    transactions = db.relationship("Transaction", order_by="Transaction.date", back_populates="user", cascade="all, delete, delete-orphan")
-    
+    businesses = db.relationship("Business", order_by="Business.busname",
+                                 back_populates="user", cascade="all, delete,\
+                                 delete-orphan")
+    categories = db.relationship("Category", order_by="Category.catname",
+                                 back_populates="user", cascade="all, delete,\
+                                 delete-orphan")
+    accounts = db.relationship("Account", order_by="Account.accname",
+                               back_populates="user", cascade="all, delete,\
+                               delete-orphan")
+    transactions = db.relationship("Transaction", order_by="Transaction.date",
+                                   back_populates="user", cascade="all, delete,\
+                                   delete-orphan")
+
     def add_business(self, busname):
         self.businesses.append(Business(busname=busname))
-   
+
     def add_category(self, catname, cattype):
-        self.categories.append(Category(catname=catname, cattype=cattype))             
+        self.categories.append(Category(catname=catname, cattype=cattype))
 
     def add_account(self, accname, balance):
         self.accounts.append(Account(accname=accname, balance=balance))
-        
+
     def add_transaction(self, amount, date, busname, catname, accname):
         date = dateutil.parser.parse(date)
-        transaction = Transaction(amount=amount, date=date)        
+        transaction = Transaction(amount=amount, date=date)
         for business in self.businesses:
             if business.busname == busname:
                 business.transactions.append(transaction)
@@ -59,56 +68,71 @@ class User(db.Model):
             if account.accname == accname:
                 account.transactions.append(transaction)
         self.transactions.append(transaction)
-    
+
+
 class Business(db.Model):
     __tablename__ = 'businesses'
     busno = db.Column(db.Integer, autoincrement=True, primary_key=True)
     busname = db.Column(db.String(250), nullable=False)
     username = db.Column(db.String(250), db.ForeignKey('users.username'))
     user = db.relationship("User", back_populates="businesses")
-    transactions = db.relationship("Transaction", order_by="Transaction.date", back_populates="business", cascade="all, delete-orphan")  
-  
+    transactions = db.relationship("Transaction", order_by="Transaction.date",
+                                   back_populates="business", cascade="all,\
+                                   delete-orphan")
+
 
 class Category(db.Model):
     __tablename__ = 'categories'
     catno = db.Column(db.Integer, primary_key=True)
     catname = db.Column(db.String(250), nullable=False)
     cattype = db.Column(db.String(250), nullable=False)
-    username = db.Column(db.String(250), db.ForeignKey('users.username'), nullable=False)    
-    user = db.relationship(User, back_populates="categories")    
-    transactions = db.relationship("Transaction", order_by="Transaction.date", back_populates="category", cascade="all, delete-orphan")
+    username = db.Column(db.String(250), db.ForeignKey('users.username'),
+                         nullable=False)
+    user = db.relationship(User, back_populates="categories")
+    transactions = db.relationship("Transaction", order_by="Transaction.date",
+                                   back_populates="category", cascade="all,\
+                                   delete-orphan")
+
 
 class Account(db.Model):
     __tablename__ = 'accounts'
     accno = db.Column(db.Integer, primary_key=True)
     accname = db.Column(db.String(250), nullable=False)
     balance = db.Column(db.Integer, nullable=False)
-    username = db.Column(db.String(250), db.ForeignKey('users.username'), nullable=False)    
-    user = db.relationship(User, back_populates="accounts")     
-    transactions = db.relationship("Transaction", order_by="Transaction.date", back_populates="account", cascade="all, delete-orphan")
+    username = db.Column(db.String(250), db.ForeignKey('users.username'),
+                         nullable=False)
+    user = db.relationship(User, back_populates="accounts")
+    transactions = db.relationship("Transaction", order_by="Transaction.date",
+                                   back_populates="account", cascade="all,\
+                                   delete-orphan")
+
 
 class Transaction(db.Model):
     __tablename__ = 'transactions'
     transno = db.Column(db.Integer, primary_key=True)
     amount = db.Column(db.Integer, nullable=False)
-    date = db.Column(db.DateTime, nullable=False)  
-    busno = db.Column(db.Integer, db.ForeignKey('businesses.busno'), nullable=False)
-    business = db.relationship(Business, back_populates="transactions") 
-    catno = db.Column(db.Integer, db.ForeignKey('categories.catno'), nullable=False, )
-    category = db.relationship(Category, back_populates="transactions")     
-    accno = db.Column(db.Integer, db.ForeignKey('accounts.accno'), nullable=False)
-    account = db.relationship(Account, back_populates="transactions")     
-    username = db.Column(db.String(250), db.ForeignKey('users.username'))        
-    user = db.relationship(User, back_populates="transactions")     
+    date = db.Column(db.DateTime, nullable=False)
+    busno = db.Column(db.Integer, db.ForeignKey('businesses.busno'),
+                      nullable=False)
+    business = db.relationship(Business, back_populates="transactions")
+    catno = db.Column(db.Integer, db.ForeignKey('categories.catno'),
+                      nullable=False, )
+    category = db.relationship(Category, back_populates="transactions")
+    accno = db.Column(db.Integer, db.ForeignKey('accounts.accno'),
+                      nullable=False)
+    account = db.relationship(Account, back_populates="transactions")
+    username = db.Column(db.String(250), db.ForeignKey('users.username'))
+    user = db.relationship(User, back_populates="transactions")
 
 
 def empty_database():
-    db.drop_all() # Drop all existing tables
-    db.create_all() # Create new tables 
+    db.drop_all()  # Drop all existing tables
+    db.create_all()  # Create new tables
 
 
 class ModifyTransactionForm(FlaskForm):
-    date = DateTimeLocalField('Date:', format='%Y-%m-%dT%H:%M', validators=[Required()])
+    date = DateTimeLocalField('Date:', format='%Y-%m-%dT%H:%M',
+                              validators=[Required()])
     business_name = SelectField('Business Name:', validators=[Required()])
     category_name = SelectField('Category Name:', validators=[Required()])
     account_name = SelectField('Account Name:', validators=[Required()])
@@ -116,26 +140,27 @@ class ModifyTransactionForm(FlaskForm):
     modify = SubmitField('Modify')
     delete = SubmitField('Delete')
     cancel = SubmitField('Cancel')
-   
-    
+
+
 @app.route('/')
 @app.route('/home')
 def home_page():
     if not session.get('logged_in'):
         return render_template('login.html')
     transactions = db.session.query(Transaction, Category, Business, Account).\
-                        filter(Transaction.username == session['user']).\
-                        filter(Transaction.catno == Category.catno).\
-                        filter(Transaction.busno == Business.busno).\
-                        filter(Transaction.accno == Account.accno).\
-                        all()
-    return render_template('home.html',transactions=transactions, menu="home")
+        filter(Transaction.username == session['user']).\
+        filter(Transaction.catno == Category.catno).\
+        filter(Transaction.busno == Business.busno).\
+        filter(Transaction.accno == Account.accno).\
+        all()
+    return render_template('home.html', transactions=transactions, menu="home")
 
 
 @app.route('/login', methods=['POST'])
 def login():
-    try:    
-        user = db.session.query(User).filter(User.username == request.form['username']).one()
+    try:
+        user = db.session.query(User).\
+            filter(User.username == request.form['username']).one()
     except NoResultFound:
         flash('Invalid login, please try again.')
         return home_page()
@@ -158,9 +183,9 @@ def accounts_page():
     if not session.get('logged_in'):
         return render_template('login.html')
     accounts = db.session.query(Account).\
-                    filter(Account.username == session['user']).\
-                    all()
-    return render_template('accounts.html',accounts=accounts, menu="accounts")
+        filter(Account.username == session['user']).\
+        all()
+    return render_template('accounts.html', accounts=accounts, menu="accounts")
 
 
 @app.route('/transactions')
@@ -168,12 +193,13 @@ def transactions_page():
     if not session.get('logged_in'):
         return render_template('login.html')
     transactions = db.session.query(Transaction, Category, Business, Account).\
-                        filter(Transaction.username == session['user']).\
-                        filter(Transaction.catno == Category.catno).\
-                        filter(Transaction.busno == Business.busno).\
-                        filter(Transaction.accno == Account.accno).\
-                        all()
-    return render_template('transactions.html',transactions=transactions, menu="transactions")
+        filter(Transaction.username == session['user']).\
+        filter(Transaction.catno == Category.catno).\
+        filter(Transaction.busno == Business.busno).\
+        filter(Transaction.accno == Account.accno).\
+        all()
+    return render_template('transactions.html', transactions=transactions,
+                           menu="transactions")
 
 
 @app.route('/transactions/modify/<int:transno>/', methods=['GET', 'POST'])
@@ -182,21 +208,24 @@ def modify_transaction(transno):
         return render_template('login.html')
 
     transaction = db.session.query(Transaction).\
-                    filter(Transaction.transno == transno).\
-                    one()
+        filter(Transaction.transno == transno).\
+        one()
     businesses = db.session.query(Business).\
-                    filter(Business.username == session['user']).\
-                    all()
+        filter(Business.username == session['user']).\
+        all()
     categories = db.session.query(Category).\
-                    filter(Category.username == session['user']).\
-                    all()
+        filter(Category.username == session['user']).\
+        all()
     accounts = db.session.query(Account).\
-                    filter(Account.username == session['user']).\
-                    all()
- 
-    business_names = [(business.busname, business.busname) for business in businesses]
-    category_names = [(category.catname, category.catname) for category in categories]
-    account_names = [(account.accname, account.accname) for account in accounts]
+        filter(Account.username == session['user']).\
+        all()
+
+    business_names = \
+        [(business.busname, business.busname) for business in businesses]
+    category_names = \
+        [(category.catname, category.catname) for category in categories]
+    account_names = \
+        [(account.accname, account.accname) for account in accounts]
 
     form = ModifyTransactionForm()
     form.date.default = transaction.date
@@ -208,19 +237,18 @@ def modify_transaction(transno):
     form.account_name.default = transaction.account.accname
     form.amount.default = transaction.amount
 
-
     if form.validate_on_submit():
-        if form.modify.data:        
+        if form.modify.data:
             transaction.date = form.date.data
             for business in businesses:
                 if business.busname == form.business_name.data:
-                    transaction.business = business 
+                    transaction.business = business
             for category in categories:
                 if category.catname == form.category_name.data:
-                    transaction.category = category 
+                    transaction.category = category
             for account in accounts:
                 if account.accname == form.account_name.data:
-                    transaction.account = account 
+                    transaction.account = account
             transaction.amount = form.amount.data
             db.session.add(transaction)
             db.session.commit()
@@ -230,21 +258,22 @@ def modify_transaction(transno):
         elif form.cancel.data:
             pass
         return redirect(url_for('transactions_page'))
-    
-    form.process() # Have to do this after validate_on_submit or breaks CSRF token
 
-    return render_template('modify_transaction.html',form=form, transno=transaction.transno,\
-                            menu="transactions")
-        
+    form.process()  # Do this after validate_on_submit or breaks CSRF token
+
+    return render_template('modify_transaction.html', form=form,
+                           transno=transaction.transno, menu="transactions")
+
 
 @app.route('/businesses')
 def businesses_page():
     if not session.get('logged_in'):
         return render_template('login.html')
     businesses = db.session.query(Business).\
-                    filter(Business.username == session['user']).\
-                    all()
-    return render_template('businesses.html',businesses=businesses, menu="businesses")
+        filter(Business.username == session['user']).\
+        all()
+    return render_template('businesses.html', businesses=businesses,
+                           menu="businesses")
 
 
 @app.route('/categories')
@@ -252,18 +281,19 @@ def categories_page():
     if not session.get('logged_in'):
         return render_template('login.html')
     categories = db.session.query(Category).\
-                    filter(Category.username == session['user']).\
-                    all()
-    return render_template('categories.html',categories=categories, menu="categories")
+        filter(Category.username == session['user']).\
+        all()
+    return render_template('categories.html', categories=categories,
+                           menu="categories")
 
 
 @app.route('/reports')
 def reports_page():
     if not session.get('logged_in'):
         return render_template('login.html')
-    return render_template('reports.html',menu="reports")
-    
-    
+    return render_template('reports.html', menu="reports")
+
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
@@ -272,9 +302,9 @@ def page_not_found(e):
 @app.errorhandler(500)
 def internal_server_error(e):
     return render_template('500.html'), 500
-    
+
 
 if __name__ == '__main__':
-    app.secret_key = os.urandom(24) # Required for sessions, used for signing cookies
+    app.secret_key = os.urandom(24)  # Required for sessions
     app.debug = True
     app.run(port=5000)
