@@ -1,6 +1,6 @@
 {% extends "bootstrap/base.html" %}
 
-{% block title %}Personal Finance Tracker{% endblock %}
+{% block title %}PFT{% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -9,16 +9,12 @@
 {% endblock %}
 
 {% block navbar %}
-<!-- Heading banner with logo, text and buttons -->   
-<div class="row">
-    <div class="col-sm-1"><img src="{{ url_for('static', filename='logo.png') }}" width="30" height="28" alt="$"/></div>
-    <div class="col-sm-5">Personal Finance Tracker</div>
-    <div class="col-sm-5">Who is logged in ?</div>    
-    <div class="col-sm-1"><a href="{{ url_for('logout') }}"><button class="btn btn-default">Log Out</button></a></div>   
-</div>
 
 <nav class="navbar navbar-inverse">
   <div class="container-fluid">
+      <div class="navbar-header">
+          <a class="navbar-brand" href="{{url_for('home_page')}}">Personal Finance Tracker</a>
+      </div>
     <ul class="nav navbar-nav">
       <li {% if menu == "home" %}class="active"{% endif %}><a href="{{url_for('home_page')}}">Home</a></li>
       <li {% if menu == "accounts" %}class="active"{% endif %}><a href="{{url_for('accounts_page')}}">Accounts</a></li>
@@ -26,16 +22,15 @@
       <li {% if menu == "businesses" %}class="active"{% endif %}><a href="{{url_for('businesses_page')}}">Businesses</a></li>
       <li {% if menu == "categories" %}class="active"{% endif %}><a href="{{url_for('categories_page')}}">Categories</a></li>
       <li {% if menu == "reports" %}class="active"{% endif %}><a href="{{url_for('reports_page')}}">Reports</a></li>
+      <li><a href="{{ url_for('logout') }}">Log Out</a><li>
     </ul>
   </div>
 </nav>
 
-
-</div>
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid">
+<div class="container">
     {% for message in get_flashed_messages() %}
     <div class="alert alert-warning">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
