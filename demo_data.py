@@ -1,3 +1,4 @@
+"""Module that generates data for a demonstration database."""
 from web import User, db, empty_database
 from lib_common import hash_password
 

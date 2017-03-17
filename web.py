@@ -1,3 +1,4 @@
+"""Module that instantiates the web application."""
 from flask import Flask, render_template, url_for, request, redirect, session,\
     flash
 from flask_script import Manager
@@ -30,6 +31,8 @@ db = SQLAlchemy(app)
 
 
 class User(db.Model):
+    """Class that instantiates a user table."""
+
     __tablename__ = 'users'
     username = db.Column(db.String(250), primary_key=True)
     password = db.Column(db.String(250), nullable=False)
@@ -47,15 +50,19 @@ class User(db.Model):
                                    delete-orphan")
 
     def add_business(self, busname):
+        """Instance method that adds a business category."""
         self.businesses.append(Business(busname=busname))
 
     def add_category(self, catname, cattype):
+        """Instance method that adds a user category."""
         self.categories.append(Category(catname=catname, cattype=cattype))
 
     def add_account(self, accname, balance):
+        """Instance method that a user account."""
         self.accounts.append(Account(accname=accname, balance=balance))
 
     def add_transaction(self, amount, date, busname, catname, accname):
+        """Instance method that adds a user transaction."""
         date = dateutil.parser.parse(date)
         transaction = Transaction(amount=amount, date=date)
         for business in self.businesses:
@@ -71,6 +78,8 @@ class User(db.Model):
 
 
 class Business(db.Model):
+    """Class that instantiates a businesses table."""
+
     __tablename__ = 'businesses'
     busno = db.Column(db.Integer, autoincrement=True, primary_key=True)
     busname = db.Column(db.String(250), nullable=False)
@@ -82,6 +91,8 @@ class Business(db.Model):
 
 
 class Category(db.Model):
+    """Class that instantiates a categories table."""
+
     __tablename__ = 'categories'
     catno = db.Column(db.Integer, primary_key=True)
     catname = db.Column(db.String(250), nullable=False)
@@ -95,6 +106,8 @@ class Category(db.Model):
 
 
 class Account(db.Model):
+    """Class that instantiates an accounts table."""
+
     __tablename__ = 'accounts'
     accno = db.Column(db.Integer, primary_key=True)
     accname = db.Column(db.String(250), nullable=False)
@@ -108,6 +121,8 @@ class Account(db.Model):
 
 
 class Transaction(db.Model):
+    """Class that instantiates a transactions table."""
+
     __tablename__ = 'transactions'
     transno = db.Column(db.Integer, primary_key=True)
     amount = db.Column(db.Integer, nullable=False)
@@ -126,11 +141,14 @@ class Transaction(db.Model):
 
 
 def empty_database():
+    """Delete existing database tables and recreate empty ones."""
     db.drop_all()  # Drop all existing tables
     db.create_all()  # Create new tables
 
 
 class ModifyTransactionForm(FlaskForm):
+    """Class that instantiates a form for modifying transactions."""
+
     date = DateTimeLocalField('Date:', format='%Y-%m-%dT%H:%M',
                               validators=[Required()])
     business_name = SelectField('Business Name:', validators=[Required()])
@@ -145,6 +163,7 @@ class ModifyTransactionForm(FlaskForm):
 @app.route('/')
 @app.route('/home')
 def home_page():
+    """Return Home HTML page."""
     if not session.get('logged_in'):
         return render_template('login.html')
     transactions = db.session.query(Transaction, Category, Business, Account).\
@@ -158,6 +177,7 @@ def home_page():
 
 @app.route('/login', methods=['POST'])
 def login():
+    """Login and return Home HTMl page."""
     try:
         user = db.session.query(User).\
             filter(User.username == request.form['username']).one()
@@ -174,12 +194,14 @@ def login():
 
 @app.route("/logout")
 def logout():
+    """Log out and return Home HTML page."""
     session['logged_in'] = False
     return home_page()
 
 
 @app.route('/accounts')
 def accounts_page():
+    """Return Accounts HTML page."""
     if not session.get('logged_in'):
         return render_template('login.html')
     accounts = db.session.query(Account).\
@@ -190,6 +212,7 @@ def accounts_page():
 
 @app.route('/transactions')
 def transactions_page():
+    """Return Transactions HTML page."""
     if not session.get('logged_in'):
         return render_template('login.html')
     transactions = db.session.query(Transaction, Category, Business, Account).\
@@ -204,6 +227,12 @@ def transactions_page():
 
 @app.route('/transactions/modify/<int:transno>/', methods=['GET', 'POST'])
 def modify_transaction(transno):
+    """
+    Modify or delete transactions.
+
+    Return a form for modifying transactions or process submitted
+    form and redirect to Transactions HTML page.
+    """
     if not session.get('logged_in'):
         return render_template('login.html')
 
@@ -267,6 +296,7 @@ def modify_transaction(transno):
 
 @app.route('/businesses')
 def businesses_page():
+    """Return Businesses HTML page."""
     if not session.get('logged_in'):
         return render_template('login.html')
     businesses = db.session.query(Business).\
@@ -278,6 +308,7 @@ def businesses_page():
 
 @app.route('/categories')
 def categories_page():
+    """Return Categories HTML page."""
     if not session.get('logged_in'):
         return render_template('login.html')
     categories = db.session.query(Category).\
@@ -289,6 +320,7 @@ def categories_page():
 
 @app.route('/reports')
 def reports_page():
+    """Return reports HTML page."""
     if not session.get('logged_in'):
         return render_template('login.html')
     return render_template('reports.html', menu="reports")
@@ -296,11 +328,13 @@ def reports_page():
 
 @app.errorhandler(404)
 def page_not_found(e):
+    """Return page not found HTML page."""
     return render_template('404.html'), 404
 
 
 @app.errorhandler(500)
 def internal_server_error(e):
+    """Return internal server error HTML page."""
     return render_template('500.html'), 500
 
 
