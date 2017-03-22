@@ -1,6 +1,10 @@
 """Module that generates data for a demonstration database."""
-from web import User, db, empty_database
+from database import User, empty_database
+from web import app, db
 from lib_common import hash_password
+
+# Tell SQLAlchemy what the current app is
+app.app_context().push()
 
 # Start with an empty database
 empty_database()
