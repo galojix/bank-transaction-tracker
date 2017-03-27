@@ -4,7 +4,7 @@ from flask import Flask, render_template, url_for, request, redirect, session,\
 from flask_script import Manager
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
-from lib_common import password_verified
+from password import password_verified
 import os
 from sqlalchemy.orm.exc import NoResultFound
 from database import db, Transaction, Category, Business, Account, User
