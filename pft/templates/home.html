@@ -6,17 +6,17 @@
 
 <h2>Transactions:</h2>
 <table class="table table-striped table-bordered table-hover table-responsive">
-    <tr>     
+    <tr>
         <th>Trans No.</th>
-        <th>Date</th> 
+        <th>Date</th>
         <th>Category</th>
         <th>Type</th>
         <th>Business</th>
         <th>Account</th>
-        <th class="right">Amount</th>
+        <th class="text-right">Amount</th>
     </tr>
 
-   {% for transaction, category, business, account in transactions %}         
+   {% for transaction, category, business, account in transactions %}
 
    <tr>
        <td class="transNo">{{transaction.transno}}</td>
@@ -25,15 +25,11 @@
        <td>{{category.cattype}}</td>
        <td>{{business.busname}}</td>
        <td>{{account.accname}}</td>
-       <td class="right">{{transaction.amount}}</td>
+       <td class="text-right">{{'{:,.2f}'.format(transaction.amount / 100)}}</td>
     </tr>
 
-   {% endfor %}         
+   {% endfor %}
 
-</table>         
+</table>
 
 {% endblock %}
-
-
-
-

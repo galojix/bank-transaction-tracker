@@ -1,6 +1,6 @@
 """Module that handles the forms."""
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, SelectField, IntegerField
+from wtforms import SubmitField, SelectField, FloatField
 from wtforms.fields.html5 import DateTimeLocalField
 from wtforms.validators import Required
 
@@ -13,7 +13,7 @@ class ModifyTransactionForm(FlaskForm):
     business_name = SelectField('Business Name:', validators=[Required()])
     category_name = SelectField('Category Name:', validators=[Required()])
     account_name = SelectField('Account Name:', validators=[Required()])
-    amount = IntegerField('Amount:', validators=[Required()])
+    amount = FloatField('Amount:', validators=[Required()])
     modify = SubmitField('Modify')
     delete = SubmitField('Delete')
     cancel = SubmitField('Cancel')

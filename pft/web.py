@@ -130,7 +130,7 @@ def modify_transaction(transno):
     form.category_name.default = transaction.category.catname
     form.account_name.choices = account_names
     form.account_name.default = transaction.account.accname
-    form.amount.default = transaction.amount
+    form.amount.default = '{:,.2f}'.format(transaction.amount / 100)
 
     if form.validate_on_submit():
         if form.modify.data:
@@ -144,7 +144,7 @@ def modify_transaction(transno):
             for account in accounts:
                 if account.accname == form.account_name.data:
                     transaction.account = account
-            transaction.amount = form.amount.data
+            transaction.amount = form.amount.data * 100
             db.session.add(transaction)
             db.session.commit()
         elif form.delete.data:
