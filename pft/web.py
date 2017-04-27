@@ -202,7 +202,4 @@ def internal_server_error(e):
 
 
 if __name__ == '__main__':
-    # app.secret_key = os.urandom(24)  # Required for sessions
-    # app.debug = True
-    # app.run(port=5000)
     manager.run()
