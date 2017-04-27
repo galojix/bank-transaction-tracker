@@ -9,6 +9,7 @@ import os
 from sqlalchemy.orm.exc import NoResultFound
 from database import db, Transaction, Category, Business, Account, User
 from forms import ModifyTransactionForm
+from datetime import datetime
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -32,13 +33,8 @@ def home_page():
     """Return Home HTML page."""
     if not session.get('logged_in'):
         return render_template('login.html')
-    transactions = db.session.query(Transaction, Category, Business, Account).\
-        filter(Transaction.username == session['user']).\
-        filter(Transaction.catno == Category.catno).\
-        filter(Transaction.busno == Business.busno).\
-        filter(Transaction.accno == Account.accno).\
-        all()
-    return render_template('home.html', transactions=transactions, menu="home")
+    return render_template('home.html', user=session['user'],
+                           login_time=session['login_time'], menu="home")
 
 
 @app.route('/login', methods=['POST'])
@@ -53,6 +49,7 @@ def login():
     if password_verified(request.form['password'], user.password):
         session['logged_in'] = True
         session['user'] = user.username
+        session['login_time'] = datetime.utcnow()
     else:
         flash('Invalid login, please try again.')
     return home_page()
