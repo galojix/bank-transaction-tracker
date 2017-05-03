@@ -24,7 +24,7 @@ def home_page():
 
 @web.route('/login', methods=['POST'])
 def login():
-    """Login and return Home HTMl page."""
+    """Login and return Home HTML page."""
     try:
         user = db.session.query(User).\
             filter(User.username == request.form['username']).one()
