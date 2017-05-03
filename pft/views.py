@@ -1,34 +1,19 @@
 """Module that instantiates the web application."""
-from flask import Flask, render_template, url_for, request, redirect, session,\
-    flash
-from flask_script import Manager
-from flask_bootstrap import Bootstrap
-from flask_moment import Moment
-from password import password_verified
-import os
-from sqlalchemy.orm.exc import NoResultFound
-from database import db, Transaction, Category, Business, Account, User
-from forms import ModifyTransactionForm
+from flask import render_template, url_for, request, redirect, session, flash,\
+    Blueprint
 from datetime import datetime
-
-basedir = os.path.abspath(os.path.dirname(__file__))
-
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'hard to guess string'
-app.config['SQLALCHEMY_DATABASE_URI'] =\
-    'sqlite:///' + os.path.join(basedir, 'pft.db')
-app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['TEMPLATES_AUTO_RELOAD'] = True
-
-manager = Manager(app)
-bootstrap = Bootstrap(app)
-moment = Moment(app)
-db.init_app(app)
+from sqlalchemy.orm.exc import NoResultFound
+from .database import Transaction, Category, Business, Account, User
+from .forms import ModifyTransactionForm
+from .password import password_verified
+from .database import db
 
 
-@app.route('/')
-@app.route('/home')
+web = Blueprint('web', __name__)
+
+
+@web.route('/')
+@web.route('/home')
 def home_page():
     """Return Home HTML page."""
     if not session.get('logged_in'):
@@ -37,7 +22,7 @@ def home_page():
                            login_time=session['login_time'], menu="home")
 
 
-@app.route('/login', methods=['POST'])
+@web.route('/login', methods=['POST'])
 def login():
     """Login and return Home HTMl page."""
     try:
@@ -55,14 +40,14 @@ def login():
     return home_page()
 
 
-@app.route("/logout")
+@web.route("/logout")
 def logout():
     """Log out and return Home HTML page."""
     session['logged_in'] = False
     return home_page()
 
 
-@app.route('/accounts')
+@web.route('/accounts')
 def accounts_page():
     """Return Accounts HTML page."""
     if not session.get('logged_in'):
@@ -73,7 +58,7 @@ def accounts_page():
     return render_template('accounts.html', accounts=accounts, menu="accounts")
 
 
-@app.route('/transactions')
+@web.route('/transactions')
 def transactions_page():
     """Return Transactions HTML page."""
     if not session.get('logged_in'):
@@ -88,7 +73,7 @@ def transactions_page():
                            menu="transactions")
 
 
-@app.route('/transactions/modify/<int:transno>/', methods=['GET', 'POST'])
+@web.route('/transactions/modify/<int:transno>/', methods=['GET', 'POST'])
 def modify_transaction(transno):
     """
     Modify or delete transactions.
@@ -149,7 +134,7 @@ def modify_transaction(transno):
             db.session.commit()
         elif form.cancel.data:
             pass
-        return redirect(url_for('transactions_page'))
+        return redirect(url_for('web.transactions_page'))
 
     form.process()  # Do this after validate_on_submit or breaks CSRF token
 
@@ -157,7 +142,7 @@ def modify_transaction(transno):
                            transno=transaction.transno, menu="transactions")
 
 
-@app.route('/businesses')
+@web.route('/businesses')
 def businesses_page():
     """Return Businesses HTML page."""
     if not session.get('logged_in'):
@@ -169,7 +154,7 @@ def businesses_page():
                            menu="businesses")
 
 
-@app.route('/categories')
+@web.route('/categories')
 def categories_page():
     """Return Categories HTML page."""
     if not session.get('logged_in'):
@@ -181,7 +166,7 @@ def categories_page():
                            menu="categories")
 
 
-@app.route('/reports')
+@web.route('/reports')
 def reports_page():
     """Return reports HTML page."""
     if not session.get('logged_in'):
@@ -189,17 +174,13 @@ def reports_page():
     return render_template('reports.html', menu="reports")
 
 
-@app.errorhandler(404)
+@web.errorhandler(404)
 def page_not_found(e):
     """Return page not found HTML page."""
     return render_template('404.html'), 404
 
 
-@app.errorhandler(500)
+@web.errorhandler(500)
 def internal_server_error(e):
     """Return internal server error HTML page."""
     return render_template('500.html'), 500
-
-
-if __name__ == '__main__':
-    manager.run()
