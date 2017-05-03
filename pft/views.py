@@ -174,13 +174,13 @@ def reports_page():
     return render_template('reports.html', menu="reports")
 
 
-@web.errorhandler(404)
+@web.app_errorhandler(404)
 def page_not_found(e):
     """Return page not found HTML page."""
     return render_template('404.html'), 404
 
 
-@web.errorhandler(500)
+@web.app_errorhandler(500)
 def internal_server_error(e):
     """Return internal server error HTML page."""
     return render_template('500.html'), 500
