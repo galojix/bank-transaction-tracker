@@ -134,7 +134,7 @@ def modify_transaction(transno):
             db.session.commit()
         elif form.cancel.data:
             pass
-        return redirect(url_for('web.transactions_page'))
+        return redirect(url_for('.transactions_page'))
 
     form.process()  # Do this after validate_on_submit or breaks CSRF token
 
