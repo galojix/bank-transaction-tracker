@@ -5,7 +5,6 @@ from datetime import datetime
 from sqlalchemy.orm.exc import NoResultFound
 from .database import Transaction, Category, Business, Account, User
 from .forms import ModifyTransactionForm
-from .password import password_verified
 from .database import db
 
 
@@ -31,7 +30,7 @@ def login():
     except NoResultFound:
         flash('Invalid login, please try again.')
         return home_page()
-    if password_verified(request.form['password'], user.password):
+    if user.verify_password(request.form['password']):
         session['logged_in'] = True
         session['user'] = user.username
         session['login_time'] = datetime.utcnow()

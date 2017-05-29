@@ -1,6 +1,7 @@
 """Module that handles the database."""
 import dateutil.parser
 from flask_sqlalchemy import SQLAlchemy
+from .password import hash_password, password_verified
 
 db = SQLAlchemy()
 
@@ -10,7 +11,7 @@ class User(db.Model):
 
     __tablename__ = 'users'
     username = db.Column(db.String(250), primary_key=True)
-    password = db.Column(db.String(250), nullable=False)
+    password_hash = db.Column(db.String(250), nullable=False)
     businesses = db.relationship("Business", order_by="Business.busname",
                                  back_populates="user", cascade="all, delete,\
                                  delete-orphan")
@@ -23,6 +24,20 @@ class User(db.Model):
     transactions = db.relationship("Transaction", order_by="Transaction.date",
                                    back_populates="user", cascade="all, delete,\
                                    delete-orphan")
+
+    @property
+    def password(self):
+        """Getter that raises an exception if attempt to read password."""
+        raise AttributeError('password is not a readable attribute')
+
+    @password.setter
+    def password(self, password):
+        """Setter that hashes then sets password."""
+        self.password_hash = hash_password(password)
+
+    def verify_password(self, password):
+        """Instance method that verifies password is correct."""
+        return password_verified(password, self.password_hash)
 
     def add_business(self, busname):
         """Instance method that adds a business category."""

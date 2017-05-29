@@ -2,7 +2,7 @@
 import os
 from pft import create_app
 from pft.database import db, empty_database, User
-from pft.password import hash_password
+
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 db.init_app(app)
@@ -13,7 +13,7 @@ if __name__ == '__main__':
     # Start with an empty database
     empty_database()
     # Create user
-    user = User(username="demo", password=hash_password("demo"))
+    user = User(username="demo", password="demo")
     # Create user's businesses
     businesses = ("Acme", "Wonka", "ABC Corp", "Bupa", "Coles", "Galojix",
                   "Lowes", "Caltex", "Unknown")
@@ -46,7 +46,7 @@ if __name__ == '__main__':
     db.session.commit()
 
     # Create user
-    user = User(username="normal", password=hash_password("normal"))
+    user = User(username="normal", password="normal")
 
     # Create user's businesses
     businesses = ("Acme", "Wonka", "ABC Corp", "Bupa", "Coles", "Galojix",
