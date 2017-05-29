@@ -4,6 +4,7 @@ from flask_migrate import Migrate, MigrateCommand
 import os
 from pft import create_app
 from pft.database import db, User, Business, Category, Account, Transaction
+from pft.demo_db import create_db
 import unittest
 
 
@@ -26,6 +27,15 @@ def test():
     """Run the unit tests."""
     tests = unittest.TestLoader().discover('pft.tests')
     unittest.TextTestRunner(verbosity=2).run(tests)
+
+
+@manager.command
+def demo():
+    """Create a demo database."""
+    print("Creating a new demo database...")
+    create_db()
+    print("Done.")
+
 
 if __name__ == '__main__':
     manager.run()

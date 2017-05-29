@@ -1,15 +1,16 @@
 """Module that creates new database for demo purposes."""
 import os
-from pft import create_app
-from pft.database import db, empty_database, User
+from . import create_app
+from .database import db, empty_database, User
 
 
-app = create_app(os.getenv('FLASK_CONFIG') or 'default')
-db.init_app(app)
+def create_db():
+    """Create demo database."""
+    app = create_app(os.getenv('FLASK_CONFIG') or 'default')
+    db.init_app(app)
 
-if __name__ == '__main__':
     # Tell SQLAlchemy what the current app is
-    app.app_context().push()
+    # app.app_context().push()
     # Start with an empty database
     empty_database()
     # Create user
