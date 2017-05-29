@@ -1,8 +1,8 @@
 """Basic Unit Tests."""
 import unittest
 from flask import current_app
-from pft import create_app
-from pft.database import db
+from .. import create_app
+from ..database import db
 
 
 class BasicsTestCase(unittest.TestCase):
