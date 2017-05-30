@@ -21,7 +21,7 @@ class UserModelTestCase(unittest.TestCase):
         self.app_context.pop()
 
     def test_password_setter(self):
-        """Test password is hased and set."""
+        """Test password is hashed and set."""
         u = User(password='cat')
         self.assertTrue(u.password_hash is not None)
 
