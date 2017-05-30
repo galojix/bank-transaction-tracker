@@ -1,16 +1,18 @@
 """Module that handles the database."""
 import dateutil.parser
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
 from .password import hash_password, password_verified
 
 db = SQLAlchemy()
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     """Class that instantiates a user table."""
 
     __tablename__ = 'users'
-    username = db.Column(db.String(250), primary_key=True)
+    username = db.Column(db.String(64), primary_key=True)
+    email = db.Column(db.String(64), nullable=False, unique=True, index=True)
     password_hash = db.Column(db.String(250), nullable=False)
     businesses = db.relationship("Business", order_by="Business.busname",
                                  back_populates="user", cascade="all, delete,\
