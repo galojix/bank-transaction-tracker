@@ -22,7 +22,13 @@
       <li {% if menu == "businesses" %}class="active"{% endif %}><a href="{{url_for('.businesses_page')}}">Businesses</a></li>
       <li {% if menu == "categories" %}class="active"{% endif %}><a href="{{url_for('.categories_page')}}">Categories</a></li>
       <li {% if menu == "reports" %}class="active"{% endif %}><a href="{{url_for('.reports_page')}}">Reports</a></li>
-      <li><a href="{{ url_for('.logout') }}">Log Out</a><li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+        {% if current_user.is_authenticated %}
+        <li><a href="{{ url_for('.logout') }}">Log Out</a></li>
+        {% else %}
+        <li><a href="{{ url_for('.login') }}">Log In</a></li>
+        {% endif %}
     </ul>
   </div>
 </nav>

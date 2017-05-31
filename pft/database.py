@@ -11,7 +11,9 @@ class User(UserMixin, db.Model):
     """Class that instantiates a user table."""
 
     __tablename__ = 'users'
-    username = db.Column(db.String(64), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(64), nullable=False, unique=True,
+                         index=True)
     email = db.Column(db.String(64), nullable=False, unique=True, index=True)
     password_hash = db.Column(db.String(250), nullable=False)
     businesses = db.relationship("Business", order_by="Business.busname",

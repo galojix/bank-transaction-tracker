@@ -1,10 +1,11 @@
 """Module that handles web views."""
 from flask import render_template, url_for, request, redirect, session, flash,\
     Blueprint
-from datetime import datetime
-from sqlalchemy.orm.exc import NoResultFound
+# from datetime import datetime
+# from sqlalchemy.orm.exc import NoResultFound
+from flask_login import login_required, login_user, logout_user, current_user
 from .database import Transaction, Category, Business, Account, User
-from .forms import ModifyTransactionForm
+from .forms import ModifyTransactionForm, LoginForm
 from .database import db
 
 
@@ -13,40 +14,38 @@ web = Blueprint('web', __name__)
 
 @web.route('/')
 @web.route('/home')
+@login_required
 def home_page():
     """Return Home HTML page."""
-    if not session.get('logged_in'):
-        return render_template('login.html')
-    return render_template('home.html', user=session['user'],
+    return render_template('home.html', user=current_user.username,
                            login_time=session['login_time'], menu="home")
 
 
-@web.route('/login', methods=['POST'])
+@web.route('/login', methods=['GET', 'POST'])
 def login():
-    """Login and return Home HTML page."""
-    try:
-        user = db.session.query(User).\
-            filter(User.username == request.form['username']).one()
-    except NoResultFound:
-        flash('Invalid login, please try again.')
-        return home_page()
-    if user.verify_password(request.form['password']):
-        session['logged_in'] = True
-        session['user'] = user.username
-        session['login_time'] = datetime.utcnow()
-    else:
-        flash('Invalid login, please try again.')
-    return home_page()
+    """Login and return home page."""
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user is not None and user.verify_password(form.password.data):
+            login_user(user, form.remember_me.data)
+            return redirect(request.args.get('next') or
+                            url_for('web.home_page'))
+        flash('Invalid username or password.')
+    return render_template('login.html', form=form)
 
 
-@web.route("/logout")
+@web.route('/logout')
+@login_required
 def logout():
-    """Log out and return Home HTML page."""
-    session['logged_in'] = False
-    return home_page()
+    """Log out and return login form."""
+    logout_user()
+    flash('You have been logged out.')
+    return redirect(url_for('web.home_page'))
 
 
 @web.route('/accounts')
+@login_required
 def accounts_page():
     """Return Accounts HTML page."""
     if not session.get('logged_in'):
@@ -58,12 +57,13 @@ def accounts_page():
 
 
 @web.route('/transactions')
+@login_required
 def transactions_page():
     """Return Transactions HTML page."""
     if not session.get('logged_in'):
         return render_template('login.html')
     transactions = db.session.query(Transaction, Category, Business, Account).\
-        filter(Transaction.username == session['user']).\
+        filter(Transaction.username == current_user.username).\
         filter(Transaction.catno == Category.catno).\
         filter(Transaction.busno == Business.busno).\
         filter(Transaction.accno == Account.accno).\
@@ -73,6 +73,7 @@ def transactions_page():
 
 
 @web.route('/transactions/modify/<int:transno>/', methods=['GET', 'POST'])
+@login_required
 def modify_transaction(transno):
     """
     Modify or delete transactions.
@@ -142,6 +143,7 @@ def modify_transaction(transno):
 
 
 @web.route('/businesses')
+@login_required
 def businesses_page():
     """Return Businesses HTML page."""
     if not session.get('logged_in'):
@@ -154,6 +156,7 @@ def businesses_page():
 
 
 @web.route('/categories')
+@login_required
 def categories_page():
     """Return Categories HTML page."""
     if not session.get('logged_in'):
@@ -166,6 +169,7 @@ def categories_page():
 
 
 @web.route('/reports')
+@login_required
 def reports_page():
     """Return reports HTML page."""
     if not session.get('logged_in'):

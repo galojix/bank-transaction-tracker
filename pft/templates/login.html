@@ -1,40 +1,15 @@
 {% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}PFT{% endblock %}
 
 {% block page_content %}
-
-<!-- Form for entering login details -->
-
-{% if session['logged_in'] %}
-<p>You're logged in already!</p>
-{% else %}
-<h2>Login:</h2>
-<form class="form-horizontal" action="/login" method="post">
-    <div class="form-group">
-        <label class="control-label col-sm-2" for="username">Username:</label>
-        <div class="col-sm-10">        
-            <input type="text" class="form-control" id="username" name="username" value="" autocomplete="off" autofocus="autofocus" required="required" maxlength="20" />
-        </div>    
-    </div>
-    <div class="form-group">
-        <label class="control-label col-sm-2" for="password">Password:</label>
-        <div class="col-sm-10">
-            <input type="password" class="form-control col-sm-10" id="password" name="password" value="" required="required" maxlength="20" />
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
-            <button type="submit" class="btn btn-default">Submit</button>
-        </div>
-    </div>
-</form>
-{% endif %}
-
-
+<div class="page-header">
+    <h1>Login</h1>
+</div>
+<div class="col-md-4">
+    {{ wtf.quick_form(form) }}
+    <br>
+    <p>New user? <a href="{{ url_for('web.login') }}">Click here to register</a>.</p>
+</div>
 {% endblock %}
-
-
-
-
-

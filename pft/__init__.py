@@ -13,13 +13,13 @@ bootstrap = Bootstrap()
 moment = Moment()
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
-login_manager.login_view = 'auth.login'
+login_manager.login_view = 'web.login'
 
 
 @login_manager.user_loader
-def load_user(username):
+def load_user(user_id):
     """Callback function for Flask-Login that loads a User."""
-    return User.query.get(username)
+    return User.query.get(user_id)
 
 
 def create_app(config_name):
