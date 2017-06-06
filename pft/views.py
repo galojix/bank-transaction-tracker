@@ -4,6 +4,7 @@ from flask import render_template, url_for, request, redirect, session, flash,\
 # from datetime import datetime
 # from sqlalchemy.orm.exc import NoResultFound
 from flask_login import login_required, login_user, logout_user, current_user
+from datetime import datetime
 from .database import Transaction, Category, Business, Account, User
 from .forms import ModifyTransactionForm, LoginForm
 from .database import db
@@ -12,7 +13,6 @@ from .database import db
 web = Blueprint('web', __name__)
 
 
-@web.route('/')
 @web.route('/home')
 @login_required
 def home_page():
@@ -21,6 +21,7 @@ def home_page():
                            login_time=session['login_time'], menu="home")
 
 
+@web.route('/', methods=['GET', 'POST'])
 @web.route('/login', methods=['GET', 'POST'])
 def login():
     """Login and return home page."""
@@ -32,26 +33,24 @@ def login():
             return redirect(request.args.get('next') or
                             url_for('web.home_page'))
         flash('Invalid username or password.')
+    session['login_time'] = datetime.utcnow()
     return render_template('login.html', form=form)
 
 
 @web.route('/logout')
-@login_required
 def logout():
     """Log out and return login form."""
     logout_user()
     flash('You have been logged out.')
-    return redirect(url_for('web.home_page'))
+    return redirect(url_for('web.login'))
 
 
 @web.route('/accounts')
 @login_required
 def accounts_page():
     """Return Accounts HTML page."""
-    if not session.get('logged_in'):
-        return render_template('login.html')
     accounts = db.session.query(Account).\
-        filter(Account.username == session['user']).\
+        filter(Account.username == current_user.username).\
         all()
     return render_template('accounts.html', accounts=accounts, menu="accounts")
 
@@ -60,8 +59,6 @@ def accounts_page():
 @login_required
 def transactions_page():
     """Return Transactions HTML page."""
-    if not session.get('logged_in'):
-        return render_template('login.html')
     transactions = db.session.query(Transaction, Category, Business, Account).\
         filter(Transaction.username == current_user.username).\
         filter(Transaction.catno == Category.catno).\
@@ -81,20 +78,17 @@ def modify_transaction(transno):
     Return a form for modifying transactions or process submitted
     form and redirect to Transactions HTML page.
     """
-    if not session.get('logged_in'):
-        return render_template('login.html')
-
     transaction = db.session.query(Transaction).\
         filter(Transaction.transno == transno).\
         one()
     businesses = db.session.query(Business).\
-        filter(Business.username == session['user']).\
+        filter(Business.username == current_user.username).\
         all()
     categories = db.session.query(Category).\
-        filter(Category.username == session['user']).\
+        filter(Category.username == current_user.username).\
         all()
     accounts = db.session.query(Account).\
-        filter(Account.username == session['user']).\
+        filter(Account.username == current_user.username).\
         all()
 
     business_names = \
@@ -146,10 +140,8 @@ def modify_transaction(transno):
 @login_required
 def businesses_page():
     """Return Businesses HTML page."""
-    if not session.get('logged_in'):
-        return render_template('login.html')
     businesses = db.session.query(Business).\
-        filter(Business.username == session['user']).\
+        filter(Business.username == current_user.username).\
         all()
     return render_template('businesses.html', businesses=businesses,
                            menu="businesses")
@@ -159,10 +151,8 @@ def businesses_page():
 @login_required
 def categories_page():
     """Return Categories HTML page."""
-    if not session.get('logged_in'):
-        return render_template('login.html')
     categories = db.session.query(Category).\
-        filter(Category.username == session['user']).\
+        filter(Category.username == current_user.username).\
         all()
     return render_template('categories.html', categories=categories,
                            menu="categories")
@@ -172,6 +162,4 @@ def categories_page():
 @login_required
 def reports_page():
     """Return reports HTML page."""
-    if not session.get('logged_in'):
-        return render_template('login.html')
     return render_template('reports.html', menu="reports")
