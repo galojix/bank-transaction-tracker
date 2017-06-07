@@ -50,8 +50,7 @@ def logout():
 def accounts_page():
     """Return Accounts HTML page."""
     accounts = db.session.query(Account).\
-        filter(Account.username == current_user.username).\
-        all()
+        filter(Account.username == current_user.username).all()
     return render_template('accounts.html', accounts=accounts, menu="accounts")
 
 
@@ -141,8 +140,7 @@ def modify_transaction(transno):
 def businesses_page():
     """Return Businesses HTML page."""
     businesses = db.session.query(Business).\
-        filter(Business.username == current_user.username).\
-        all()
+        filter(Business.username == current_user.username).all()
     return render_template('businesses.html', businesses=businesses,
                            menu="businesses")
 
@@ -152,8 +150,7 @@ def businesses_page():
 def categories_page():
     """Return Categories HTML page."""
     categories = db.session.query(Category).\
-        filter(Category.username == current_user.username).\
-        all()
+        filter(Category.username == current_user.username).all()
     return render_template('categories.html', categories=categories,
                            menu="categories")
 
