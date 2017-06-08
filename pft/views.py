@@ -6,7 +6,7 @@ from flask import render_template, url_for, request, redirect, session, flash,\
 from flask_login import login_required, login_user, logout_user, current_user
 from datetime import datetime
 from .database import Transaction, Category, Business, Account, User
-from .forms import ModifyTransactionForm, LoginForm
+from .forms import ModifyTransactionForm, LoginForm, RegistrationForm
 from .database import db
 
 
@@ -43,6 +43,27 @@ def logout():
     logout_user()
     flash('You have been logged out.')
     return redirect(url_for('web.login'))
+
+
+@web.route('/register', methods=['GET', 'POST'])
+def register():
+    """New user registration form."""
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user = User(email=form.email.data,
+                    username=form.username.data,
+                    password=form.password.data)
+        # Add default categories
+        user.add_category(catname="Unspecified Expense", cattype="Expense")
+        user.add_category(catname="Unspecified Income", cattype="Income")
+        # Add default account
+        user.add_account(accname="Unknown", balance=0)
+        # Add default business
+        user.add_business(busname="Unknown")
+        db.session.add(user)
+        flash('You can now login.')
+        return redirect(url_for('web.login'))
+    return render_template('register.html', form=form)
 
 
 @web.route('/accounts')

@@ -5,11 +5,9 @@
 
 {% block page_content %}
 <div class="page-header">
-    <h1>Login</h1>
+    <h1>Register</h1>
 </div>
 <div class="col-md-4">
     {{ wtf.quick_form(form) }}
-    <br>
-    <p>New user? <a href="{{ url_for('web.register') }}">Click here to register</a>.</p>
 </div>
 {% endblock %}
