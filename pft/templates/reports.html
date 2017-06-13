@@ -2,10 +2,24 @@
 
 {% block title %}PFT{% endblock %}
 
-{% block page_content %}
-
-<h2>Reports:</h2>
-<p>Reports will go here !</p>
-
+{% block head %}
+{{ super() }}
+<link
+    href="http://cdn.pydata.org/bokeh/release/bokeh-0.12.5.min.css"
+    rel="stylesheet" type="text/css">
+<link
+    href="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.5.min.css"
+    rel="stylesheet" type="text/css">
+<script src="http://cdn.pydata.org/bokeh/release/bokeh-0.12.5.min.js"></script>
+<script src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.5.min.js">
+</script>
+{{graph[0]|safe}}
 {% endblock %}
 
+
+
+{% block page_content %}
+
+{{graph[1]|safe}}
+
+{% endblock %}

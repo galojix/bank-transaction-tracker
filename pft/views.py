@@ -8,6 +8,7 @@ from datetime import datetime
 from .database import Transaction, Category, Business, Account, User
 from .forms import ModifyTransactionForm, LoginForm, RegistrationForm
 from .database import db
+from .reports import graph
 
 
 web = Blueprint('web', __name__)
@@ -180,4 +181,4 @@ def categories_page():
 @login_required
 def reports_page():
     """Return reports HTML page."""
-    return render_template('reports.html', menu="reports")
+    return render_template('reports.html', graph=graph(), menu="reports")
