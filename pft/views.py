@@ -48,7 +48,7 @@ def logout():
 
 @web.route('/register', methods=['GET', 'POST'])
 def register():
-    """New user registration form."""
+    """User registration form."""
     form = RegistrationForm()
     if form.validate_on_submit():
         user = User(email=form.email.data,
@@ -177,8 +177,9 @@ def categories_page():
                            menu="categories")
 
 
-@web.route('/reports')
+@web.route('/reports/<report_name>/')
 @login_required
-def reports_page():
+def reports_page(report_name):
     """Return reports HTML page."""
-    return render_template('reports.html', graph=graph(), menu="reports")
+    return render_template('reports.html', graph=graph(report_name),
+                           menu="reports")
