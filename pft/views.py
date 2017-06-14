@@ -19,7 +19,7 @@ web = Blueprint('web', __name__)
 def home_page():
     """Return Home HTML page."""
     return render_template('home.html', user=current_user.username,
-                           login_time=session['login_time'], menu="home")
+                           login_time=session.get('login_time'), menu="home")
 
 
 @web.route('/', methods=['GET', 'POST'])
