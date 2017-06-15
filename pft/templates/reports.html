@@ -21,7 +21,17 @@
 
 
 {% block page_content %}
+<h2>{{report_name}}</h2>
 
-{{graph[1]|safe}}
+<div class="row">
+  <div class="col-sm-5">
+      {{graph[1]|safe}}
+  </div>
+  <div class="col-sm-7">
+
+  </div>
+</div>
+
+
 
 {% endblock %}

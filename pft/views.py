@@ -181,5 +181,5 @@ def categories_page():
 @login_required
 def reports_page(report_name):
     """Return reports HTML page."""
-    return render_template('reports.html', graph=graph(report_name),
-                           menu="reports")
+    return render_template('reports.html', report_name=report_name,
+                           graph=graph(report_name), menu="reports")
