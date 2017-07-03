@@ -18,7 +18,7 @@ def graph(report_name):
 
 def line_graph(report_name):
     """Line graph."""
-    plot = figure(x_axis_label='Date', y_axis_label='Amount')
+    plot = figure(x_axis_label='Date', y_axis_label='Amount', logo=None)
     dates = [1, 2, 3, 4, 5, 6, 7]
     amounts = [8, 1, 2, 9, 1, 4, 4]
     plot.line(dates, amounts, legend="First", line_color="green", line_width=2)
@@ -35,6 +35,6 @@ def pie_graph(report_name):
     amounts = [10, 0.15, 4, 2]
     categories = ["category1", "category2", "category3", "category4"]
     data = pd.Series(amounts, index=categories)
-    pie_chart = Donut(data, responsive=True)
+    pie_chart = Donut(data, responsive=True, logo=None)
     script, div = components(pie_chart)
     return script, div
