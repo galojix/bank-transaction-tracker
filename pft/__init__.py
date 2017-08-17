@@ -18,7 +18,7 @@ login_manager.login_view = 'web.login'
 
 @login_manager.user_loader
 def load_user(user_id):
-    """Callback function for Flask-Login that loads a User."""
+    """Load a user for Flask-Login."""
     return User.query.get(user_id)
 
 
