@@ -1,7 +1,7 @@
 """Module that generates report graphs."""
 from bokeh.plotting import figure
 from bokeh.embed import components
-from bokeh.charts import Donut
+from bkcharts import Donut
 import pandas as pd
 
 
