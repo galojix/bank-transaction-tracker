@@ -12,8 +12,6 @@ class User(UserMixin, db.Model):
 
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), nullable=False, unique=True,
-                         index=True)
     email = db.Column(db.String(64), nullable=False, unique=True, index=True)
     password_hash = db.Column(db.String(250), nullable=False)
     businesses = db.relationship("Business", order_by="Business.busname",
@@ -77,7 +75,7 @@ class Business(db.Model):
     __tablename__ = 'businesses'
     busno = db.Column(db.Integer, autoincrement=True, primary_key=True)
     busname = db.Column(db.String(250), nullable=False)
-    username = db.Column(db.String(250), db.ForeignKey('users.username'))
+    id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship("User", back_populates="businesses")
     transactions = db.relationship("Transaction", order_by="Transaction.date",
                                    back_populates="business", cascade="all,\
@@ -91,8 +89,7 @@ class Category(db.Model):
     catno = db.Column(db.Integer, primary_key=True)
     catname = db.Column(db.String(250), nullable=False)
     cattype = db.Column(db.String(250), nullable=False)
-    username = db.Column(db.String(250), db.ForeignKey('users.username'),
-                         nullable=False)
+    id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship(User, back_populates="categories")
     transactions = db.relationship("Transaction", order_by="Transaction.date",
                                    back_populates="category", cascade="all,\
@@ -106,8 +103,7 @@ class Account(db.Model):
     accno = db.Column(db.Integer, primary_key=True)
     accname = db.Column(db.String(250), nullable=False)
     balance = db.Column(db.Integer, nullable=False)
-    username = db.Column(db.String(250), db.ForeignKey('users.username'),
-                         nullable=False)
+    id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship(User, back_populates="accounts")
     transactions = db.relationship("Transaction", order_by="Transaction.date",
                                    back_populates="account", cascade="all,\
@@ -130,7 +126,7 @@ class Transaction(db.Model):
     accno = db.Column(db.Integer, db.ForeignKey('accounts.accno'),
                       nullable=False)
     account = db.relationship(Account, back_populates="transactions")
-    username = db.Column(db.String(250), db.ForeignKey('users.username'))
+    id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship(User, back_populates="transactions")
 
 

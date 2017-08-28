@@ -18,7 +18,7 @@ web = Blueprint('web', __name__)
 @login_required
 def home_page():
     """Return Home HTML page."""
-    return render_template('home.html', user=current_user.username,
+    return render_template('home.html', user=current_user.email,
                            login_time=session.get('login_time'), menu="home")
 
 
@@ -33,7 +33,7 @@ def login():
             login_user(user, form.remember_me.data)
             return redirect(request.args.get('next') or
                             url_for('web.home_page'))
-        flash('Invalid username or password.')
+        flash('Invalid email or password.')
     session['login_time'] = datetime.utcnow()
     return render_template('login.html', form=form)
 
@@ -52,7 +52,6 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         user = User(email=form.email.data,
-                    username=form.username.data,
                     password=form.password.data)
         # Add default categories
         user.add_category(catname="Unspecified Expense", cattype="Expense")
@@ -72,7 +71,7 @@ def register():
 def accounts_page():
     """Return Accounts HTML page."""
     accounts = db.session.query(Account).\
-        filter(Account.username == current_user.username).all()
+        filter(Account.id == current_user.id).all()
     return render_template('accounts.html', accounts=accounts, menu="accounts")
 
 
@@ -81,7 +80,7 @@ def accounts_page():
 def transactions_page():
     """Return Transactions HTML page."""
     transactions = db.session.query(Transaction, Category, Business, Account).\
-        filter(Transaction.username == current_user.username).\
+        filter(Transaction.id == current_user.id).\
         filter(Transaction.catno == Category.catno).\
         filter(Transaction.busno == Business.busno).\
         filter(Transaction.accno == Account.accno).\
@@ -103,13 +102,13 @@ def modify_transaction(transno):
         filter(Transaction.transno == transno).\
         one()
     businesses = db.session.query(Business).\
-        filter(Business.username == current_user.username).\
+        filter(Business.id == current_user.id).\
         all()
     categories = db.session.query(Category).\
-        filter(Category.username == current_user.username).\
+        filter(Category.id == current_user.id).\
         all()
     accounts = db.session.query(Account).\
-        filter(Account.username == current_user.username).\
+        filter(Account.id == current_user.id).\
         all()
 
     business_names = \
@@ -162,7 +161,7 @@ def modify_transaction(transno):
 def businesses_page():
     """Return Businesses HTML page."""
     businesses = db.session.query(Business).\
-        filter(Business.username == current_user.username).all()
+        filter(Business.id == current_user.id).all()
     return render_template('businesses.html', businesses=businesses,
                            menu="businesses")
 
@@ -172,7 +171,7 @@ def businesses_page():
 def categories_page():
     """Return Categories HTML page."""
     categories = db.session.query(Category).\
-        filter(Category.username == current_user.username).all()
+        filter(Category.id == current_user.id).all()
     return render_template('categories.html', categories=categories,
                            menu="categories")
 

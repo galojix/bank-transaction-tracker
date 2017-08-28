@@ -14,7 +14,7 @@ def create_db():
     # Start with an empty database
     empty_database()
     # Create user
-    user = User(username="demo", email="demo@demo.demo", password="demo")
+    user = User(email="demo@demo.demo", password="demo")
     # Create user's businesses
     businesses = ("Acme", "Wonka", "ABC Corp", "Bupa", "Coles", "Galojix",
                   "Lowes", "Caltex", "Unknown")
@@ -47,7 +47,7 @@ def create_db():
     db.session.commit()
 
     # Create user
-    user = User(username="normal", email="normal@demo.demo", password="normal")
+    user = User(email="normal@demo.demo", password="normal")
 
     # Create user's businesses
     businesses = ("Acme", "Wonka", "ABC Corp", "Bupa", "Coles", "Galojix",
