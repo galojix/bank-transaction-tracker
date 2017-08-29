@@ -15,16 +15,16 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(64), nullable=False, unique=True, index=True)
     password_hash = db.Column(db.String(250), nullable=False)
     businesses = db.relationship("Business", order_by="Business.busname",
-                                 back_populates="user", cascade="all, delete,\
+                                 back_populates="user", cascade="all,\
                                  delete-orphan")
     categories = db.relationship("Category", order_by="Category.catname",
-                                 back_populates="user", cascade="all, delete,\
+                                 back_populates="user", cascade="all,\
                                  delete-orphan")
     accounts = db.relationship("Account", order_by="Account.accname",
-                               back_populates="user", cascade="all, delete,\
+                               back_populates="user", cascade="all,\
                                delete-orphan")
     transactions = db.relationship("Transaction", order_by="Transaction.date",
-                                   back_populates="user", cascade="all, delete,\
+                                   back_populates="user", cascade="all,\
                                    delete-orphan")
 
     @property
@@ -78,8 +78,7 @@ class Business(db.Model):
     id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship("User", back_populates="businesses")
     transactions = db.relationship("Transaction", order_by="Transaction.date",
-                                   back_populates="business", cascade="all,\
-                                   delete-orphan")
+                                   back_populates="business")
 
 
 class Category(db.Model):
@@ -92,8 +91,7 @@ class Category(db.Model):
     id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship(User, back_populates="categories")
     transactions = db.relationship("Transaction", order_by="Transaction.date",
-                                   back_populates="category", cascade="all,\
-                                   delete-orphan")
+                                   back_populates="category")
 
 
 class Account(db.Model):
@@ -106,8 +104,7 @@ class Account(db.Model):
     id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship(User, back_populates="accounts")
     transactions = db.relationship("Transaction", order_by="Transaction.date",
-                                   back_populates="account", cascade="all,\
-                                   delete-orphan")
+                                   back_populates="account")
 
 
 class Transaction(db.Model):
