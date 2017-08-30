@@ -3,6 +3,10 @@ from bokeh.plotting import figure
 from bokeh.embed import components
 from bkcharts import Donut
 import pandas as pd
+from flask_login import current_user
+from .database import db
+from .database import Transaction, Category, Business
+from sqlalchemy.sql import func
 
 
 def graph(report_name):
@@ -32,9 +36,91 @@ def line_graph(report_name):
 
 def pie_graph(report_name):
     """Pie graph."""
-    amounts = [10, 0.15, 4, 2]
-    categories = ["category1", "category2", "category3", "category4"]
-    data = pd.Series(amounts, index=categories)
+    totals, labels = pie_data(report_name)
+    data = pd.Series(totals, index=labels)
     pie_chart = Donut(data, responsive=True, logo=None)
     script, div = components(pie_chart)
     return script, div
+
+
+def pie_data(report_name):
+    """Calculate pie graph data."""
+    data = []
+
+    if report_name == "Expenses by Category":
+        data = db.session.query(Category.catname,
+                                func.sum(Transaction.amount)).\
+            filter(Transaction.id == current_user.id).\
+            filter(Transaction.catno == Category.catno).\
+            filter(Category.cattype == 'Expense').\
+            group_by(Category.catname).\
+            all()
+        if data:
+            totals = []
+            labels = []
+            for label, total in data:
+                totals.append(total)
+                labels.append(label)
+        else:
+            totals = [100]
+            labels = ["No Data"]
+
+    if report_name == "Expenses by Business":
+        data = db.session.query(Business.busname,
+                                func.sum(Transaction.amount),
+                                Category.cattype).\
+            filter(Transaction.id == current_user.id).\
+            filter(Transaction.busno == Business.busno).\
+            filter(Transaction.catno == Category.catno).\
+            filter(Category.cattype == 'Expense').\
+            group_by(Business.busname).\
+            all()
+        if data:
+            totals = []
+            labels = []
+            for label, total, cattype in data:
+                totals.append(total)
+                labels.append(label)
+        else:
+            totals = [100]
+            labels = ["No Data"]
+
+    if report_name == "Income by Category":
+        data = db.session.query(Category.catname,
+                                func.sum(Transaction.amount)).\
+            filter(Transaction.id == current_user.id).\
+            filter(Transaction.catno == Category.catno).\
+            filter(Category.cattype == 'Income').\
+            group_by(Category.catname).\
+            all()
+        if data:
+            totals = []
+            labels = []
+            for label, total in data:
+                totals.append(total)
+                labels.append(label)
+        else:
+            totals = [100]
+            labels = ["No Data"]
+
+    if report_name == "Income by Business":
+        data = db.session.query(Business.busname,
+                                func.sum(Transaction.amount),
+                                Category.cattype).\
+            filter(Transaction.id == current_user.id).\
+            filter(Transaction.busno == Business.busno).\
+            filter(Transaction.catno == Category.catno).\
+            filter(Category.cattype == 'Income').\
+            group_by(Business.busname).\
+            all()
+        if data:
+            totals = []
+            labels = []
+            for label, total, cattype in data:
+                totals.append(total)
+                labels.append(label)
+        else:
+            totals = [100]
+            labels = ["No Data"]
+
+    return totals, labels

@@ -25,6 +25,7 @@ def create_db():
     categories = (("Food", "Expense"),
                   ("Entertainment", "Expense"),
                   ("Insurance", "Expense"),
+                  ("Salary", "Income"),
                   ("Unspecified Expense", "Expense"),
                   ("Unspecified Income", "Income"))
     for catname, cattype in categories:
@@ -38,7 +39,11 @@ def create_db():
     # Create user's transactions
     transactions = ((7007, "2016-10-01T08:05", "Bupa", "Insurance", "NAB"),
                     (6007, "2016-10-01T08:06", "ABC Corp", "Entertainment",
-                     "NAB"))
+                     "NAB"),
+                    (8008, "2016-10-01T08:07", "Bupa", "Insurance", "NAB"),
+                    (700, "2016-10-01T08:15", "Coles", "Food", "ANZ"),
+                    (75000, "2016-10-01T08:05", "Coles", "Food", "ANZ"),
+                    (85000, "2016-10-01T08:25", "Wonka", "Salary", "ANZ"))
     for amount, date, busname, catname, accname in transactions:
         user.add_transaction(amount=amount, date=date, busname=busname,
                              catname=catname, accname=accname)
