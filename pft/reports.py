@@ -129,25 +129,18 @@ class LineGraph(Graph):
     def __init__(self):
         """Initialise."""
         super().__init__()
-        self.query_result = None
+        self.data = {}
 
     def get_html(self):
         """Get HTML components."""
-        if self.query_result:
-            dates = []
-            amounts = []
-            for row in self.query_result:
-                dates.append(row[0])
-                print(row[0])
-                amounts.append(row[1]/100.0)
-        else:
-            dates = [1]
-            amounts = [0]
-
         plot = figure(x_axis_type='datetime', x_axis_label='Date',
                       y_axis_label='Amount', logo=None)
-        plot.line(dates, amounts, legend="First", line_color="green",
-                  line_width=2)
+
+        for account in self.data.keys():
+            dates = self.data[account][0]
+            amounts = self.data[account][1]
+            plot.line(dates, amounts, legend=account, line_color="green",
+                      line_width=2)
         plot.sizing_mode = 'scale_width'
         script, div = components(plot)
         return script, div
@@ -159,12 +152,11 @@ class CashFlowLineGraph(LineGraph):
     def __init__(self):
         """Perform database query."""
         super().__init__()
-        self.query_result = db.session.query(Transaction.date,
-                                             Transaction.amount).\
-            filter(Transaction.id == current_user.id).\
-            filter(Category.cattype == 'Expense').\
-            order_by(Transaction.date).\
-            all()
+        accounts = db.session.query()
+        for account in accounts:
+            dates = db.session.query()
+            amounts = db.session.query()
+            self.data[account] = [dates, amounts]
 
 
 class AccountBalancesLineGraph(LineGraph):
