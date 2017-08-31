@@ -11,13 +11,101 @@ from sqlalchemy.sql import func
 
 def graph(report_name):
     """Report graph."""
-    if report_name == "Expenses by Category" or\
-            report_name == "Expenses by Business" or\
-            report_name == "Income by Category" or\
-            report_name == "Income by Business":
-        return pie_graph(report_name)
-    if report_name == "Cash Flow" or report_name == "Account Balances":
-        return line_graph(report_name)
+    if report_name == "Expenses by Category":
+        graph = ExpensesByCategoryPieGraph()
+    elif report_name == "Expenses by Business":
+        graph = ExpensesByBusinessPieGraph()
+    elif report_name == "Income by Category":
+        graph = IncomeByCategoryPieGraph()
+    elif report_name == "Income by Business":
+        graph = IncomeByBusinessPieGraph()
+    # elif report_name == "Cash Flow":
+    #     graph = CashFlowLineGraph()
+    # elif report_name == "Account Balances":
+    #     graph = AccountBalancesLineGraph()
+    return graph.get_html()
+
+
+class Graph():
+    def __init__(self):
+        self.query_result = None
+
+
+class PieGraph(Graph):
+    def __init__(self):
+        super().__init__()
+
+    def get_html(self):
+        """Get HTML components."""
+        if self.query_result:
+            totals = []
+            labels = []
+            for row in self.query_result:
+                totals.append(row[1])
+                labels.append(row[0])
+        else:
+            totals = [100]
+            labels = ["No Data"]
+        data = pd.Series(totals, index=labels)
+        pie_chart = Donut(data, responsive=True, logo=None)
+        script, div = components(pie_chart)
+        return script, div
+
+
+class ExpensesByCategoryPieGraph(PieGraph):
+    def __init__(self):
+        super().__init__()
+        self.query_result = db.session.query(Category.catname,
+                                             func.sum(Transaction.amount)).\
+            filter(Transaction.id == current_user.id).\
+            filter(Transaction.catno == Category.catno).\
+            filter(Category.cattype == 'Expense').\
+            group_by(Category.catname).\
+            all()
+
+
+class ExpensesByBusinessPieGraph(PieGraph):
+    def __init__(self):
+        super().__init__()
+        self.query_result = db.session.query(Business.busname,
+                                             func.sum(Transaction.amount),
+                                             Category.cattype).\
+            filter(Transaction.id == current_user.id).\
+            filter(Transaction.busno == Business.busno).\
+            filter(Transaction.catno == Category.catno).\
+            filter(Category.cattype == 'Expense').\
+            group_by(Business.busname).\
+            all()
+
+
+class IncomeByCategoryPieGraph(PieGraph):
+    def __init__(self):
+        super().__init__()
+        self.query_result = db.session.query(Category.catname,
+                                             func.sum(Transaction.amount)).\
+            filter(Transaction.id == current_user.id).\
+            filter(Transaction.catno == Category.catno).\
+            filter(Category.cattype == 'Income').\
+            group_by(Category.catname).\
+            all()
+
+
+class IncomeByBusinessPieGraph(PieGraph):
+    def __init__(self):
+        super().__init__()
+        self.query_result = db.session.query(Business.busname,
+                                             func.sum(Transaction.amount),
+                                             Category.cattype).\
+            filter(Transaction.id == current_user.id).\
+            filter(Transaction.busno == Business.busno).\
+            filter(Transaction.catno == Category.catno).\
+            filter(Category.cattype == 'Income').\
+            group_by(Business.busname).\
+            all()
+
+
+class LineGraph(Graph):
+    pass
 
 
 def line_graph(report_name):
@@ -32,95 +120,3 @@ def line_graph(report_name):
     plot.sizing_mode = 'scale_width'
     script, div = components(plot)
     return script, div
-
-
-def pie_graph(report_name):
-    """Pie graph."""
-    totals, labels = pie_data(report_name)
-    data = pd.Series(totals, index=labels)
-    pie_chart = Donut(data, responsive=True, logo=None)
-    script, div = components(pie_chart)
-    return script, div
-
-
-def pie_data(report_name):
-    """Calculate pie graph data."""
-    data = []
-
-    if report_name == "Expenses by Category":
-        data = db.session.query(Category.catname,
-                                func.sum(Transaction.amount)).\
-            filter(Transaction.id == current_user.id).\
-            filter(Transaction.catno == Category.catno).\
-            filter(Category.cattype == 'Expense').\
-            group_by(Category.catname).\
-            all()
-        if data:
-            totals = []
-            labels = []
-            for label, total in data:
-                totals.append(total)
-                labels.append(label)
-        else:
-            totals = [100]
-            labels = ["No Data"]
-
-    if report_name == "Expenses by Business":
-        data = db.session.query(Business.busname,
-                                func.sum(Transaction.amount),
-                                Category.cattype).\
-            filter(Transaction.id == current_user.id).\
-            filter(Transaction.busno == Business.busno).\
-            filter(Transaction.catno == Category.catno).\
-            filter(Category.cattype == 'Expense').\
-            group_by(Business.busname).\
-            all()
-        if data:
-            totals = []
-            labels = []
-            for label, total, cattype in data:
-                totals.append(total)
-                labels.append(label)
-        else:
-            totals = [100]
-            labels = ["No Data"]
-
-    if report_name == "Income by Category":
-        data = db.session.query(Category.catname,
-                                func.sum(Transaction.amount)).\
-            filter(Transaction.id == current_user.id).\
-            filter(Transaction.catno == Category.catno).\
-            filter(Category.cattype == 'Income').\
-            group_by(Category.catname).\
-            all()
-        if data:
-            totals = []
-            labels = []
-            for label, total in data:
-                totals.append(total)
-                labels.append(label)
-        else:
-            totals = [100]
-            labels = ["No Data"]
-
-    if report_name == "Income by Business":
-        data = db.session.query(Business.busname,
-                                func.sum(Transaction.amount),
-                                Category.cattype).\
-            filter(Transaction.id == current_user.id).\
-            filter(Transaction.busno == Business.busno).\
-            filter(Transaction.catno == Category.catno).\
-            filter(Category.cattype == 'Income').\
-            group_by(Business.busname).\
-            all()
-        if data:
-            totals = []
-            labels = []
-            for label, total, cattype in data:
-                totals.append(total)
-                labels.append(label)
-        else:
-            totals = [100]
-            labels = ["No Data"]
-
-    return totals, labels
