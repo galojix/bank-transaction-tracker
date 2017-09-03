@@ -5,7 +5,7 @@ from bkcharts import Donut
 import pandas as pd
 from flask_login import current_user
 from .database import db
-from .database import Transaction, Category, Business
+from .database import Transaction, Category, Business, Account
 from sqlalchemy.sql import func
 
 
@@ -136,14 +136,20 @@ class LineGraph(Graph):
         plot = figure(x_axis_type='datetime', x_axis_label='Date',
                       y_axis_label='Amount', logo=None)
 
-        for account in self.data.keys():
+        for num, account in enumerate(self.data.keys()):
             dates = self.data[account][0]
             amounts = self.data[account][1]
-            plot.line(dates, amounts, legend=account, line_color="green",
-                      line_width=2)
+            plot.line(dates, amounts, legend=account,
+                      line_color=self.get_next_color(num), line_width=2)
         plot.sizing_mode = 'scale_width'
         script, div = components(plot)
         return script, div
+
+    def get_next_color(self, num):
+        """Generate the next color."""
+        colors = {0: 'red', 1: 'green', 2: 'blue'}
+        num = num % 3
+        return colors[num]
 
 
 class CashFlowLineGraph(LineGraph):
@@ -152,11 +158,20 @@ class CashFlowLineGraph(LineGraph):
     def __init__(self):
         """Perform database query."""
         super().__init__()
-        accounts = db.session.query()
-        for account in accounts:
-            dates = db.session.query()
-            amounts = db.session.query()
-            self.data[account] = [dates, amounts]
+        accounts = db.session.query(Account.accname, Account.accno).\
+            filter(Account.id == current_user.id)
+        for accname, accno in accounts:
+            transactions = db.session.query(Transaction.date,
+                                            Transaction.amount).\
+                filter(Transaction.id == current_user.id).\
+                filter(Transaction.accno == accno).\
+                order_by(Transaction.date)
+            dates = []
+            amounts = []
+            for date, amount in transactions:
+                dates.append(date)
+                amounts.append(amount/100.0)
+            self.data[accname] = [dates, amounts]
 
 
 class AccountBalancesLineGraph(LineGraph):
