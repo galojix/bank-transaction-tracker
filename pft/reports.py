@@ -7,6 +7,7 @@ from flask_login import current_user
 from .database import db
 from .database import Transaction, Category, Business, Account
 from sqlalchemy.sql import func
+from collections import OrderedDict
 
 
 def graph(report_name):
@@ -40,14 +41,14 @@ class PieGraph(Graph):
     def __init__(self):
         """Initialise."""
         super().__init__()
-        self.query_result = None
+        self.data = None
 
     def get_html(self):
         """Get HTML components."""
-        if self.query_result:
+        if self.data:
             totals = []
             labels = []
-            for row in self.query_result:
+            for row in self.data:
                 labels.append(row[0])
                 totals.append(row[1])
         else:
@@ -65,8 +66,8 @@ class ExpensesByCategoryPieGraph(PieGraph):
     def __init__(self):
         """Perform database query."""
         super().__init__()
-        self.query_result = db.session.query(Category.catname,
-                                             func.sum(Transaction.amount)).\
+        self.data = db.session.query(Category.catname,
+                                     func.sum(Transaction.amount)).\
             filter(Transaction.id == current_user.id).\
             filter(Transaction.catno == Category.catno).\
             filter(Category.cattype == 'Expense').\
@@ -80,9 +81,9 @@ class ExpensesByBusinessPieGraph(PieGraph):
     def __init__(self):
         """Perform database query."""
         super().__init__()
-        self.query_result = db.session.query(Business.busname,
-                                             func.sum(Transaction.amount),
-                                             Category.cattype).\
+        self.data = db.session.query(Business.busname,
+                                     func.sum(Transaction.amount),
+                                     Category.cattype).\
             filter(Transaction.id == current_user.id).\
             filter(Transaction.busno == Business.busno).\
             filter(Transaction.catno == Category.catno).\
@@ -97,8 +98,8 @@ class IncomeByCategoryPieGraph(PieGraph):
     def __init__(self):
         """Perform database query."""
         super().__init__()
-        self.query_result = db.session.query(Category.catname,
-                                             func.sum(Transaction.amount)).\
+        self.data = db.session.query(Category.catname,
+                                     func.sum(Transaction.amount)).\
             filter(Transaction.id == current_user.id).\
             filter(Transaction.catno == Category.catno).\
             filter(Category.cattype == 'Income').\
@@ -112,9 +113,9 @@ class IncomeByBusinessPieGraph(PieGraph):
     def __init__(self):
         """Perform database query."""
         super().__init__()
-        self.query_result = db.session.query(Business.busname,
-                                             func.sum(Transaction.amount),
-                                             Category.cattype).\
+        self.data = db.session.query(Business.busname,
+                                     func.sum(Transaction.amount),
+                                     Category.cattype).\
             filter(Transaction.id == current_user.id).\
             filter(Transaction.busno == Business.busno).\
             filter(Transaction.catno == Category.catno).\
@@ -124,22 +125,28 @@ class IncomeByBusinessPieGraph(PieGraph):
 
 
 class LineGraph(Graph):
-    """Line graph."""
+    """
+    Line graph.
+
+    Expects data to be { item1: [[x-values], [y-values]],
+                         item2: [[x-values], [y-values]],
+                         ...                              }
+    """
 
     def __init__(self):
         """Initialise."""
         super().__init__()
-        self.data = {}
+        self.data = OrderedDict()
 
     def get_html(self):
         """Get HTML components."""
         plot = figure(x_axis_type='datetime', x_axis_label='Date',
                       y_axis_label='Amount', logo=None)
 
-        for num, account in enumerate(self.data.keys()):
-            dates = self.data[account][0]
-            amounts = self.data[account][1]
-            plot.line(dates, amounts, legend=account,
+        for num, item in enumerate(self.data.keys()):
+            dates = self.data[item][0]
+            amounts = self.data[item][1]
+            plot.line(dates, amounts, legend=item,
                       line_color=self.get_next_color(num), line_width=2)
         plot.sizing_mode = 'scale_width'
         script, div = components(plot)
@@ -159,13 +166,16 @@ class CashFlowLineGraph(LineGraph):
         """Perform database query."""
         super().__init__()
         accounts = db.session.query(Account.accname, Account.accno).\
-            filter(Account.id == current_user.id)
+            filter(Account.id == current_user.id).\
+            order_by(Account.accname).\
+            all()
         for accname, accno in accounts:
             transactions = db.session.query(Transaction.date,
                                             Transaction.amount).\
                 filter(Transaction.id == current_user.id).\
                 filter(Transaction.accno == accno).\
-                order_by(Transaction.date)
+                order_by(Transaction.date).\
+                all()
             dates = []
             amounts = []
             for date, amount in transactions:
