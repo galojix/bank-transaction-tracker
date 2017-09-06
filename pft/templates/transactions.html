@@ -26,7 +26,7 @@
        <td>{{category.cattype}}</td>
        <td>{{business.busname}}</td>
        <td>{{account.accname}}</td>
-       <td class="text-right">{{'{:,.2f}'.format(transaction.amount / 100)}}</td>
+       <td class="text-right">{{'{:,.2f}'.format(transaction.amount / 100.0)}}</td>
        <td><a href="{{url_for('.modify_transaction', transno=transaction.transno)}}">Modify</a></td>
    </tr>
 

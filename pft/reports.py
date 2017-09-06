@@ -27,21 +27,13 @@ def graph(report_name):
     return graph.get_html()
 
 
-class Graph():
-    """Report graph."""
-
-    def __init__(self):
-        """Initialise."""
-        pass
-
-
-class PieGraph(Graph):
+class PieGraph():
     """Pie graph."""
 
     def __init__(self):
         """Initialise."""
         super().__init__()
-        self.data = None
+        self.data = []
 
     def get_html(self):
         """Get HTML components."""
@@ -82,8 +74,7 @@ class ExpensesByBusinessPieGraph(PieGraph):
         """Perform database query."""
         super().__init__()
         self.data = db.session.query(Business.busname,
-                                     func.sum(Transaction.amount),
-                                     Category.cattype).\
+                                     func.sum(Transaction.amount)).\
             filter(Transaction.id == current_user.id).\
             filter(Transaction.busno == Business.busno).\
             filter(Transaction.catno == Category.catno).\
@@ -114,8 +105,7 @@ class IncomeByBusinessPieGraph(PieGraph):
         """Perform database query."""
         super().__init__()
         self.data = db.session.query(Business.busname,
-                                     func.sum(Transaction.amount),
-                                     Category.cattype).\
+                                     func.sum(Transaction.amount)).\
             filter(Transaction.id == current_user.id).\
             filter(Transaction.busno == Business.busno).\
             filter(Transaction.catno == Category.catno).\
@@ -124,7 +114,7 @@ class IncomeByBusinessPieGraph(PieGraph):
             all()
 
 
-class LineGraph(Graph):
+class LineGraph():
     """
     Line graph.
 
@@ -143,48 +133,81 @@ class LineGraph(Graph):
         plot = figure(x_axis_type='datetime', x_axis_label='Date',
                       y_axis_label='Amount', logo=None)
 
-        for num, item in enumerate(self.data.keys()):
-            dates = self.data[item][0]
-            amounts = self.data[item][1]
-            plot.line(dates, amounts, legend=item,
-                      line_color=self.get_next_color(num), line_width=2)
+        if self.data:
+            for num, item in enumerate(self.data.keys()):
+                dates = self.data[item][0]
+                amounts = self.data[item][1]
+                plot.line(dates, amounts, legend=item,
+                          line_color=self.get_next_color(num), line_width=2)
         plot.sizing_mode = 'scale_width'
         script, div = components(plot)
         return script, div
 
     def get_next_color(self, num):
         """Generate the next color."""
-        colors = {0: 'red', 1: 'green', 2: 'blue'}
+        colors = {0: 'green', 1: 'blue', 2: 'orange'}
         num = num % 3
         return colors[num]
 
 
-class CashFlowLineGraph(LineGraph):
-    """Cash flow line graph."""
+class AccountBalancesLineGraph(LineGraph):
+    """Account balances line graph."""
 
     def __init__(self):
-        """Perform database query."""
+        """Perform database query and populate data structure."""
         super().__init__()
         accounts = db.session.query(Account.accname, Account.accno).\
             filter(Account.id == current_user.id).\
             order_by(Account.accname).\
             all()
         for accname, accno in accounts:
+            balance = db.session.query(func.sum(Account.balance)).\
+                filter(Account.id == current_user.id).\
+                filter(Account.accname == accname).\
+                first()[0] / 100.0
             transactions = db.session.query(Transaction.date,
-                                            Transaction.amount).\
+                                            Transaction.amount,
+                                            Category.cattype).\
                 filter(Transaction.id == current_user.id).\
                 filter(Transaction.accno == accno).\
+                filter(Transaction.catno == Category.catno).\
                 order_by(Transaction.date).\
                 all()
             dates = []
             amounts = []
-            for date, amount in transactions:
+            for date, amount, cattype in transactions:
+                if cattype == 'Expense':
+                    balance -= amount / 100.0
+                else:
+                    balance += amount / 100.0
                 dates.append(date)
-                amounts.append(amount/100.0)
+                amounts.append(balance)
             self.data[accname] = [dates, amounts]
 
 
-class AccountBalancesLineGraph(LineGraph):
-    """Account balances line graph."""
+class CashFlowLineGraph(LineGraph):
+    """Cash flow line graph."""
 
-    pass
+    def __init__(self):
+        """Perform database query and populate data structure."""
+        super().__init__()
+        balance = db.session.query(func.sum(Account.balance)).\
+            filter(Account.id == current_user.id).\
+            first()[0] / 100.0
+        transactions = db.session.query(Transaction.date,
+                                        Transaction.amount,
+                                        Category.cattype).\
+            filter(Transaction.id == current_user.id).\
+            filter(Transaction.catno == Category.catno).\
+            order_by(Transaction.date).\
+            all()
+        dates = []
+        amounts = []
+        for date, amount, cattype in transactions:
+            if cattype == 'Expense':
+                balance -= amount / 100.0
+            else:
+                balance += amount / 100.0
+            dates.append(date)
+            amounts.append(balance)
+        self.data['Cash'] = [dates, amounts]
