@@ -1,6 +1,7 @@
 """Module that generates report graphs."""
 from bokeh.plotting import figure
 from bokeh.embed import components
+from bokeh.models import DatetimeTickFormatter
 from bkcharts import Donut
 import pandas as pd
 from flask_login import current_user
@@ -133,6 +134,9 @@ class LineGraph():
         plot = figure(x_axis_type='datetime', x_axis_label='Date',
                       y_axis_label='Amount', logo=None)
 
+        DATE_TIME_FORMAT = {'days': ['%d/%m/%y'],
+                            'months': ['%m/%Y']}
+        plot.xaxis.formatter = DatetimeTickFormatter(**DATE_TIME_FORMAT)
         if self.data:
             for num, item in enumerate(self.data.keys()):
                 dates = self.data[item][0]
@@ -210,4 +214,4 @@ class CashFlowLineGraph(LineGraph):
                 balance += amount / 100.0
             dates.append(date)
             amounts.append(balance)
-        self.data['Cash'] = [dates, amounts]
+        self.data['Net Total'] = [dates, amounts]

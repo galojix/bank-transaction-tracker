@@ -84,6 +84,7 @@ def transactions_page():
         filter(Transaction.catno == Category.catno).\
         filter(Transaction.busno == Business.busno).\
         filter(Transaction.accno == Account.accno).\
+        order_by(Transaction.date).\
         all()
     return render_template('transactions.html', transactions=transactions,
                            menu="transactions")
