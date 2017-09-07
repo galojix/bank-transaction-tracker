@@ -36,3 +36,8 @@
     border-top-color: #777;
     border-bottom-color: #777;
 }
+/* Dropdown Menu */
+.navbar-default .navbar-nav .open .dropdown-menu > li > a {
+    color: #000000;
+    background-color: #ffffff;
+}
