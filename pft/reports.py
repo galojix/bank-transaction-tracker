@@ -2,8 +2,6 @@
 from bokeh.plotting import figure
 from bokeh.embed import components
 from bokeh.models import DatetimeTickFormatter
-from bkcharts import Donut
-import pandas as pd
 from flask_login import current_user
 from .database import db
 from .database import Transaction, Category, Business, Account
@@ -47,10 +45,10 @@ class PieGraph():
         else:
             labels = ["No Data"]
             totals = [100]
-        data = pd.Series(totals, index=labels)
-        pie_chart = Donut(data, responsive=True, logo=None)
-        script, div = components(pie_chart)
-        return script, div
+        # data = pd.Series(totals, index=labels)
+        # pie_chart = Donut(data, responsive=True, logo=None)
+        # script, div = components(pie_chart)
+        # return script, div
 
 
 class ExpensesByCategoryPieGraph(PieGraph):
