@@ -7,6 +7,7 @@ from .database import db
 from .database import Transaction, Category, Business, Account
 from sqlalchemy.sql import func
 from collections import OrderedDict
+from numpy import pi
 
 
 def graph(report_name):
@@ -37,18 +38,27 @@ class PieGraph():
     def get_html(self):
         """Get HTML components."""
         if self.data:
-            totals = []
+            totals = [0]
             labels = []
             for row in self.data:
                 labels.append(row[0])
                 totals.append(row[1])
         else:
             labels = ["No Data"]
-            totals = [100]
-        # data = pd.Series(totals, index=labels)
-        # pie_chart = Donut(data, responsive=True, logo=None)
-        # script, div = components(pie_chart)
-        # return script, div
+            totals = [0, 100]
+        max_value = max(totals)
+        totals = [value / max_value for value in totals]
+        start_angles = [2 * pi * value for value in totals[:-1]]
+        end_angles = [2 * pi * value for value in totals[1:]]
+        colors = ["red", "green", "blue", "orange", "yellow"]
+        print(totals, start_angles, end_angles)
+        pie_chart = figure(x_range=(-1, 1), y_range=(-1, 1), logo=None)
+        pie_chart.xaxis.visible = False
+        pie_chart.yaxis.visible = False
+        pie_chart.wedge(x=0, y=0, radius=1, start_angle=start_angles,
+                        end_angle=end_angles, color=colors)
+        script, div = components(pie_chart)
+        return script, div
 
 
 class ExpensesByCategoryPieGraph(PieGraph):
@@ -63,6 +73,7 @@ class ExpensesByCategoryPieGraph(PieGraph):
             filter(Transaction.catno == Category.catno).\
             filter(Category.cattype == 'Expense').\
             group_by(Category.catname).\
+            order_by(func.sum(Transaction.amount)).\
             all()
 
 
@@ -79,6 +90,7 @@ class ExpensesByBusinessPieGraph(PieGraph):
             filter(Transaction.catno == Category.catno).\
             filter(Category.cattype == 'Expense').\
             group_by(Business.busname).\
+            order_by(func.sum(Transaction.amount)).\
             all()
 
 
@@ -94,6 +106,7 @@ class IncomeByCategoryPieGraph(PieGraph):
             filter(Transaction.catno == Category.catno).\
             filter(Category.cattype == 'Income').\
             group_by(Category.catname).\
+            order_by(func.sum(Transaction.amount)).\
             all()
 
 
@@ -110,6 +123,7 @@ class IncomeByBusinessPieGraph(PieGraph):
             filter(Transaction.catno == Category.catno).\
             filter(Category.cattype == 'Income').\
             group_by(Business.busname).\
+            order_by(func.sum(Transaction.amount)).\
             all()
 
 
