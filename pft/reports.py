@@ -1,7 +1,7 @@
 """Module that generates report graphs."""
 from bokeh.plotting import figure
 from bokeh.embed import components
-from bokeh.models import DatetimeTickFormatter
+from bokeh.models import DatetimeTickFormatter, ColumnDataSource
 from flask_login import current_user
 from .database import db
 from .database import Transaction, Category, Business, Account
@@ -55,8 +55,12 @@ class PieGraph():
         pie_chart = figure(x_range=(-1, 1), y_range=(-1, 1), logo=None)
         pie_chart.xaxis.visible = False
         pie_chart.yaxis.visible = False
-        pie_chart.wedge(x=0, y=0, radius=1, start_angle=start_angles,
-                        end_angle=end_angles, color=colors)
+        source = ColumnDataSource(dict(start_angles=start_angles,
+                                  end_angles=end_angles, labels=labels,
+                                  colors=colors, amounts=totals))
+        pie_chart.wedge(x=0, y=0, radius=0.75, start_angle='start_angles',
+                        end_angle='end_angles', color='colors',
+                        legend='labels', source=source)
         script, div = components(pie_chart)
         return script, div
 
