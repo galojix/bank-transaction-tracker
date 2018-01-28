@@ -101,16 +101,11 @@ def modify_transaction(transno):
     """
     transaction = db.session.query(Transaction).\
         filter(Transaction.transno == transno).\
+        filter(Transaction.id == current_user.id).\
         one()
-    businesses = db.session.query(Business).\
-        filter(Business.id == current_user.id).\
-        all()
-    categories = db.session.query(Category).\
-        filter(Category.id == current_user.id).\
-        all()
-    accounts = db.session.query(Account).\
-        filter(Account.id == current_user.id).\
-        all()
+    businesses = transaction.user.businesses
+    categories = transaction.user.categories
+    accounts = transaction.user.accounts
 
     business_names = \
         [(business.busname, business.busname) for business in businesses]
