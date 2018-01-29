@@ -1,8 +1,6 @@
 """Module that handles web views."""
 from flask import render_template, url_for, request, redirect, session, flash,\
     Blueprint
-# from datetime import datetime
-# from sqlalchemy.orm.exc import NoResultFound
 from flask_login import login_required, login_user, logout_user, current_user
 from datetime import datetime
 from .database import Transaction, Category, Business, Account, User
@@ -18,8 +16,9 @@ web = Blueprint('web', __name__)
 @login_required
 def home_page():
     """Return Home HTML page."""
-    return render_template('home.html', user=current_user.email,
-                           login_time=session.get('login_time'), menu="home")
+    return render_template(
+        'home.html', user=current_user.email,
+        login_time=session.get('login_time'), menu="home")
 
 
 @web.route('/', methods=['GET', 'POST'])
@@ -31,8 +30,8 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
         if user is not None and user.verify_password(form.password.data):
             login_user(user, form.remember_me.data)
-            return redirect(request.args.get('next') or
-                            url_for('web.home_page'))
+            return redirect(
+                request.args.get('next') or url_for('web.home_page'))
         flash('Invalid email or password.')
     session['login_time'] = datetime.utcnow()
     return render_template('login.html', form=form)
@@ -70,8 +69,9 @@ def register():
 @login_required
 def accounts_page():
     """Return Accounts HTML page."""
-    accounts = db.session.query(Account).\
-        filter(Account.id == current_user.id).all()
+    accounts = (
+        db.session.query(Account)
+        .filter(Account.id == current_user.id).all())
     return render_template('accounts.html', accounts=accounts, menu="accounts")
 
 
@@ -79,15 +79,16 @@ def accounts_page():
 @login_required
 def transactions_page():
     """Return Transactions HTML page."""
-    transactions = db.session.query(Transaction, Category, Business, Account).\
-        filter(Transaction.id == current_user.id).\
-        filter(Transaction.catno == Category.catno).\
-        filter(Transaction.busno == Business.busno).\
-        filter(Transaction.accno == Account.accno).\
-        order_by(Transaction.date).\
-        all()
-    return render_template('transactions.html', transactions=transactions,
-                           menu="transactions")
+    transactions = (
+        db.session.query(Transaction, Category, Business, Account)
+        .filter(Transaction.id == current_user.id)
+        .filter(Transaction.catno == Category.catno)
+        .filter(Transaction.busno == Business.busno)
+        .filter(Transaction.accno == Account.accno)
+        .order_by(Transaction.date)
+        .all())
+    return render_template(
+        'transactions.html', transactions=transactions, menu="transactions")
 
 
 @web.route('/transactions/modify/<int:transno>/', methods=['GET', 'POST'])
@@ -99,20 +100,21 @@ def modify_transaction(transno):
     Return a form for modifying transactions or process submitted
     form and redirect to Transactions HTML page.
     """
-    transaction = db.session.query(Transaction).\
-        filter(Transaction.transno == transno).\
-        filter(Transaction.id == current_user.id).\
-        one()
+    transaction = (
+        db.session.query(Transaction)
+        .filter(Transaction.transno == transno)
+        .filter(Transaction.id == current_user.id)
+        .one())
     businesses = transaction.user.businesses
     categories = transaction.user.categories
     accounts = transaction.user.accounts
 
-    business_names = \
-        [(business.busname, business.busname) for business in businesses]
-    category_names = \
-        [(category.catname, category.catname) for category in categories]
-    account_names = \
-        [(account.accname, account.accname) for account in accounts]
+    business_names = [
+        (business.busname, business.busname) for business in businesses]
+    category_names = [
+        (category.catname, category.catname) for category in categories]
+    account_names = [
+        (account.accname, account.accname) for account in accounts]
 
     form = ModifyTransactionForm()
     form.date.default = transaction.date
@@ -148,16 +150,18 @@ def modify_transaction(transno):
 
     form.process()  # Do this after validate_on_submit or breaks CSRF token
 
-    return render_template('modify_transaction.html', form=form,
-                           transno=transaction.transno, menu="transactions")
+    return render_template(
+        'modify_transaction.html', form=form, transno=transaction.transno,
+        menu="transactions")
 
 
 @web.route('/businesses')
 @login_required
 def businesses_page():
     """Return Businesses HTML page."""
-    businesses = db.session.query(Business).\
-        filter(Business.id == current_user.id).all()
+    businesses = (
+        db.session.query(Business)
+        .filter(Business.id == current_user.id).all())
     return render_template('businesses.html', businesses=businesses,
                            menu="businesses")
 
@@ -166,15 +170,17 @@ def businesses_page():
 @login_required
 def categories_page():
     """Return Categories HTML page."""
-    categories = db.session.query(Category).\
-        filter(Category.id == current_user.id).all()
-    return render_template('categories.html', categories=categories,
-                           menu="categories")
+    categories = (
+        db.session.query(Category)
+        .filter(Category.id == current_user.id).all())
+    return render_template(
+        'categories.html', categories=categories, menu="categories")
 
 
 @web.route('/reports/<report_name>/')
 @login_required
 def reports_page(report_name):
     """Return reports HTML page."""
-    return render_template('reports.html', report_name=report_name,
-                           graph=graph(report_name), menu="reports")
+    return render_template(
+        'reports.html', report_name=report_name, graph=graph(report_name),
+        menu="reports")

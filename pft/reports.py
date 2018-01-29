@@ -32,7 +32,6 @@ class PieGraph():
 
     def __init__(self):
         """Initialise."""
-        super().__init__()
         self.data = []
 
     def get_html(self):
@@ -51,16 +50,17 @@ class PieGraph():
         start_angles = [2 * pi * value for value in totals[:-1]]
         end_angles = [2 * pi * value for value in totals[1:]]
         colors = ["red", "green", "blue", "orange", "yellow"]
-        print(totals, start_angles, end_angles)
         pie_chart = figure(x_range=(-1, 1), y_range=(-1, 1), logo=None)
         pie_chart.xaxis.visible = False
         pie_chart.yaxis.visible = False
-        source = ColumnDataSource(dict(start_angles=start_angles,
-                                  end_angles=end_angles, labels=labels,
-                                  colors=colors, amounts=totals))
-        pie_chart.wedge(x=0, y=0, radius=0.75, start_angle='start_angles',
-                        end_angle='end_angles', color='colors',
-                        legend='labels', source=source)
+        source_dict = dict(
+            start_angles=start_angles, end_angles=end_angles, labels=labels,
+            colors=colors, amounts=totals)
+        source = ColumnDataSource(source_dict)
+        pie_chart.wedge(
+            x=0, y=0, radius=0.75, start_angle='start_angles',
+            end_angle='end_angles', color='colors', legend='labels',
+            source=source)
         script, div = components(pie_chart)
         return script, div
 
@@ -71,14 +71,14 @@ class ExpensesByCategoryPieGraph(PieGraph):
     def __init__(self):
         """Perform database query."""
         super().__init__()
-        self.data = db.session.query(Category.catname,
-                                     func.sum(Transaction.amount)).\
-            filter(Transaction.id == current_user.id).\
-            filter(Transaction.catno == Category.catno).\
-            filter(Category.cattype == 'Expense').\
-            group_by(Category.catname).\
-            order_by(func.sum(Transaction.amount)).\
-            all()
+        self.data = (
+            db.session.query(Category.catname, func.sum(Transaction.amount))
+            .filter(Transaction.id == current_user.id)
+            .filter(Transaction.catno == Category.catno)
+            .filter(Category.cattype == 'Expense')
+            .group_by(Category.catname)
+            .order_by(func.sum(Transaction.amount))
+            .all())
 
 
 class ExpensesByBusinessPieGraph(PieGraph):
@@ -87,15 +87,15 @@ class ExpensesByBusinessPieGraph(PieGraph):
     def __init__(self):
         """Perform database query."""
         super().__init__()
-        self.data = db.session.query(Business.busname,
-                                     func.sum(Transaction.amount)).\
-            filter(Transaction.id == current_user.id).\
-            filter(Transaction.busno == Business.busno).\
-            filter(Transaction.catno == Category.catno).\
-            filter(Category.cattype == 'Expense').\
-            group_by(Business.busname).\
-            order_by(func.sum(Transaction.amount)).\
-            all()
+        self.data = (
+            db.session.query(Business.busname, func.sum(Transaction.amount))
+            .filter(Transaction.id == current_user.id)
+            .filter(Transaction.busno == Business.busno)
+            .filter(Transaction.catno == Category.catno)
+            .filter(Category.cattype == 'Expense')
+            .group_by(Business.busname)
+            .order_by(func.sum(Transaction.amount))
+            .all())
 
 
 class IncomeByCategoryPieGraph(PieGraph):
@@ -104,14 +104,14 @@ class IncomeByCategoryPieGraph(PieGraph):
     def __init__(self):
         """Perform database query."""
         super().__init__()
-        self.data = db.session.query(Category.catname,
-                                     func.sum(Transaction.amount)).\
-            filter(Transaction.id == current_user.id).\
-            filter(Transaction.catno == Category.catno).\
-            filter(Category.cattype == 'Income').\
-            group_by(Category.catname).\
-            order_by(func.sum(Transaction.amount)).\
-            all()
+        self.data = (
+            db.session.query(Category.catname, func.sum(Transaction.amount))
+            .filter(Transaction.id == current_user.id)
+            .filter(Transaction.catno == Category.catno)
+            .filter(Category.cattype == 'Income')
+            .group_by(Category.catname)
+            .order_by(func.sum(Transaction.amount))
+            .all())
 
 
 class IncomeByBusinessPieGraph(PieGraph):
@@ -120,15 +120,15 @@ class IncomeByBusinessPieGraph(PieGraph):
     def __init__(self):
         """Perform database query."""
         super().__init__()
-        self.data = db.session.query(Business.busname,
-                                     func.sum(Transaction.amount)).\
-            filter(Transaction.id == current_user.id).\
-            filter(Transaction.busno == Business.busno).\
-            filter(Transaction.catno == Category.catno).\
-            filter(Category.cattype == 'Income').\
-            group_by(Business.busname).\
-            order_by(func.sum(Transaction.amount)).\
-            all()
+        self.data = (
+            db.session.query(Business.busname, func.sum(Transaction.amount))
+            .filter(Transaction.id == current_user.id)
+            .filter(Transaction.busno == Business.busno)
+            .filter(Transaction.catno == Category.catno)
+            .filter(Category.cattype == 'Income')
+            .group_by(Business.busname)
+            .order_by(func.sum(Transaction.amount))
+            .all())
 
 
 class LineGraph():
@@ -142,23 +142,24 @@ class LineGraph():
 
     def __init__(self):
         """Initialise."""
-        super().__init__()
         self.data = OrderedDict()
 
     def get_html(self):
         """Get HTML components."""
-        plot = figure(x_axis_type='datetime', x_axis_label='Date',
-                      y_axis_label='Amount', logo=None)
+        plot = figure(
+            x_axis_type='datetime', x_axis_label='Date', y_axis_label='Amount',
+            logo=None)
 
-        DATE_TIME_FORMAT = {'days': ['%d/%m/%y'],
-                            'months': ['%m/%Y']}
+        DATE_TIME_FORMAT = {
+            'days': ['%d/%m/%y'], 'months': ['%m/%Y']}
         plot.xaxis.formatter = DatetimeTickFormatter(**DATE_TIME_FORMAT)
         if self.data:
             for num, item in enumerate(self.data.keys()):
                 dates = self.data[item][0]
                 amounts = self.data[item][1]
-                plot.line(dates, amounts, legend=item,
-                          line_color=self.get_next_color(num), line_width=2)
+                plot.line(
+                    dates, amounts, legend=item,
+                    line_color=self.get_next_color(num), line_width=2)
         plot.sizing_mode = 'scale_width'
         script, div = components(plot)
         return script, div
@@ -176,23 +177,25 @@ class AccountBalancesLineGraph(LineGraph):
     def __init__(self):
         """Perform database query and populate data structure."""
         super().__init__()
-        accounts = db.session.query(Account.accname, Account.accno).\
-            filter(Account.id == current_user.id).\
-            order_by(Account.accname).\
-            all()
+        accounts = (
+            db.session.query(Account.accname, Account.accno)
+            .filter(Account.id == current_user.id)
+            .order_by(Account.accname)
+            .all())
         for accname, accno in accounts:
-            balance = db.session.query(func.sum(Account.balance)).\
-                filter(Account.id == current_user.id).\
-                filter(Account.accname == accname).\
-                first()[0] / 100.0
-            transactions = db.session.query(Transaction.date,
-                                            Transaction.amount,
-                                            Category.cattype).\
-                filter(Transaction.id == current_user.id).\
-                filter(Transaction.accno == accno).\
-                filter(Transaction.catno == Category.catno).\
-                order_by(Transaction.date).\
-                all()
+            balance = (
+                db.session.query(func.sum(Account.balance))
+                .filter(Account.id == current_user.id)
+                .filter(Account.accname == accname)
+                .first()[0] / 100.0)
+            transactions = (
+                db.session.query(
+                    Transaction.date, Transaction.amount, Category.cattype)
+                .filter(Transaction.id == current_user.id)
+                .filter(Transaction.accno == accno)
+                .filter(Transaction.catno == Category.catno)
+                .order_by(Transaction.date)
+                .all())
             dates = []
             amounts = []
             for date, amount, cattype in transactions:
@@ -211,16 +214,17 @@ class CashFlowLineGraph(LineGraph):
     def __init__(self):
         """Perform database query and populate data structure."""
         super().__init__()
-        balance = db.session.query(func.sum(Account.balance)).\
-            filter(Account.id == current_user.id).\
-            first()[0] / 100.0
-        transactions = db.session.query(Transaction.date,
-                                        Transaction.amount,
-                                        Category.cattype).\
-            filter(Transaction.id == current_user.id).\
-            filter(Transaction.catno == Category.catno).\
-            order_by(Transaction.date).\
-            all()
+        balance = (
+            db.session.query(func.sum(Account.balance))
+            .filter(Account.id == current_user.id)
+            .first()[0] / 100.0)
+        transactions = (
+            db.session.query(
+                Transaction.date, Transaction.amount, Category.cattype)
+            .filter(Transaction.id == current_user.id)
+            .filter(Transaction.catno == Category.catno)
+            .order_by(Transaction.date)
+            .all())
         dates = []
         amounts = []
         for date, amount, cattype in transactions:

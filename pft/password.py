@@ -7,6 +7,6 @@ def hash_password(password):
     return pbkdf2_sha256.hash(password)
 
 
-def password_verified(password, hash):
+def password_verified(password, salt_and_hash):
     """Verify password and return status."""
-    return pbkdf2_sha256.verify(password, hash)
+    return pbkdf2_sha256.verify(password, salt_and_hash)

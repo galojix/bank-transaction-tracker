@@ -14,18 +14,18 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(64), nullable=False, unique=True, index=True)
     password_hash = db.Column(db.String(250), nullable=False)
-    businesses = db.relationship("Business", order_by="Business.busname",
-                                 back_populates="user", cascade="all,\
-                                 delete-orphan")
-    categories = db.relationship("Category", order_by="Category.catname",
-                                 back_populates="user", cascade="all,\
-                                 delete-orphan")
-    accounts = db.relationship("Account", order_by="Account.accname",
-                               back_populates="user", cascade="all,\
-                               delete-orphan")
-    transactions = db.relationship("Transaction", order_by="Transaction.date",
-                                   back_populates="user", cascade="all,\
-                                   delete-orphan")
+    businesses = db.relationship(
+        "Business", order_by="Business.busname", back_populates="user",
+        cascade="all, delete-orphan")
+    categories = db.relationship(
+        "Category", order_by="Category.catname", back_populates="user",
+        cascade="all, delete-orphan")
+    accounts = db.relationship(
+        "Account", order_by="Account.accname", back_populates="user",
+        cascade="all, delete-orphan")
+    transactions = db.relationship(
+        "Transaction", order_by="Transaction.date", back_populates="user",
+        cascade="all, delete-orphan")
 
     @property
     def password(self):
@@ -77,8 +77,8 @@ class Business(db.Model):
     busname = db.Column(db.String(250), nullable=False)
     id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship("User", back_populates="businesses")
-    transactions = db.relationship("Transaction", order_by="Transaction.date",
-                                   back_populates="business")
+    transactions = db.relationship(
+        "Transaction", order_by="Transaction.date", back_populates="business")
 
 
 class Category(db.Model):
@@ -90,8 +90,8 @@ class Category(db.Model):
     cattype = db.Column(db.String(250), nullable=False)
     id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship(User, back_populates="categories")
-    transactions = db.relationship("Transaction", order_by="Transaction.date",
-                                   back_populates="category")
+    transactions = db.relationship(
+        "Transaction", order_by="Transaction.date", back_populates="category")
 
 
 class Account(db.Model):
@@ -103,8 +103,8 @@ class Account(db.Model):
     balance = db.Column(db.Integer, nullable=False)
     id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship(User, back_populates="accounts")
-    transactions = db.relationship("Transaction", order_by="Transaction.date",
-                                   back_populates="account")
+    transactions = db.relationship(
+        "Transaction", order_by="Transaction.date", back_populates="account")
 
 
 class Transaction(db.Model):
@@ -114,14 +114,14 @@ class Transaction(db.Model):
     transno = db.Column(db.Integer, primary_key=True)
     amount = db.Column(db.Integer, nullable=False)
     date = db.Column(db.DateTime, nullable=False)
-    busno = db.Column(db.Integer, db.ForeignKey('businesses.busno'),
-                      nullable=False)
+    busno = db.Column(
+        db.Integer, db.ForeignKey('businesses.busno'), nullable=False)
     business = db.relationship(Business, back_populates="transactions")
-    catno = db.Column(db.Integer, db.ForeignKey('categories.catno'),
-                      nullable=False, )
+    catno = db.Column(
+        db.Integer, db.ForeignKey('categories.catno'), nullable=False)
     category = db.relationship(Category, back_populates="transactions")
-    accno = db.Column(db.Integer, db.ForeignKey('accounts.accno'),
-                      nullable=False)
+    accno = db.Column(
+        db.Integer, db.ForeignKey('accounts.accno'), nullable=False)
     account = db.relationship(Account, back_populates="transactions")
     id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship(User, back_populates="transactions")
