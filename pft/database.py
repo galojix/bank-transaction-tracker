@@ -68,17 +68,25 @@ class User(UserMixin, db.Model):
                 account.transactions.append(transaction)
         self.transactions.append(transaction)
 
+    def __repr__(self):
+        """Represent user as id and email address."""
+        return '<User:{num},{name}>'.format(num=self.id, name=self.email)
+
 
 class Business(db.Model):
     """Class that instantiates a businesses table."""
 
     __tablename__ = 'businesses'
-    busno = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    busno = db.Column(db.Integer, primary_key=True)
     busname = db.Column(db.String(250), nullable=False)
     id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship("User", back_populates="businesses")
     transactions = db.relationship(
         "Transaction", order_by="Transaction.date", back_populates="business")
+
+    def __repr__(self):
+        """Represent business as business number and name."""
+        return '<Bus:{num},{name}>'.format(num=self.busno, name=self.busname)
 
 
 class Category(db.Model):
@@ -93,6 +101,10 @@ class Category(db.Model):
     transactions = db.relationship(
         "Transaction", order_by="Transaction.date", back_populates="category")
 
+    def __repr__(self):
+        """Represent category as category number and name."""
+        return '<Cat:{num},{name}>'.format(num=self.catno, name=self.catname)
+
 
 class Account(db.Model):
     """Class that instantiates an accounts table."""
@@ -105,6 +117,10 @@ class Account(db.Model):
     user = db.relationship(User, back_populates="accounts")
     transactions = db.relationship(
         "Transaction", order_by="Transaction.date", back_populates="account")
+
+    def __repr__(self):
+        """Represent account as account number and name."""
+        return '<Acc:{num},{name}>'.format(num=self.accno, name=self.accname)
 
 
 class Transaction(db.Model):
@@ -125,6 +141,11 @@ class Transaction(db.Model):
     account = db.relationship(Account, back_populates="transactions")
     id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship(User, back_populates="transactions")
+
+    def __repr__(self):
+        """Represent transaction as transaction number and user."""
+        return '<Trans:{num},{name}>'.format(
+            num=self.transno, name=self.user.email)
 
 
 def empty_database():
