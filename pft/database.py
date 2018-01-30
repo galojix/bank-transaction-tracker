@@ -43,30 +43,25 @@ class User(UserMixin, db.Model):
 
     def add_business(self, busname):
         """Instance method that adds a business category."""
-        self.businesses.append(Business(busname=busname))
+        Business(busname=busname, user=self)
 
     def add_category(self, catname, cattype):
         """Instance method that adds a user category."""
-        self.categories.append(Category(catname=catname, cattype=cattype))
+        Category(catname=catname, cattype=cattype, user=self)
 
     def add_account(self, accname, balance):
         """Instance method that a user account."""
-        self.accounts.append(Account(accname=accname, balance=balance))
+        Account(accname=accname, balance=balance, user=self)
 
     def add_transaction(self, amount, date, busname, catname, accname):
         """Instance method that adds a user transaction."""
         date = dateutil.parser.parse(date)
-        transaction = Transaction(amount=amount, date=date)
-        for business in self.businesses:
-            if business.busname == busname:
-                business.transactions.append(transaction)
-        for category in self.categories:
-            if category.catname == catname:
-                category.transactions.append(transaction)
-        for account in self.accounts:
-            if account.accname == accname:
-                account.transactions.append(transaction)
-        self.transactions.append(transaction)
+        business = [b for b in self.businesses if b.busname == busname][0]
+        category = [c for c in self.categories if c.catname == catname][0]
+        account = [a for a in self.accounts if a.accname == accname][0]
+        Transaction(
+            amount=amount, date=date, user=self, business=business,
+            category=category, account=account)
 
     def __repr__(self):
         """Represent user as id and email address."""
