@@ -75,6 +75,18 @@ def accounts_page():
     return render_template('accounts.html', accounts=accounts, menu="accounts")
 
 
+@web.route('/accounts/modify/<int:accno>/', methods=['GET', 'POST'])
+@login_required
+def modify_account(accno):
+    """
+    Modify or delete accounts.
+
+    Return a form for modifying accounts or process submitted
+    form and redirect to Accounts HTML page.
+    """
+    return redirect(url_for('.accounts_page'))
+
+
 @web.route('/transactions')
 @login_required
 def transactions_page():
@@ -166,6 +178,18 @@ def businesses_page():
                            menu="businesses")
 
 
+@web.route('/businesses/modify/<int:busno>/', methods=['GET', 'POST'])
+@login_required
+def modify_business(busno):
+    """
+    Modify or delete businesses.
+
+    Return a form for modifying businesses or process submitted
+    form and redirect to Businesses HTML page.
+    """
+    return redirect(url_for('.businesses_page'))
+
+
 @web.route('/categories')
 @login_required
 def categories_page():
@@ -175,6 +199,18 @@ def categories_page():
         .filter(Category.id == current_user.id).all())
     return render_template(
         'categories.html', categories=categories, menu="categories")
+
+
+@web.route('/categories/modify/<int:catno>/', methods=['GET', 'POST'])
+@login_required
+def modify_category(catno):
+    """
+    Modify or delete categories.
+
+    Return a form for modifying categories or process submitted
+    form and redirect to Categories HTML page.
+    """
+    return redirect(url_for('.categories_page'))
 
 
 @web.route('/reports/<report_name>/')

@@ -6,26 +6,22 @@
 
 <h2>Categories:</h2>
 <table class="table table-striped table-bordered table-hover table-responsive">
-    <tr>     
-        <th>Category No.</th>
-        <th>Category Name</th> 
+    <tr>
+        <th>Category Name</th>
         <th>Category Type</th>
+        <th>Action</th>
     </tr>
 
-   {% for category in categories %}         
+   {% for category in categories %}
 
    <tr>
-       <td class="catNo">{{category.catno}}</td>
        <td>{{category.catname}}</td>
        <td>{{category.cattype}}</td>
+       <td><a href="{{url_for('.modify_category', catno=category.catno)}}">Modify</a></td>       
     </tr>
 
-   {% endfor %}         
+   {% endfor %}
 
-</table>         
+</table>
 
 {% endblock %}
-
-
-
-
