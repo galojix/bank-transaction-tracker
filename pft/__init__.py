@@ -7,6 +7,7 @@ from .database import db, User
 from .views import web
 from .errors import error
 from config import config
+from .email import mail
 
 
 bootstrap = Bootstrap()
@@ -31,6 +32,7 @@ def create_app(config_name):
     moment.init_app(app)
     db.init_app(app)
     login_manager.init_app(app)
+    mail.init_app(app)
     app.register_blueprint(web)
     app.register_blueprint(error)
     return app
