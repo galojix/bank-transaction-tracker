@@ -14,32 +14,32 @@
 <nav class="navbar navbar-default">
     <div class="container-fluid">
         <div class="navbar-header">
-            <a class="navbar-brand" href="{{url_for('.home_page')}}">Personal Finance Tracker</a>
+            <a class="navbar-brand" href="{{url_for('web.home_page')}}">Personal Finance Tracker</a>
         </div>
         <ul class="nav navbar-nav">
-            <li {% if menu == "home" %}class="active"{% endif %}><a href="{{url_for('.home_page')}}">Home</a></li>
-            <li {% if menu == "accounts" %}class="active"{% endif %}><a href="{{url_for('.accounts_page')}}">Accounts</a></li>
-            <li {% if menu == "transactions" %}class="active"{% endif %}><a href="{{url_for('.transactions_page')}}">Transactions</a></li>
-            <li {% if menu == "businesses" %}class="active"{% endif %}><a href="{{url_for('.businesses_page')}}">Businesses</a></li>
-            <li {% if menu == "categories" %}class="active"{% endif %}><a href="{{url_for('.categories_page')}}">Categories</a></li>
+            <li {% if menu == "home" %}class="active"{% endif %}><a href="{{url_for('web.home_page')}}">Home</a></li>
+            <li {% if menu == "accounts" %}class="active"{% endif %}><a href="{{url_for('web.accounts_page')}}">Accounts</a></li>
+            <li {% if menu == "transactions" %}class="active"{% endif %}><a href="{{url_for('web.transactions_page')}}">Transactions</a></li>
+            <li {% if menu == "businesses" %}class="active"{% endif %}><a href="{{url_for('web.businesses_page')}}">Businesses</a></li>
+            <li {% if menu == "categories" %}class="active"{% endif %}><a href="{{url_for('web.categories_page')}}">Categories</a></li>
             <li {% if menu == "reports" %}class="active"{% endif %} class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">Reports
                     <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="{{url_for('.reports_page', report_name="Expenses by Category" )}}">Expenses by Category</a></li>
-                        <li><a href="{{url_for('.reports_page', report_name="Expenses by Business" )}}">Expenses by Business</a></li>
-                        <li><a href="{{url_for('.reports_page', report_name="Income by Category" )}}">Income by Category</a></li>
-                        <li><a href="{{url_for('.reports_page', report_name="Income by Business" )}}">Income by Business</a></li>
-                        <li><a href="{{url_for('.reports_page', report_name="Cash Flow" )}}">Cash Flow</a></li>
-                        <li><a href="{{url_for('.reports_page', report_name="Account Balances" )}}">Account Balances</a></li>
+                        <li><a href="{{url_for('web.reports_page', report_name="Expenses by Category" )}}">Expenses by Category</a></li>
+                        <li><a href="{{url_for('web.reports_page', report_name="Expenses by Business" )}}">Expenses by Business</a></li>
+                        <li><a href="{{url_for('web.reports_page', report_name="Income by Category" )}}">Income by Category</a></li>
+                        <li><a href="{{url_for('web.reports_page', report_name="Income by Business" )}}">Income by Business</a></li>
+                        <li><a href="{{url_for('web.reports_page', report_name="Cash Flow" )}}">Cash Flow</a></li>
+                        <li><a href="{{url_for('web.reports_page', report_name="Account Balances" )}}">Account Balances</a></li>
                     </ul>
             </li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
             {% if current_user.is_authenticated %}
-            <li><a href="{{ url_for('.logout') }}">Log Out</a></li>
+            <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
             {% else %}
-            <li><a href="{{ url_for('.login') }}">Log In</a></li>
+            <li><a href="{{ url_for('auth.login') }}">Log In</a></li>
             {% endif %}
         </ul>
     </div>

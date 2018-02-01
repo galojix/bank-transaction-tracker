@@ -6,6 +6,7 @@ from flask_login import LoginManager
 from .database import db, User
 from .views import web
 from .errors import error
+from .auths import auth
 from config import config
 from .email import mail
 
@@ -14,7 +15,7 @@ bootstrap = Bootstrap()
 moment = Moment()
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
-login_manager.login_view = 'web.login'
+login_manager.login_view = 'auth.login'
 
 
 @login_manager.user_loader
@@ -35,4 +36,5 @@ def create_app(config_name):
     mail.init_app(app)
     app.register_blueprint(web)
     app.register_blueprint(error)
+    app.register_blueprint(auth)
     return app

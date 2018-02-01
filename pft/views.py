@@ -1,10 +1,8 @@
 """Module that handles web views."""
-from flask import render_template, url_for, request, redirect, session, flash,\
-    Blueprint
-from flask_login import login_required, login_user, logout_user, current_user
-from datetime import datetime
-from .database import Transaction, Category, Business, Account, User
-from .forms import ModifyTransactionForm, LoginForm, RegistrationForm
+from flask import render_template, url_for, redirect, session, Blueprint
+from flask_login import login_required, current_user
+from .database import Transaction, Category, Business, Account
+from .forms import ModifyTransactionForm
 from .database import db
 from .reports import graph
 
@@ -19,50 +17,6 @@ def home_page():
     return render_template(
         'home.html', user=current_user.email,
         login_time=session.get('login_time'), menu="home")
-
-
-@web.route('/', methods=['GET', 'POST'])
-@web.route('/login', methods=['GET', 'POST'])
-def login():
-    """Login and return home page."""
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user is not None and user.verify_password(form.password.data):
-            login_user(user, form.remember_me.data)
-            return redirect(
-                request.args.get('next') or url_for('web.home_page'))
-        flash('Invalid email or password.')
-    session['login_time'] = datetime.utcnow()
-    return render_template('login.html', form=form)
-
-
-@web.route('/logout')
-def logout():
-    """Log out and return login form."""
-    logout_user()
-    flash('You have been logged out.')
-    return redirect(url_for('web.login'))
-
-
-@web.route('/register', methods=['GET', 'POST'])
-def register():
-    """User registration form."""
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        user = User(email=form.email.data,
-                    password=form.password.data)
-        # Add default categories
-        user.add_category(catname="Unspecified Expense", cattype="Expense")
-        user.add_category(catname="Unspecified Income", cattype="Income")
-        # Add default account
-        user.add_account(accname="Unknown", balance=0)
-        # Add default business
-        user.add_business(busname="Unknown")
-        db.session.add(user)
-        flash('You can now login.')
-        return redirect(url_for('web.login'))
-    return render_template('register.html', form=form)
 
 
 @web.route('/accounts')
