@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "aaec8e3f9d0ff21d200380d99a84a7ca3a4d87a800bca364aa9a586bc984118d"
+            "sha256": "4cf7a080f7ace5efced3b2ade86184dcb89637d7c72ff1607b3c21453bd101ec"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -29,12 +29,6 @@
         ]
     },
     "default": {
-        "alembic": {
-            "hashes": [
-                "sha256:46f4849c6dce69f54dd5001b3215b6a983dee6b17512efee10e237fa11f20cfa"
-            ],
-            "version": "==0.9.7"
-        },
         "blinker": {
             "hashes": [
                 "sha256:471aee25f3992bd325afa3772f1063dbdbbca947a041b8b89466dc00d606f8b6"
@@ -85,13 +79,6 @@
             ],
             "version": "==0.9.1"
         },
-        "flask-migrate": {
-            "hashes": [
-                "sha256:493f9b3795985b9b4915bf3b7d16946697f027b73545384e7d9e3a79f989d2fe",
-                "sha256:b709ca8642559c3c5a81a33ab10839fa052177accd5ba821047a99db635255ed"
-            ],
-            "version": "==2.1.1"
-        },
         "flask-moment": {
             "hashes": [
                 "sha256:71a601fcd5be4742227251641cb706c109680b54c5fb25c5d2ed96e576ec3b4d",
@@ -104,13 +91,6 @@
                 "sha256:6425963d91054cfcc185807141c7314a9c5ad46325911bd24dcb489bd0161c65"
             ],
             "version": "==2.0.6"
-        },
-        "flask-sqlalchemy": {
-            "hashes": [
-                "sha256:3bc0fac969dd8c0ace01b32060f0c729565293302f0c4269beed154b46bec50b",
-                "sha256:5971b9852b5888655f11db634e87725a9031e170f37c0ce7851cf83497f56e53"
-            ],
-            "version": "==2.3.2"
         },
         "flask-wtf": {
             "hashes": [
@@ -131,12 +111,6 @@
                 "sha256:f84be1bb0040caca4cea721fcbbbbd61f9be9464ca236387158b0feea01914a4"
             ],
             "version": "==2.10"
-        },
-        "mako": {
-            "hashes": [
-                "sha256:4e02fde57bd4abb5ec400181e4c314f56ac3e49ba4fb8b0d50bba18cb27d25ae"
-            ],
-            "version": "==1.0.7"
         },
         "markupsafe": {
             "hashes": [
@@ -186,12 +160,6 @@
             ],
             "version": "==2.6.1"
         },
-        "python-editor": {
-            "hashes": [
-                "sha256:a3c066acee22a1c94f63938341d4fb374e3fdd69366ed6603d7b24bed1efc565"
-            ],
-            "version": "==1.0.3"
-        },
         "pyyaml": {
             "hashes": [
                 "sha256:3262c96a1ca437e7e4763e2843746588a965426550f3797a79fca9c6199c431f",
@@ -217,12 +185,6 @@
                 "sha256:70e8a77beed4562e7f14fe23a786b54f6296e34344c23bc42f07b15018ff98e9"
             ],
             "version": "==1.11.0"
-        },
-        "sqlalchemy": {
-            "hashes": [
-                "sha256:64b4720f0a8e033db0154d3824f5bf677cf2797e11d44743cf0aebd2a0499d9d"
-            ],
-            "version": "==1.2.2"
         },
         "tornado": {
             "hashes": [
