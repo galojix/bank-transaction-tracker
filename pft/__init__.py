@@ -6,7 +6,7 @@ from flask_login import LoginManager
 from .database import db, User
 from .views import web
 from .errors import error
-from .auths import auth
+from .auth.views import auth
 from config import config
 from .email import mail
 
