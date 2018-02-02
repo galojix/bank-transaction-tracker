@@ -2,7 +2,8 @@
 from flask_wtf import FlaskForm
 from wtforms import (
     SubmitField, StringField, PasswordField, BooleanField, ValidationError)
-from wtforms.validators import Required, Length, Email, EqualTo, DataRequired
+from wtforms.validators import (
+    Required, Length, Email, EqualTo, DataRequired, Regexp)
 from ..database import User
 
 
@@ -11,7 +12,8 @@ class LoginForm(FlaskForm):
 
     email = StringField(
         'Email', validators=[DataRequired(), Length(1, 64), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
+    password = PasswordField(
+        'Password', validators=[DataRequired(), Length(4, 64)])
     remember_me = BooleanField('Keep me logged in')
     submit = SubmitField('Log In')
 
@@ -19,10 +21,15 @@ class LoginForm(FlaskForm):
 class RegistrationForm(FlaskForm):
     """User registration form."""
 
+    name_validators = [Length(1, 64), DataRequired(), Regexp(
+        '^[A-Za-z][A-Za-z0-9_.]*$', 0, 'Names must have only letters, numbers,'
+        ' dots or underscores')]
+    name = StringField('Name', validators=name_validators)
     email_validators = [DataRequired(), Length(1, 64), Email()]
     email = StringField('Email', validators=email_validators)
     password_validators = [
-        DataRequired(), EqualTo('password2', message='Passwords must match.')]
+        DataRequired(), EqualTo('password2', message='Passwords must match.'),
+        Length(4, 64)]
     password = PasswordField('Password', validators=password_validators)
     password2 = PasswordField('Confirm password', validators=[Required()])
     submit = SubmitField('Register')
@@ -38,7 +45,8 @@ class ChangePasswordForm(FlaskForm):
 
     old_password = PasswordField('Old password', validators=[DataRequired()])
     password = PasswordField('New password', validators=[
-        DataRequired(), EqualTo('password2', message='Passwords must match.')])
+        DataRequired(), EqualTo('password2', message='Passwords must match.'),
+        Length(4, 64)])
     password2 = PasswordField('Confirm new password',
                               validators=[DataRequired()])
     submit = SubmitField('Update Password')
@@ -56,7 +64,8 @@ class PasswordResetForm(FlaskForm):
     """Password reset form."""
 
     password = PasswordField('New Password', validators=[
-        DataRequired(), EqualTo('password2', message='Passwords must match')])
+        DataRequired(), EqualTo('password2', message='Passwords must match'),
+        Length(4, 64)])
     password2 = PasswordField('Confirm password', validators=[DataRequired()])
     submit = SubmitField('Reset Password')
 
@@ -66,7 +75,8 @@ class ChangeEmailForm(FlaskForm):
 
     email = StringField(
         'New Email', validators=[DataRequired(), Length(1, 64), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
+    password = PasswordField(
+        'Password', validators=[DataRequired(), Length(4, 64)])
     submit = SubmitField('Update Email Address')
 
     def validate_email(self, field):

@@ -74,8 +74,9 @@ def register():
     """User registration form."""
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(email=form.email.data,
-                    password=form.password.data)
+        user = User(
+            name=form.name.data, email=form.email.data,
+            password=form.password.data)
         # Add default categories
         user.add_category(catname="Unspecified Expense", cattype="Expense")
         user.add_category(catname="Unspecified Income", cattype="Income")

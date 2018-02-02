@@ -15,6 +15,7 @@ class User(UserMixin, db.Model):
 
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), nullable=False)
     email = db.Column(db.String(64), nullable=False, unique=True, index=True)
     password_hash = db.Column(db.String(250), nullable=False)
     confirmed = db.Column(db.Boolean, default=False)
@@ -111,12 +112,12 @@ class User(UserMixin, db.Model):
 
     def generate_reset_token(self, expiration=3600):
         """Generate password reset token."""
-
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'reset': self.id}).decode('utf-8')
 
     @staticmethod
     def reset_password(token, new_password):
+        """Reset password."""
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
             data = s.loads(token.encode('utf-8'))

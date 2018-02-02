@@ -1,4 +1,4 @@
-Dear {{ user.email }},
+Dear {{ user.name }},
 
 Welcome to PFT!
 

@@ -1,4 +1,4 @@
-<p>Dear {{ user.email }},</p>
+<p>Dear {{ user.name }},</p>
 <p>Welcome to <b>PFT</b>!</p>
 <p>To confirm your account please <a href="{{ url_for('auth.confirm', token=token, _external=True) }}">click here</a>.</p>
 <p>Alternatively, you can paste the following link in your browser's address bar:</p>
