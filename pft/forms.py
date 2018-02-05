@@ -18,3 +18,16 @@ class ModifyTransactionForm(FlaskForm):
     modify = SubmitField('Modify')
     delete = SubmitField('Delete')
     cancel = SubmitField('Cancel')
+
+
+class AddTransactionForm(FlaskForm):
+    """Modify transaction form."""
+
+    date = DateTimeLocalField(
+        'Date:', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
+    business_name = SelectField('Business Name:', validators=[DataRequired()])
+    category_name = SelectField('Category Name:', validators=[DataRequired()])
+    account_name = SelectField('Account Name:', validators=[DataRequired()])
+    amount = FloatField('Amount:', validators=[InputRequired()])
+    add = SubmitField('Add')
+    cancel = SubmitField('Cancel')

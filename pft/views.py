@@ -1,10 +1,11 @@
 """Module that handles web views."""
 from flask import render_template, url_for, redirect, session, Blueprint
 from flask_login import login_required, current_user
-from .database import Transaction, Category, Business, Account
-from .forms import ModifyTransactionForm
+from .database import Transaction
+from .forms import ModifyTransactionForm, AddTransactionForm
 from .database import db
 from .reports import graph
+import datetime
 
 
 web = Blueprint('web', __name__)
@@ -23,9 +24,7 @@ def home_page():
 @login_required
 def accounts_page():
     """Return Accounts HTML page."""
-    accounts = (
-        db.session.query(Account)
-        .filter(Account.id == current_user.id).all())
+    accounts = current_user.accounts
     return render_template('accounts.html', accounts=accounts, menu="accounts")
 
 
@@ -45,16 +44,68 @@ def modify_account(accno):
 @login_required
 def transactions_page():
     """Return Transactions HTML page."""
-    transactions = (
-        db.session.query(Transaction, Category, Business, Account)
-        .filter(Transaction.id == current_user.id)
-        .filter(Transaction.catno == Category.catno)
-        .filter(Transaction.busno == Business.busno)
-        .filter(Transaction.accno == Account.accno)
-        .order_by(Transaction.date)
-        .all())
+    transactions = current_user.transactions
     return render_template(
         'transactions.html', transactions=transactions, menu="transactions")
+
+
+@web.route('/transactions/add', methods=['GET', 'POST'])
+@login_required
+def add_transaction():
+    """
+    Add a transaction.
+
+    Return a form for adding a transaction or process submitted
+    form and redirect to Transactions HTML page.
+    """
+    businesses = current_user.businesses
+    categories = current_user.categories
+    accounts = current_user.accounts
+
+    business_names = [
+        (business.busname, business.busname) for business in businesses]
+    category_names = [
+        (category.catname, category.catname) for category in categories]
+    account_names = [
+        (account.accname, account.accname) for account in accounts]
+
+    form = AddTransactionForm()
+    form.date.default = datetime.datetime.now()
+    form.business_name.choices = business_names
+    form.business_name.default = business_names[0]
+    form.category_name.choices = category_names
+    form.category_name.default = category_names[0]
+    form.account_name.choices = account_names
+    form.account_name.default = account_names[0]
+    form.amount.default = '{:,.2f}'.format(0)
+    #
+    if form.validate_on_submit():
+        # This must go here or else before_app_request will try to commit
+        # transaction with NULL fields when SQLALCHEMY_COMMIT_ON_TEARDOWN
+        # is set to True
+        transaction = Transaction(user=current_user)
+        if form.add.data:
+            transaction.date = form.date.data
+            for business in businesses:
+                if business.busname == form.business_name.data:
+                    transaction.business = business
+            for category in categories:
+                if category.catname == form.category_name.data:
+                    transaction.category = category
+            for account in accounts:
+                if account.accname == form.account_name.data:
+                    transaction.account = account
+            transaction.amount = form.amount.data * 100
+            db.session.add(transaction)
+            db.session.commit()
+        elif form.cancel.data:
+            db.session.rollback()
+        return redirect(url_for('.transactions_page'))
+
+    form.process()  # Do this after validate_on_submit or breaks CSRF token
+
+    return render_template(
+        'add_transaction.html', form=form, menu="transactions")
 
 
 @web.route('/transactions/modify/<int:transno>/', methods=['GET', 'POST'])
@@ -67,10 +118,7 @@ def modify_transaction(transno):
     form and redirect to Transactions HTML page.
     """
     transaction = (
-        db.session.query(Transaction)
-        .filter(Transaction.transno == transno)
-        .filter(Transaction.id == current_user.id)
-        .one())
+        Transaction.query.filter_by(user=current_user, transno=transno).one())
     businesses = transaction.user.businesses
     categories = transaction.user.categories
     accounts = transaction.user.accounts
@@ -125,9 +173,7 @@ def modify_transaction(transno):
 @login_required
 def businesses_page():
     """Return Businesses HTML page."""
-    businesses = (
-        db.session.query(Business)
-        .filter(Business.id == current_user.id).all())
+    businesses = current_user.businesses
     return render_template('businesses.html', businesses=businesses,
                            menu="businesses")
 
@@ -148,9 +194,7 @@ def modify_business(busno):
 @login_required
 def categories_page():
     """Return Categories HTML page."""
-    categories = (
-        db.session.query(Category)
-        .filter(Category.id == current_user.id).all())
+    categories = current_user.categories
     return render_template(
         'categories.html', categories=categories, menu="categories")
 
