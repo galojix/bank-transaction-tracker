@@ -169,6 +169,20 @@ def modify_transaction(transno):
         menu="transactions")
 
 
+@web.route('/transactions/upload')
+@login_required
+def upload_transactions():
+    """
+    Upload transactions.
+
+    Return a form for uploading transactions or process submitted
+    form and redirect to Transactions HTML page.
+    """
+    transactions = current_user.transactions
+    return render_template(
+        'transactions.html', transactions=transactions, menu="transactions")
+
+
 @web.route('/businesses')
 @login_required
 def businesses_page():
