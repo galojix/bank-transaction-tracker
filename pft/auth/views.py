@@ -45,7 +45,6 @@ def resend_confirmation():
     return redirect(url_for('web.home_page'))
 
 
-@auth.route('/', methods=['GET', 'POST'])
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     """Login and return home page."""

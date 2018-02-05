@@ -5,8 +5,13 @@
 {% block page_content %}
 
 <h2>Welcome to PFT</h2>
-    <p>You are logged in as {{ user }}.</p>
-    <p>The current date is {{ moment(login_time).format('LL') }}.</p>
-    <p>You logged in {{ moment(login_time).fromNow(refresh=True) }}.</p>
+    {% if current_user.is_authenticated %}
+        <p>You are logged in as {{ current_user.name }}.</p>
+        <p>The current date is {{ moment(login_time).format('LL') }}.</p>
+        <p>You logged in {{ moment(login_time).fromNow(refresh=True) }}.</p>
+    {% else %}
+        <p>Personal Finance Tracker (PFT) is an application for tracking your personal income and expenditure.</p>
+        <p>To login or register, <a href="{{ url_for('auth.login') }}">please click here.</a></p>
+    {% endif %}
 
 {% endblock %}

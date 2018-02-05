@@ -10,12 +10,12 @@ from .reports import graph
 web = Blueprint('web', __name__)
 
 
+@web.route('/')
 @web.route('/home')
-@login_required
 def home_page():
     """Return Home HTML page."""
     return render_template(
-        'home.html', user=current_user.name,
+        'home.html', current_user=current_user,
         login_time=session.get('login_time'), menu="home")
 
 
