@@ -177,6 +177,9 @@ def add_transaction():
             db.session.commit()
         elif form.cancel.data:
             db.session.rollback()
+        # Clear search parameters
+        if 'transactions' in session:
+            del session['transactions']
         return redirect(url_for('.transactions_page'))
 
     form.process()  # Do this after validate_on_submit or breaks CSRF token
