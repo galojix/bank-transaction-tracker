@@ -2,7 +2,8 @@
 from flask import render_template, url_for, redirect, session, Blueprint
 from flask_login import login_required, current_user
 from .database import Transaction
-from .forms import ModifyTransactionForm, AddTransactionForm
+from .forms import (
+    ModifyTransactionForm, AddTransactionForm, SearchTransactionsForm)
 from .database import db
 from .reports import graph
 import datetime
@@ -46,7 +47,77 @@ def transactions_page():
     """Return Transactions HTML page."""
     transactions = current_user.transactions
     return render_template(
-        'transactions.html', transactions=transactions, menu="transactions")
+        'transactions.html', transactions=transactions,
+        menu="transactions")
+
+
+@web.route('/transactions/search', methods=['GET', 'POST'])
+@login_required
+def search_transactions():
+    """
+    Search for transactions.
+
+    Return a form for searching transactions or process submitted
+    form and render Transactions HTML page.
+    """
+    businesses = current_user.businesses
+    categories = current_user.categories
+    category_types = {category.cattype for category in categories}
+    accounts = current_user.accounts
+
+    form = SearchTransactionsForm()
+
+    # Form choices and defaults
+    form.start_date.default = current_user.transactions[0].date
+    form.end_date.default = datetime.datetime.now()
+    form.category_names.choices = [
+        (category.catname, category.catname) for category in categories]
+    form.category_names.default = [category.catname for category in categories]
+    form.category_types.choices = [
+        (category_type, category_type) for category_type in category_types]
+    form.category_types.default = [
+        category_type for category_type in category_types]
+    form.business_names.choices = [
+        (business.busname, business.busname) for business in businesses]
+    form.business_names.default = [business.busname for business in businesses]
+    form.account_names.choices = [
+        (account.accname, account.accname) for account in accounts]
+    form.account_names.default = [account.accname for account in accounts]
+
+    if form.validate_on_submit():
+        # This must go here or else before_app_request will try to commit
+        # transaction with NULL fields when SQLALCHEMY_COMMIT_ON_TEARDOWN
+        # is set to True
+        if form.search.data:
+            start_date = form.start_date.data
+            end_date = form.end_date.data
+            category_names = form.category_names.data
+            category_types = form.category_types.data
+            business_names = form.business_names.data
+            account_names = form.account_names.data
+            transactions = current_user.transactions
+            selected_transactions = []
+            for transaction in transactions:
+                if (
+                    transaction.date >= start_date
+                    and transaction.date <= end_date
+                    and transaction.category.catname in category_names
+                    and transaction.category.cattype in category_types
+                    and transaction.business.busname in business_names
+                    and transaction.account.accname in account_names
+                ):
+                    selected_transactions.append(transaction)
+        elif form.cancel.data:
+            selected_transactions = current_user.transactions
+
+        return render_template(
+            'transactions.html', transactions=selected_transactions,
+            menu="transactions")
+
+    form.process()  # Do this after validate_on_submit or breaks CSRF token
+
+    return render_template(
+        'search_transactions.html', form=form, menu="transactions")
 
 
 @web.route('/transactions/add', methods=['GET', 'POST'])
