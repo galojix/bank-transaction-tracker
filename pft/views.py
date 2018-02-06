@@ -46,6 +46,11 @@ def modify_account(accno):
 def transactions_page():
     """Return Transactions HTML page."""
     transactions = current_user.transactions
+    transaction_numbers = session.get('transactions')
+    if transaction_numbers:
+        transactions = [
+            transaction for transaction in transactions
+            if transaction.transno in transaction_numbers]
     return render_template(
         'transactions.html', transactions=transactions,
         menu="transactions")
@@ -110,9 +115,10 @@ def search_transactions():
         elif form.cancel.data:
             selected_transactions = current_user.transactions
 
-        return render_template(
-            'transactions.html', transactions=selected_transactions,
-            menu="transactions")
+        session['transactions'] = [
+            transaction.transno for transaction in selected_transactions]
+
+        return redirect(url_for('.transactions_page'))
 
     form.process()  # Do this after validate_on_submit or breaks CSRF token
 
