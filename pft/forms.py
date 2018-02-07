@@ -4,6 +4,7 @@ from wtforms import (
     SubmitField, SelectField, FloatField, SelectMultipleField)
 from wtforms.fields.html5 import DateTimeLocalField
 from wtforms.validators import DataRequired, InputRequired
+from wtforms import widgets
 
 
 class ModifyTransactionForm(FlaskForm):
@@ -33,6 +34,18 @@ class AddTransactionForm(FlaskForm):
     cancel = SubmitField('Cancel')
 
 
+class MultiCheckboxField(SelectMultipleField):
+    """
+    A multiple-select, except displays a list of checkboxes.
+
+    Iterating the field will produce subfields, allowing custom rendering of
+    the enclosed checkbox fields.
+    """
+
+    widget = widgets.ListWidget(prefix_label=False)
+    option_widget = widgets.CheckboxInput()
+
+
 class SearchTransactionsForm(FlaskForm):
     """Modify transaction form."""
 
@@ -46,7 +59,7 @@ class SearchTransactionsForm(FlaskForm):
         'Category Types:', validators=[DataRequired()])
     business_names = SelectMultipleField(
         'Business Name:', validators=[DataRequired()])
-    account_names = SelectMultipleField(
+    account_names = MultiCheckboxField(
         'Account Name:', validators=[DataRequired()])
     search = SubmitField('Search')
     cancel = SubmitField('Cancel')
