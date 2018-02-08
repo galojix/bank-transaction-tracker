@@ -50,16 +50,16 @@ class SearchTransactionsForm(FlaskForm):
     """Modify transaction form."""
 
     start_date = DateTimeLocalField(
-        'Date:', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
+        'Start Date:', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
     end_date = DateTimeLocalField(
-        'Date:', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
-    category_names = SelectMultipleField(
-        'Category Name:', validators=[DataRequired()])
-    category_types = SelectMultipleField(
+        'End Date:', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
+    category_names = MultiCheckboxField(
+        'Category Names:', validators=[DataRequired()])
+    category_types = MultiCheckboxField(
         'Category Types:', validators=[DataRequired()])
-    business_names = SelectMultipleField(
-        'Business Name:', validators=[DataRequired()])
+    business_names = MultiCheckboxField(
+        'Business Names:', validators=[DataRequired()])
     account_names = MultiCheckboxField(
-        'Account Name:', validators=[DataRequired()])
+        'Account Names:', validators=[DataRequired()])
     search = SubmitField('Search')
     cancel = SubmitField('Cancel')
