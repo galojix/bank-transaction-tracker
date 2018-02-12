@@ -3,7 +3,9 @@ from flask import render_template, url_for, redirect, session, Blueprint
 from flask_login import login_required, current_user
 from .database import Transaction
 from .forms import (
-    ModifyTransactionForm, AddTransactionForm, SearchTransactionsForm)
+    ModifyTransactionForm, AddTransactionForm, SearchTransactionsForm,
+    UploadTransactionsForm)
+from werkzeug import secure_filename
 from .database import db
 from .reports import graph
 import datetime
@@ -249,7 +251,7 @@ def modify_transaction(transno):
         menu="transactions")
 
 
-@web.route('/transactions/upload')
+@web.route('/transactions/upload', methods=['GET', 'POST'])
 @login_required
 def upload_transactions():
     """
@@ -258,9 +260,14 @@ def upload_transactions():
     Return a form for uploading transactions or process submitted
     form and redirect to Transactions HTML page.
     """
-    transactions = current_user.transactions
-    return render_template(
-        'transactions.html', transactions=transactions, menu="transactions")
+    form = UploadTransactionsForm()
+
+    if form.validate_on_submit():
+        filename = secure_filename(form.transactions_file.data.filename)
+        form.transactions_file.data.save('uploads/' + filename)
+        return redirect(url_for('.transactions_page'))
+
+    return render_template('upload_transactions.html', form=form)
 
 
 @web.route('/businesses')

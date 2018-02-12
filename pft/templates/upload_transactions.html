@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}PFT{% endblock %}
+
+{% block page_content %}
+
+<h2>Upload Transactions: </h2>
+<form method="post" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.transactions_file }}
+    </p>
+    <input type="submit">
+</form>
+{% endblock %}

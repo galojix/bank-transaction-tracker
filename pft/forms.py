@@ -4,6 +4,7 @@ from wtforms import (
     SubmitField, SelectField, FloatField, SelectMultipleField)
 from wtforms.fields.html5 import DateTimeLocalField
 from wtforms.validators import DataRequired, InputRequired
+from flask_wtf.file import FileField, FileRequired
 from wtforms import widgets
 
 
@@ -63,3 +64,9 @@ class SearchTransactionsForm(FlaskForm):
         'Account Names:', validators=[DataRequired()])
     search = SubmitField('Search')
     cancel = SubmitField('Cancel')
+
+
+class UploadTransactionsForm(FlaskForm):
+    """Upload transactions form."""
+
+    transactions_file = FileField(validators=[FileRequired()])
