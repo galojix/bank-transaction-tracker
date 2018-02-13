@@ -69,4 +69,7 @@ class SearchTransactionsForm(FlaskForm):
 class UploadTransactionsForm(FlaskForm):
     """Upload transactions form."""
 
-    transactions_file = FileField(validators=[FileRequired()])
+    transactions_file = FileField('File:', validators=[FileRequired()])
+    account = SelectField('Account:', validators=[DataRequired()])
+    upload = SubmitField('Upload')
+    cancel = SubmitField('Cancel')

@@ -261,10 +261,16 @@ def upload_transactions():
     form and redirect to Transactions HTML page.
     """
     form = UploadTransactionsForm()
+    accounts = current_user.accounts
+    account_names = [
+        (account.accname, account.accname) for account in accounts]
+    form.account.choices = account_names
+    form.account.default = accounts[0].accname
 
     if form.validate_on_submit():
-        filename = secure_filename(form.transactions_file.data.filename)
-        form.transactions_file.data.save('uploads/' + filename)
+        if form.upload.data:
+            filename = secure_filename(form.transactions_file.data.filename)
+            form.transactions_file.data.save('uploads/' + filename)
         return redirect(url_for('.transactions_page'))
 
     return render_template('upload_transactions.html', form=form)
