@@ -72,4 +72,3 @@ class UploadTransactionsForm(FlaskForm):
     transactions_file = FileField('File:', validators=[FileRequired()])
     account = SelectField('Account:', validators=[DataRequired()])
     upload = SubmitField('Upload')
-    cancel = SubmitField('Cancel')
