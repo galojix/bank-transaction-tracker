@@ -82,3 +82,14 @@ class AddAccountForm(FlaskForm):
         'Initial Balance:', validators=[InputRequired()])
     add = SubmitField('Add')
     cancel = SubmitField('Cancel')
+
+
+class ModifyAccountForm(FlaskForm):
+    """Modify account form."""
+
+    account_name = TextField('Account Name:', validators=[DataRequired()])
+    initial_balance = FloatField(
+        'Initial Balance:', validators=[InputRequired()])
+    modify = SubmitField('Modify')
+    delete = SubmitField('Delete')
+    cancel = SubmitField('Cancel')

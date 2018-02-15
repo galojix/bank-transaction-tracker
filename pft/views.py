@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 from .database import Transaction, Account
 from .forms import (
     ModifyTransactionForm, AddTransactionForm, SearchTransactionsForm,
-    UploadTransactionsForm, AddAccountForm)
+    UploadTransactionsForm, AddAccountForm, ModifyAccountForm)
 from werkzeug import secure_filename
 from .database import db
 from .reports import graph
@@ -40,7 +40,38 @@ def modify_account(accno):
     Return a form for modifying accounts or process submitted
     form and redirect to Accounts HTML page.
     """
-    return redirect(url_for('.accounts_page'))
+    account = (
+        Account.query.filter_by(user=current_user, accno=accno).one())
+    accounts = current_user.accounts
+
+    form = ModifyAccountForm()
+    form.account_name.default = account.accname
+    form.initial_balance.default = '{:,.2f}'.format(account.balance / 100)
+
+    if form.validate_on_submit():
+        if form.modify.data:
+            for item in accounts:
+                if (
+                    item.accname == form.account_name.data and
+                    item.accname != form.account_name.default
+                ):
+                    flash('Another account already has this name.')
+                    return redirect(url_for('.modify_account', accno=accno))
+            account.accname = form.account_name.data
+            account.balance = form.initial_balance.data * 100
+            db.session.add(account)
+            db.session.commit()
+        elif form.delete.data:
+            db.session.delete(account)
+            db.session.commit()
+        elif form.cancel.data:
+            pass
+        return redirect(url_for('.accounts_page'))
+
+    form.process()  # Do this after validate_on_submit or breaks CSRF token
+
+    return render_template(
+        'modify_account.html', form=form, accno=accno, menu="accounts")
 
 
 @web.route('/accounts/add', methods=['GET', 'POST'])
