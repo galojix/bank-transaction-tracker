@@ -18,16 +18,24 @@
         </div>
         <ul class="nav navbar-nav">
             <li {% if menu == "home" %}class="active"{% endif %}><a href="{{url_for('web.home_page')}}">Home</a></li>
-            <li {% if menu == "accounts" %}class="active"{% endif %}><a href="{{url_for('web.accounts_page')}}">Accounts</a></li>
+
+            <li {% if menu == "accounts" %}class="active"{% endif %} class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Accounts<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{url_for('web.accounts_page')}}">Search/Modify</a></li>
+                        <li><a href="{{url_for('web.add_account')}}">Add</a></li>
+                    </ul>
+            </li>
+
             <li {% if menu == "transactions" %}class="active"{% endif %} class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Transactions
-                    <span class="caret"></span></a>
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Transactions<span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href="{{url_for('web.search_transactions')}}">Search/Modify</a></li>
                         <li><a href="{{url_for('web.add_transaction')}}">Add</a></li>
                         <li><a href="{{url_for('web.upload_transactions')}}">Upload</a></li>
                     </ul>
-                </li>
+            </li>
+
             <li {% if menu == "businesses" %}class="active"{% endif %}><a href="{{url_for('web.businesses_page')}}">Businesses</a></li>
             <li {% if menu == "categories" %}class="active"{% endif %}><a href="{{url_for('web.categories_page')}}">Categories</a></li>
             <li {% if menu == "reports" %}class="active"{% endif %} class="dropdown">

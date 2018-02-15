@@ -1,7 +1,7 @@
 """Module that handles the forms."""
 from flask_wtf import FlaskForm
 from wtforms import (
-    SubmitField, SelectField, FloatField, SelectMultipleField)
+    SubmitField, SelectField, FloatField, SelectMultipleField, TextField)
 from wtforms.fields.html5 import DateTimeLocalField
 from wtforms.validators import DataRequired, InputRequired
 from flask_wtf.file import FileField, FileRequired
@@ -23,7 +23,7 @@ class ModifyTransactionForm(FlaskForm):
 
 
 class AddTransactionForm(FlaskForm):
-    """Modify transaction form."""
+    """Add transaction form."""
 
     date = DateTimeLocalField(
         'Date:', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
@@ -72,3 +72,13 @@ class UploadTransactionsForm(FlaskForm):
     transactions_file = FileField('File:', validators=[FileRequired()])
     account = SelectField('Account:', validators=[DataRequired()])
     upload = SubmitField('Upload')
+
+
+class AddAccountForm(FlaskForm):
+    """Add account form."""
+
+    account_name = TextField('Account Name:', validators=[DataRequired()])
+    initial_balance = FloatField(
+        'Initial Balance:', validators=[InputRequired()])
+    add = SubmitField('Add')
+    cancel = SubmitField('Cancel')

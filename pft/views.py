@@ -1,10 +1,10 @@
 """Module that handles web views."""
-from flask import render_template, url_for, redirect, session, Blueprint
+from flask import render_template, url_for, redirect, session, Blueprint, flash
 from flask_login import login_required, current_user
-from .database import Transaction
+from .database import Transaction, Account
 from .forms import (
     ModifyTransactionForm, AddTransactionForm, SearchTransactionsForm,
-    UploadTransactionsForm)
+    UploadTransactionsForm, AddAccountForm)
 from werkzeug import secure_filename
 from .database import db
 from .reports import graph
@@ -41,6 +41,43 @@ def modify_account(accno):
     form and redirect to Accounts HTML page.
     """
     return redirect(url_for('.accounts_page'))
+
+
+@web.route('/accounts/add', methods=['GET', 'POST'])
+@login_required
+def add_account():
+    """
+    Add a transaction.
+
+    Return a form for adding an account or process submitted
+    form and redirect to Accounts HTML page.
+    """
+    accounts = current_user.accounts
+
+    form = AddAccountForm()
+    form.account_name.default = 'New Account'
+    form.initial_balance.default = 0
+
+    if form.validate_on_submit():
+        if form.add.data:
+            for account in accounts:
+                if account.accname == form.account_name.data:
+                    flash('Account already exists.')
+                    return redirect(url_for('.add_account'))
+            account = Account()
+            account.accname = form.account_name.data
+            account.balance = form.initial_balance.data
+            account.user = current_user
+            db.session.add(account)
+            db.session.commit()
+        elif form.cancel.data:
+            pass
+        return redirect(url_for('.accounts_page'))
+
+    form.process()  # Do this after validate_on_submit or breaks CSRF token
+
+    return render_template(
+        'add_account.html', form=form, menu="transactions")
 
 
 @web.route('/transactions')
@@ -157,7 +194,7 @@ def add_transaction():
     form.account_name.choices = account_names
     form.account_name.default = account_names[0]
     form.amount.default = '{:,.2f}'.format(0)
-    #
+
     if form.validate_on_submit():
         # This must go here or else before_app_request will try to commit
         # transaction with NULL fields when SQLALCHEMY_COMMIT_ON_TEARDOWN
