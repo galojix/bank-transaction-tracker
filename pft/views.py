@@ -28,7 +28,10 @@ def home_page():
 def accounts_page():
     """Return Accounts HTML page."""
     accounts = current_user.accounts
-    return render_template('accounts.html', accounts=accounts, menu="accounts")
+    known_accounts = [
+        account for account in accounts if account.accname != 'Unknown']
+    return render_template(
+        'accounts.html', accounts=known_accounts, menu="accounts")
 
 
 @web.route('/accounts/modify/<int:accno>/', methods=['GET', 'POST'])
@@ -62,6 +65,13 @@ def modify_account(accno):
             db.session.add(account)
             db.session.commit()
         elif form.delete.data:
+            for transaction in current_user.transactions:
+                if transaction.account == account:
+                    unknown_account = Account.query.filter_by(
+                        user=current_user, accname='Unknown').one()
+                    transaction.account = unknown_account
+                    db.session.add(transaction)
+                    db.session.commit()
             db.session.delete(account)
             db.session.commit()
         elif form.cancel.data:
@@ -108,7 +118,7 @@ def add_account():
     form.process()  # Do this after validate_on_submit or breaks CSRF token
 
     return render_template(
-        'add_account.html', form=form, menu="transactions")
+        'add_account.html', form=form, menu="accounts")
 
 
 @web.route('/transactions')
