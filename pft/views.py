@@ -419,7 +419,9 @@ def categories_page():
     """Return Categories HTML page."""
     categories = current_user.categories
     known_categories = [
-        category for category in categories if category.catname != 'Unknown']
+        category for category in categories if (
+            category.catname != 'Unspecified Expense' and
+            category.catname != 'Unspecified Income')]
     return render_template(
         'categories.html', categories=known_categories, menu="categories")
 
@@ -438,6 +440,9 @@ def add_category():
     form = AddCategoryForm()
     form.category_name.default = 'New Category'
     form.category_type.default = 'Expense'
+    category_types = sorted({item.cattype for item in categories})
+    form.category_type.choices = [
+        (category_type, category_type) for category_type in category_types]
 
     if form.validate_on_submit():
         if form.add.data:
@@ -447,7 +452,7 @@ def add_category():
                     return redirect(url_for('.add_category'))
             category = Category()
             category.catname = form.category_name.data
-            category.catetype = form.category_type.data
+            category.cattype = form.category_type.data
             category.user = current_user
             db.session.add(category)
             db.session.commit()
@@ -472,12 +477,18 @@ def modify_category(catno):
     """
     category = (
         Category.query.filter_by(user=current_user, catno=catno).one())
+    unspecified_expense = (Category.query.filter_by(
+        user=current_user, catname='Unspecified Expense').one())
+    unspecified_income = (Category.query.filter_by(
+        user=current_user, catname='Unspecified Income').one())
     categories = current_user.categories
 
     form = ModifyCategoryForm()
     form.category_name.default = category.catname
     form.category_type.default = category.cattype
-    form.category_type.choices = [(category.cattype, )]
+    category_types = sorted({item.cattype for item in categories})
+    form.category_type.choices = [
+        (category_type, category_type) for category_type in category_types]
 
     if form.validate_on_submit():
         if form.modify.data:
@@ -494,10 +505,18 @@ def modify_category(catno):
             db.session.commit()
         elif form.delete.data:
             for transaction in current_user.transactions:
-                if transaction.category == category:
-                    unknown_category = Category.query.filter_by(
-                        user=current_user, catname='Unknown').one()
-                    transaction.category = unknown_category
+                if (
+                    transaction.category == category and
+                    category.cattype == 'Expense'
+                ):
+                    transaction.category = unspecified_expense
+                    db.session.add(transaction)
+                    db.session.commit()
+                elif (
+                    transaction.category == category and
+                    category.cattype == 'Income'
+                ):
+                    transaction.category = unspecified_income
                     db.session.add(transaction)
                     db.session.commit()
             db.session.delete(category)
