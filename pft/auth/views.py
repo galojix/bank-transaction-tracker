@@ -79,6 +79,10 @@ def register():
         # Add default categories
         user.add_category(catname="Unspecified Expense", cattype="Expense")
         user.add_category(catname="Unspecified Income", cattype="Income")
+        user.add_category(
+            catname="Transfer In", cattype="Transfer In")
+        user.add_category(
+            catname="Transfer Out", cattype="Transfer Out")
         # Add default account
         user.add_account(accname="Unknown", balance=0)
         # Add default business

@@ -36,8 +36,22 @@
                     </ul>
             </li>
 
-            <li {% if menu == "businesses" %}class="active"{% endif %}><a href="{{url_for('web.businesses_page')}}">Businesses</a></li>
-            <li {% if menu == "categories" %}class="active"{% endif %}><a href="{{url_for('web.categories_page')}}">Categories</a></li>
+            <li {% if menu == "businesses" %}class="active"{% endif %} class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Businesses<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{url_for('web.businesses_page')}}">Search/Modify</a></li>
+                        <li><a href="{{url_for('web.add_business')}}">Add</a></li>
+                    </ul>
+            </li>
+
+            <li {% if menu == "categories" %}class="active"{% endif %} class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Categories<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{url_for('web.categories_page')}}">Search/Modify</a></li>
+                        <li><a href="{{url_for('web.add_category')}}">Add</a></li>
+                    </ul>
+            </li>
+
             <li {% if menu == "reports" %}class="active"{% endif %} class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">Reports
                     <span class="caret"></span></a>

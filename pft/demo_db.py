@@ -29,7 +29,9 @@ def create_db():
                   ("Salary", "Income"),
                   ("Interest", "Income"),
                   ("Unspecified Expense", "Expense"),
-                  ("Unspecified Income", "Income"))
+                  ("Unspecified Income", "Income"),
+                  ("Transfer In", "Transfer In"),
+                  ("Transfer Out", "Transfer Out"))
     for catname, cattype in categories:
         user.add_category(catname=catname, cattype=cattype)
 
@@ -65,6 +67,8 @@ def create_db():
         (75000, "2016-10-17T08:05", "Coles", "Food", "ANZ"),
         (85000, "2016-10-18T08:25", "Wonka", "Salary", "ANZ"),
         (7007, "2016-10-19T08:05", "Bupa", "Insurance", "NAB"),
+        (10000, "2016-10-18T08:35", "Unknown", "Transfer Out", "ANZ"),
+        (10000, "2016-10-19T08:45", "Unknown", "Transfer In", "NAB"),
         (6007, "2016-10-20T08:06", "ABC Corp", "Entertainment", "NAB"),
         (8008, "2016-10-21T08:07", "Bupa", "Insurance", "NAB"),
         (700, "2016-10-22T08:15", "Coles", "Food", "ANZ"),

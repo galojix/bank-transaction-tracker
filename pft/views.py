@@ -1,10 +1,11 @@
 """Module that handles web views."""
 from flask import render_template, url_for, redirect, session, Blueprint, flash
 from flask_login import login_required, current_user
-from .database import Transaction, Account
+from .database import Transaction, Account, Category
 from .forms import (
     ModifyTransactionForm, AddTransactionForm, SearchTransactionsForm,
-    UploadTransactionsForm, AddAccountForm, ModifyAccountForm)
+    UploadTransactionsForm, AddAccountForm, ModifyAccountForm,
+    ModifyCategoryForm, AddCategoryForm)
 from werkzeug import secure_filename
 from .database import db
 from .reports import graph
@@ -147,7 +148,7 @@ def search_transactions():
     """
     businesses = current_user.businesses
     categories = current_user.categories
-    category_types = {category.cattype for category in categories}
+    category_types = sorted({category.cattype for category in categories})
     accounts = current_user.accounts
 
     form = SearchTransactionsForm()
@@ -363,6 +364,43 @@ def businesses_page():
                            menu="businesses")
 
 
+@web.route('/businesses/add', methods=['GET', 'POST'])
+@login_required
+def add_business():
+    """
+    Add a business.
+
+    Return a form for adding a business or process submitted
+    form and redirect to Businesses HTML page.
+    """
+    accounts = current_user.accounts
+
+    form = AddAccountForm()
+    form.account_name.default = 'New Account'
+    form.initial_balance.default = 0
+
+    if form.validate_on_submit():
+        if form.add.data:
+            for account in accounts:
+                if account.accname == form.account_name.data:
+                    flash('Account already exists.')
+                    return redirect(url_for('.add_account'))
+            account = Account()
+            account.accname = form.account_name.data
+            account.balance = form.initial_balance.data
+            account.user = current_user
+            db.session.add(account)
+            db.session.commit()
+        elif form.cancel.data:
+            pass
+        return redirect(url_for('.accounts_page'))
+
+    form.process()  # Do this after validate_on_submit or breaks CSRF token
+
+    return render_template(
+        'add_account.html', form=form, menu="accounts")
+
+
 @web.route('/businesses/modify/<int:busno>/', methods=['GET', 'POST'])
 @login_required
 def modify_business(busno):
@@ -380,8 +418,47 @@ def modify_business(busno):
 def categories_page():
     """Return Categories HTML page."""
     categories = current_user.categories
+    known_categories = [
+        category for category in categories if category.catname != 'Unknown']
     return render_template(
-        'categories.html', categories=categories, menu="categories")
+        'categories.html', categories=known_categories, menu="categories")
+
+
+@web.route('/categories/add', methods=['GET', 'POST'])
+@login_required
+def add_category():
+    """
+    Add a category.
+
+    Return a form for adding a category or process submitted
+    form and redirect to Categories HTML page.
+    """
+    categories = current_user.categories
+
+    form = AddCategoryForm()
+    form.category_name.default = 'New Category'
+    form.category_type.default = 'Expense'
+
+    if form.validate_on_submit():
+        if form.add.data:
+            for category in categories:
+                if category.catname == form.category_name.data:
+                    flash('Category already exists.')
+                    return redirect(url_for('.add_category'))
+            category = Category()
+            category.catname = form.category_name.data
+            category.catetype = form.category_type.data
+            category.user = current_user
+            db.session.add(category)
+            db.session.commit()
+        elif form.cancel.data:
+            pass
+        return redirect(url_for('.categories_page'))
+
+    form.process()  # Do this after validate_on_submit or breaks CSRF token
+
+    return render_template(
+        'add_category.html', form=form, menu="categories")
 
 
 @web.route('/categories/modify/<int:catno>/', methods=['GET', 'POST'])
@@ -393,7 +470,46 @@ def modify_category(catno):
     Return a form for modifying categories or process submitted
     form and redirect to Categories HTML page.
     """
-    return redirect(url_for('.categories_page'))
+    category = (
+        Category.query.filter_by(user=current_user, catno=catno).one())
+    categories = current_user.categories
+
+    form = ModifyCategoryForm()
+    form.category_name.default = category.catname
+    form.category_type.default = category.cattype
+    form.category_type.choices = [(category.cattype, )]
+
+    if form.validate_on_submit():
+        if form.modify.data:
+            for item in categories:
+                if (
+                    item.catname == form.category_name.data and
+                    item.catname != form.category_name.default
+                ):
+                    flash('Another category already has this name.')
+                    return redirect(url_for('.modify_category', catno=catno))
+            category.catname = form.category_name.data
+            category.cattype = form.category_type.data
+            db.session.add(category)
+            db.session.commit()
+        elif form.delete.data:
+            for transaction in current_user.transactions:
+                if transaction.category == category:
+                    unknown_category = Category.query.filter_by(
+                        user=current_user, catname='Unknown').one()
+                    transaction.category = unknown_category
+                    db.session.add(transaction)
+                    db.session.commit()
+            db.session.delete(category)
+            db.session.commit()
+        elif form.cancel.data:
+            pass
+        return redirect(url_for('.categories_page'))
+
+    form.process()  # Do this after validate_on_submit or breaks CSRF token
+
+    return render_template(
+        'modify_category.html', form=form, catno=catno, menu="categories")
 
 
 @web.route('/reports/<report_name>/')
