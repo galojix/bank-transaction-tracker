@@ -95,6 +95,15 @@ class ModifyAccountForm(FlaskForm):
     cancel = SubmitField('Cancel')
 
 
+class AddCategoryForm(FlaskForm):
+    """Add category form."""
+
+    category_name = TextField('Account Name:', validators=[DataRequired()])
+    category_type = SelectField('Category Type:', validators=[DataRequired()])
+    add = SubmitField('Add')
+    cancel = SubmitField('Cancel')
+
+
 class ModifyCategoryForm(FlaskForm):
     """Modify category form."""
 
@@ -105,10 +114,18 @@ class ModifyCategoryForm(FlaskForm):
     cancel = SubmitField('Cancel')
 
 
-class AddCategoryForm(FlaskForm):
-    """Add category form."""
+class AddBusinessForm(FlaskForm):
+    """Add business form."""
 
-    category_name = TextField('Account Name:', validators=[DataRequired()])
-    category_type = SelectField('Category Type:', validators=[DataRequired()])
+    business_name = TextField('Business Name:', validators=[DataRequired()])
     add = SubmitField('Add')
+    cancel = SubmitField('Cancel')
+
+
+class ModifyBusinessForm(FlaskForm):
+    """Modify business form."""
+
+    business_name = TextField('Business Name:', validators=[DataRequired()])
+    modify = SubmitField('Modify')
+    delete = SubmitField('Delete')
     cancel = SubmitField('Cancel')

@@ -1,11 +1,11 @@
 """Module that handles web views."""
 from flask import render_template, url_for, redirect, session, Blueprint, flash
 from flask_login import login_required, current_user
-from .database import Transaction, Account, Category
+from .database import Transaction, Account, Category, Business
 from .forms import (
     ModifyTransactionForm, AddTransactionForm, SearchTransactionsForm,
     UploadTransactionsForm, AddAccountForm, ModifyAccountForm,
-    ModifyCategoryForm, AddCategoryForm)
+    ModifyCategoryForm, AddCategoryForm, AddBusinessForm, ModifyBusinessForm)
 from werkzeug import secure_filename
 from .database import db
 from .reports import graph
@@ -373,32 +373,30 @@ def add_business():
     Return a form for adding a business or process submitted
     form and redirect to Businesses HTML page.
     """
-    accounts = current_user.accounts
+    businesses = current_user.businesses
 
-    form = AddAccountForm()
-    form.account_name.default = 'New Account'
-    form.initial_balance.default = 0
+    form = AddBusinessForm()
+    form.business_name.default = 'New Business'
 
     if form.validate_on_submit():
         if form.add.data:
-            for account in accounts:
-                if account.accname == form.account_name.data:
-                    flash('Account already exists.')
-                    return redirect(url_for('.add_account'))
-            account = Account()
-            account.accname = form.account_name.data
-            account.balance = form.initial_balance.data
-            account.user = current_user
-            db.session.add(account)
+            for business in businesses:
+                if business.busname == form.business_name.data:
+                    flash('Business already exists.')
+                    return redirect(url_for('.add_business'))
+            business = Business()
+            business.busname = form.business_name.data
+            business.user = current_user
+            db.session.add(business)
             db.session.commit()
         elif form.cancel.data:
             pass
-        return redirect(url_for('.accounts_page'))
+        return redirect(url_for('.businesses_page'))
 
     form.process()  # Do this after validate_on_submit or breaks CSRF token
 
     return render_template(
-        'add_account.html', form=form, menu="accounts")
+        'add_business.html', form=form, menu="businesses")
 
 
 @web.route('/businesses/modify/<int:busno>/', methods=['GET', 'POST'])
@@ -410,7 +408,43 @@ def modify_business(busno):
     Return a form for modifying businesses or process submitted
     form and redirect to Businesses HTML page.
     """
-    return redirect(url_for('.businesses_page'))
+    business = (
+        Business.query.filter_by(user=current_user, busno=busno).one())
+    businesses = current_user.businesses
+
+    form = ModifyBusinessForm()
+    form.business_name.default = business.busname
+
+    if form.validate_on_submit():
+        if form.modify.data:
+            for item in businesses:
+                if (
+                    item.busname == form.business_name.data and
+                    item.busname != form.business_name.default
+                ):
+                    flash('Another business already has this name.')
+                    return redirect(url_for('.modify_business', busno=busno))
+            business.busname = form.business_name.data
+            db.session.add(business)
+            db.session.commit()
+        elif form.delete.data:
+            for transaction in current_user.transactions:
+                if transaction.business == business:
+                    unknown_business = Business.query.filter_by(
+                        user=current_user, busname='Unknown').one()
+                    transaction.business = unknown_business
+                    db.session.add(transaction)
+                    db.session.commit()
+            db.session.delete(business)
+            db.session.commit()
+        elif form.cancel.data:
+            pass
+        return redirect(url_for('.businesses_page'))
+
+    form.process()  # Do this after validate_on_submit or breaks CSRF token
+
+    return render_template(
+        'modify_business.html', form=form, busno=busno, menu="businesses")
 
 
 @web.route('/categories')
