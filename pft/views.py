@@ -440,9 +440,9 @@ def add_category():
     form = AddCategoryForm()
     form.category_name.default = 'New Category'
     form.category_type.default = 'Expense'
-    category_types = sorted({item.cattype for item in categories})
     form.category_type.choices = [
-        (category_type, category_type) for category_type in category_types]
+        ('Expense', 'Expense'), ('Income', 'Income'),
+        ('Transfer In', 'Transfer In'), ('Transfer Out', 'Transfer Out')]
 
     if form.validate_on_submit():
         if form.add.data:
@@ -486,9 +486,9 @@ def modify_category(catno):
     form = ModifyCategoryForm()
     form.category_name.default = category.catname
     form.category_type.default = category.cattype
-    category_types = sorted({item.cattype for item in categories})
     form.category_type.choices = [
-        (category_type, category_type) for category_type in category_types]
+        ('Expense', 'Expense'), ('Income', 'Income'),
+        ('Transfer In', 'Transfer In'), ('Transfer Out', 'Transfer Out')]
 
     if form.validate_on_submit():
         if form.modify.data:
