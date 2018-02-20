@@ -1,7 +1,8 @@
 """Module that handles the forms."""
 from flask_wtf import FlaskForm
 from wtforms import (
-    SubmitField, SelectField, FloatField, SelectMultipleField, TextField)
+    SubmitField, SelectField, FloatField, SelectMultipleField, TextField,
+    FieldList, FormField)
 from wtforms.fields.html5 import DateTimeLocalField
 from wtforms.validators import DataRequired, InputRequired
 from flask_wtf.file import FileField, FileRequired
@@ -129,3 +130,16 @@ class ModifyBusinessForm(FlaskForm):
     modify = SubmitField('Modify')
     delete = SubmitField('Delete')
     cancel = SubmitField('Cancel')
+
+
+class ClassifyTransactionColumnsForm(FlaskForm):
+    """Classify transaction columns form."""
+
+    name = TextField()
+
+
+class ProcessUploadedTransactionsForm(FlaskForm):
+    """Process uploaded transactions form."""
+
+    classifications = FieldList(
+        FormField(ClassifyTransactionColumnsForm), min_entries=1)

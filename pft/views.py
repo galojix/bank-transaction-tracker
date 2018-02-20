@@ -5,7 +5,8 @@ from .database import Transaction, Account, Category, Business
 from .forms import (
     ModifyTransactionForm, AddTransactionForm, SearchTransactionsForm,
     UploadTransactionsForm, AddAccountForm, ModifyAccountForm,
-    ModifyCategoryForm, AddCategoryForm, AddBusinessForm, ModifyBusinessForm)
+    ModifyCategoryForm, AddCategoryForm, AddBusinessForm, ModifyBusinessForm,
+    ProcessUploadedTransactionsForm)
 from werkzeug import secure_filename
 from .database import db
 from .reports import graph
@@ -350,9 +351,25 @@ def upload_transactions():
         if form.upload.data:
             filename = secure_filename(form.transactions_file.data.filename)
             form.transactions_file.data.save('uploads/' + filename)
-        return redirect(url_for('.transactions_page'))
+        return redirect(url_for('.process_transactions'))
 
     return render_template('upload_transactions.html', form=form)
+
+
+@web.route('/transactions/process', methods=['GET', 'POST'])
+@login_required
+def process_transactions():
+    """
+    Process uploaded transactions.
+
+    Return a form for processing uploaded transactions or process submitted
+    form and redirect to Transactions HTML page.
+    """
+    fields = [
+        {"name": "First Address"}, {"name": "Second Address"}]
+    form = ProcessUploadedTransactionsForm(classifications=fields)
+
+    return render_template('process_transactions.html', form=form)
 
 
 @web.route('/businesses')

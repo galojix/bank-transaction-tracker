@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}PFT{% endblock %}
+
+{% block page_content %}
+
+<h2>Process Uploaded Transactions: </h2>
+<form class="form form-horizontal" method="post" role="form" enctype="multipart/form-data">
+  {{ form.hidden_tag() }}
+  {{ wtf.form_errors(form, hiddens="only") }}
+
+  {% for classify_transaction_columns_form in form.classifications %}
+      {{ wtf.form_field(classify_transaction_columns_form) }}
+  {% endfor %}
+
+</form>
+
+{% endblock %}
