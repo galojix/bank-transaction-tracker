@@ -6,7 +6,7 @@ from .forms import (
     ModifyTransactionForm, AddTransactionForm, SearchTransactionsForm,
     UploadTransactionsForm, AddAccountForm, ModifyAccountForm,
     ModifyCategoryForm, AddCategoryForm, AddBusinessForm, ModifyBusinessForm,
-    ProcessUploadedTransactionsForm)
+    ProcessUploadedTransactionsForm, ClassifyTransactionColumnsForm)
 from werkzeug import secure_filename
 from .database import db
 from .reports import graph
@@ -365,10 +365,18 @@ def process_transactions():
     Return a form for processing uploaded transactions or process submitted
     form and redirect to Transactions HTML page.
     """
-    fields = [
-        {"name": "First Address"}, {"name": "Second Address"}]
-    form = ProcessUploadedTransactionsForm(classifications=fields)
-
+    # fields = [
+    #     {"name": [("option1", "option1"), ("option2", "option2")]},
+    #     {"name": [("option1", "option1"), ("option2", "option2")]}]
+    form = ProcessUploadedTransactionsForm()
+    classify_form = ClassifyTransactionColumnsForm()
+    classify_form.name.choices = [
+        ("option1", "option1"), ("option2", "option2")]
+    form.classifications.append_entry(classify_form)
+    classify_form = ClassifyTransactionColumnsForm()
+    classify_form.name.choices = [
+        ("option3", "option3"), ("option4", "option4")]
+    form.classifications.append_entry(classify_form)
     return render_template('process_transactions.html', form=form)
 
 

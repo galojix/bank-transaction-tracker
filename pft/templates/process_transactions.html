@@ -11,7 +11,7 @@
   {{ wtf.form_errors(form, hiddens="only") }}
 
   {% for classify_transaction_columns_form in form.classifications %}
-      {{ wtf.form_field(classify_transaction_columns_form) }}
+    {{ wtf.form_field(classify_transaction_columns_form.form.name) }}
   {% endfor %}
 
 </form>
