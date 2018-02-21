@@ -365,18 +365,16 @@ def process_transactions():
     Return a form for processing uploaded transactions or process submitted
     form and redirect to Transactions HTML page.
     """
-    # fields = [
-    #     {"name": [("option1", "option1"), ("option2", "option2")]},
-    #     {"name": [("option1", "option1"), ("option2", "option2")]}]
+    classify_form = ClassifyTransactionColumnsForm()
     form = ProcessUploadedTransactionsForm()
-    classify_form = ClassifyTransactionColumnsForm()
-    classify_form.name.choices = [
-        ("option1", "option1"), ("option2", "option2")]
     form.classifications.append_entry(classify_form)
-    classify_form = ClassifyTransactionColumnsForm()
-    classify_form.name.choices = [
-        ("option3", "option3"), ("option4", "option4")]
     form.classifications.append_entry(classify_form)
+    form.classifications.append_entry(classify_form)
+    for subform in form.classifications:
+        subform.form.name.choices = [
+            ('date', 'Date'), ('description', 'Description'),
+            ('dr', 'Debit'), ('cr', 'Credit'), ('drcr', 'Debit/Credit'),
+            ('delete', 'Delete')]
     return render_template('process_transactions.html', form=form)
 
 

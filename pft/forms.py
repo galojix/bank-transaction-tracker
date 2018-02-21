@@ -135,11 +135,11 @@ class ModifyBusinessForm(FlaskForm):
 class ClassifyTransactionColumnsForm(FlaskForm):
     """Classify transaction columns form."""
 
-    name = SelectField()
+    name = SelectField('Option', validators=[DataRequired()], choices=[])
 
 
 class ProcessUploadedTransactionsForm(FlaskForm):
     """Process uploaded transactions form."""
 
     classifications = FieldList(
-        FormField(ClassifyTransactionColumnsForm), min_entries=1)
+        FormField(ClassifyTransactionColumnsForm))
