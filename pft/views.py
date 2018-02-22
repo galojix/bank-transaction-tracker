@@ -11,6 +11,7 @@ from werkzeug import secure_filename
 from .database import db
 from .reports import graph
 import datetime
+import csv
 
 
 web = Blueprint('web', __name__)
@@ -351,9 +352,11 @@ def upload_transactions():
         if form.upload.data:
             filename = secure_filename(form.transactions_file.data.filename)
             form.transactions_file.data.save('uploads/' + filename)
+            session['transaction_csv_file'] = filename
         return redirect(url_for('.process_transactions'))
 
-    return render_template('upload_transactions.html', form=form)
+    return render_template(
+        'upload_transactions.html', form=form, menu="transactions")
 
 
 @web.route('/transactions/process', methods=['GET', 'POST'])
@@ -365,17 +368,24 @@ def process_transactions():
     Return a form for processing uploaded transactions or process submitted
     form and redirect to Transactions HTML page.
     """
+    csvfile = 'uploads/' + session['transaction_csv_file']
+    transactions = []
+    with open(csvfile, newline='') as csvfile:
+        reader = csv.reader(csvfile, delimiter=',')
+        for row in reader:
+            transactions.append(row)
     classify_form = ClassifyTransactionColumnsForm()
     form = ProcessUploadedTransactionsForm()
-    form.classifications.append_entry(classify_form)
-    form.classifications.append_entry(classify_form)
-    form.classifications.append_entry(classify_form)
+    for _ in range(0, len(transactions[0])):
+        form.classifications.append_entry(classify_form)
     for subform in form.classifications:
         subform.form.name.choices = [
             ('date', 'Date'), ('description', 'Description'),
             ('dr', 'Debit'), ('cr', 'Credit'), ('drcr', 'Debit/Credit'),
             ('delete', 'Delete')]
-    return render_template('process_transactions.html', form=form)
+    return render_template(
+        'process_transactions.html', form=form, transactions=transactions,
+        menu="transactions")
 
 
 @web.route('/businesses')

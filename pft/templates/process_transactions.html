@@ -10,12 +10,27 @@
   {{ form.hidden_tag() }}
   {{ wtf.form_errors(form, hiddens="only") }}
 
-{% for classification in form.classifications %}
-    <div class="col-md-1">
-    {{ wtf.form_field(classification.form.name) }}
-    </div>
-{% endfor %}
-</div>
+
+  <table class="table table-striped table-bordered table-hover table-responsive">
+
+  <tr>
+  {% for classification in form.classifications %}
+      <td><div class="col-md-12">{{ wtf.form_field(classification.form.name) }}</div></td>
+  {% endfor %}
+  </tr>
+
+
+ {% for transaction in transactions %}
+
+  <tr>
+      {% for field in transaction %}
+      <td>{{ field }}</td>
+      {% endfor %}
+  </tr>
+
+ {% endfor %}
+
+  </table>
 
 </form>
 

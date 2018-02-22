@@ -135,7 +135,7 @@ class ModifyBusinessForm(FlaskForm):
 class ClassifyTransactionColumnsForm(FlaskForm):
     """Classify transaction columns form."""
 
-    name = SelectField('Option', validators=[DataRequired()], choices=[])
+    name = SelectField('', validators=[DataRequired()], choices=[])
 
 
 class ProcessUploadedTransactionsForm(FlaskForm):
