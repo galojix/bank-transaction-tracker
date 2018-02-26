@@ -11,8 +11,10 @@ from .forms import (
 from werkzeug import secure_filename
 from .database import db
 from .reports import graph
+from tempfile import mkdtemp
 import datetime
 import csv
+import os
 
 
 web = Blueprint('web', __name__)
@@ -352,7 +354,9 @@ def upload_transactions():
     if form.validate_on_submit():
         if form.upload.data:
             filename = secure_filename(form.transactions_file.data.filename)
-            form.transactions_file.data.save('uploads/' + filename)
+            temp_dir = mkdtemp(dir='uploads/')
+            form.transactions_file.data.save(temp_dir + '/' + filename)
+            session['transaction_csv_dir'] = temp_dir
             session['transaction_csv_file'] = filename
         return redirect(url_for('.process_transactions'))
 
@@ -369,12 +373,15 @@ def process_transactions():
     Return a form for processing uploaded transactions or process submitted
     form and redirect to Transactions HTML page.
     """
-    csvfile = 'uploads/' + session['transaction_csv_file']
+    csvfilename = (
+        session['transaction_csv_dir'] + '/' + session['transaction_csv_file'])
     transactions = []
-    with open(csvfile, newline='') as csvfile:
+    with open(csvfilename, newline='') as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
         for row in reader:
             transactions.append(row)
+    os.remove(csvfilename)
+    os.rmdir(session['transaction_csv_dir'])
     classify_cols_form = ClassifyTransactionColumnsForm()
     classify_rows_form = ClassifyTransactionRowsForm()
     form = ProcessUploadedTransactionsForm()
@@ -394,7 +401,7 @@ def process_transactions():
     business_names = [
         (business.busname, business.busname) for business in businesses]
     actions = [
-        ('Process', 'Process'), ('Ignore', 'Ignore')]
+        ('Keep', 'Keep'), ('Ignore', 'Ignore')]
     for subform in form.row_classifications:
         subform.form.category_name.choices = category_names
         subform.form.business_name.choices = business_names
