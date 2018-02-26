@@ -6,7 +6,8 @@ from .forms import (
     ModifyTransactionForm, AddTransactionForm, SearchTransactionsForm,
     UploadTransactionsForm, AddAccountForm, ModifyAccountForm,
     ModifyCategoryForm, AddCategoryForm, AddBusinessForm, ModifyBusinessForm,
-    ProcessUploadedTransactionsForm, ClassifyTransactionColumnsForm)
+    ProcessUploadedTransactionsForm, ClassifyTransactionColumnsForm,
+    ClassifyTransactionRowsForm)
 from werkzeug import secure_filename
 from .database import db
 from .reports import graph
@@ -374,18 +375,33 @@ def process_transactions():
         reader = csv.reader(csvfile, delimiter=',')
         for row in reader:
             transactions.append(row)
-    classify_form = ClassifyTransactionColumnsForm()
+    classify_cols_form = ClassifyTransactionColumnsForm()
+    classify_rows_form = ClassifyTransactionRowsForm()
     form = ProcessUploadedTransactionsForm()
     for _ in range(0, len(transactions[0])):
-        form.classifications.append_entry(classify_form)
-    for subform in form.classifications:
+        form.col_classifications.append_entry(classify_cols_form)
+    for _ in range(0, len(transactions)):
+        form.row_classifications.append_entry(classify_rows_form)
+    for subform in form.col_classifications:
         subform.form.name.choices = [
             ('date', 'Date'), ('description', 'Description'),
             ('dr', 'Debit'), ('cr', 'Credit'), ('drcr', 'Debit/Credit'),
             ('delete', 'Delete')]
+    categories = current_user.categories
+    category_names = [
+        (category.catname, category.catname) for category in categories]
+    businesses = current_user.businesses
+    business_names = [
+        (business.busname, business.busname) for business in businesses]
+    actions = [
+        ('Process', 'Process'), ('Ignore', 'Ignore')]
+    for subform in form.row_classifications:
+        subform.form.category_name.choices = category_names
+        subform.form.business_name.choices = business_names
+        subform.form.action.choices = actions
     return render_template(
         'process_transactions.html', form=form, transactions=transactions,
-        menu="transactions")
+        num_transactions=len(transactions), menu="transactions")
 
 
 @web.route('/businesses')
