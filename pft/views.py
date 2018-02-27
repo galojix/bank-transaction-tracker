@@ -365,7 +365,6 @@ def upload_transactions():
                 for row in reader:
                     transactions.append(row)
             session['uploaded_transactions'] = transactions
-            # print(session['uploaded_transactions'])
             os.remove(csvfilename)
             os.rmdir(temp_dir)
 

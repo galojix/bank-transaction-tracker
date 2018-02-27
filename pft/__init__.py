@@ -3,6 +3,7 @@ from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_login import LoginManager
+from flask_session import Session
 from .database import db, User
 from .views import web
 from .errors import error
@@ -11,6 +12,7 @@ from config import config
 from .email import mail
 
 
+sess = Session()
 bootstrap = Bootstrap()
 moment = Moment()
 login_manager = LoginManager()
@@ -29,6 +31,7 @@ def create_app(config_name):
     app = Flask(__name__)
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
+    sess.init_app(app)
     bootstrap.init_app(app)
     moment.init_app(app)
     db.init_app(app)

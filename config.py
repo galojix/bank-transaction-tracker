@@ -22,6 +22,8 @@ class Config:
     MAIL_SUBJECT_PREFIX = '[PFT]'
     MAIL_SENDER = 'PFT Admin <pft@galojix.com>'
 
+    SESSION_TYPE = 'filesystem'
+
     @staticmethod
     def init_app(app):
         """Initialise config for app."""
