@@ -355,9 +355,20 @@ def upload_transactions():
         if form.upload.data:
             filename = secure_filename(form.transactions_file.data.filename)
             temp_dir = mkdtemp(dir='uploads/')
-            form.transactions_file.data.save(temp_dir + '/' + filename)
+            csvfilename = temp_dir + '/' + filename
+            form.transactions_file.data.save(csvfilename)
             session['transaction_csv_dir'] = temp_dir
             session['transaction_csv_file'] = filename
+            transactions = []
+            with open(csvfilename, newline='') as csvfile:
+                reader = csv.reader(csvfile, delimiter=',')
+                for row in reader:
+                    transactions.append(row)
+            session['uploaded_transactions'] = transactions
+            # print(session['uploaded_transactions'])
+            os.remove(csvfilename)
+            os.rmdir(temp_dir)
+
         return redirect(url_for('.process_transactions'))
 
     return render_template(
@@ -375,13 +386,7 @@ def process_transactions():
     """
     form = ProcessUploadedTransactionsForm()
 
-    csvfilename = (
-        session['transaction_csv_dir'] + '/' + session['transaction_csv_file'])
-    transactions = []
-    with open(csvfilename, newline='') as csvfile:
-        reader = csv.reader(csvfile, delimiter=',')
-        for row in reader:
-            transactions.append(row)
+    transactions = session['uploaded_transactions']
 
     classify_cols_form = ClassifyTransactionColumnsForm()
     for _ in range(0, len(transactions[0])):
@@ -413,8 +418,6 @@ def process_transactions():
             pass
         if form.cancel.data:
             pass
-        os.remove(csvfilename)
-        os.rmdir(session['transaction_csv_dir'])
         return redirect(url_for('.transactions_page'))
 
     # form.process()  # Do this after validate_on_submit or breaks CSRF token
