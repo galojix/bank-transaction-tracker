@@ -1,5 +1,6 @@
 """Module that handles web views."""
-from flask import render_template, url_for, redirect, session, Blueprint, flash
+from flask import (
+    render_template, url_for, redirect, session, Blueprint, flash, request)
 from flask_login import login_required, current_user
 from .database import Transaction, Account, Category, Business
 from .forms import (
@@ -388,8 +389,9 @@ def process_transactions():
     transactions = session['uploaded_transactions']
 
     classify_cols_form = ClassifyTransactionColumnsForm()
-    for _ in range(0, len(transactions[0])):
-        form.col_classifications.append_entry(classify_cols_form)
+    if request.method != 'POST':
+        for _ in range(0, len(transactions[0])):
+            form.col_classifications.append_entry(classify_cols_form)
     for subform in form.col_classifications:
         subform.form.name.choices = [
             ('date', 'Date'), ('description', 'Description'),
@@ -397,8 +399,9 @@ def process_transactions():
             ('delete', 'Delete')]
 
     classify_rows_form = ClassifyTransactionRowsForm()
-    for _ in range(0, len(transactions)):
-        form.row_classifications.append_entry(classify_rows_form)
+    if request.method != 'POST':
+        for _ in range(0, len(transactions)):
+            form.row_classifications.append_entry(classify_rows_form)
     categories = current_user.categories
     category_names = [
         (category.catname, category.catname) for category in categories]
