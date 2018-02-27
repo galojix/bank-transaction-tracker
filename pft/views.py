@@ -373,6 +373,8 @@ def process_transactions():
     Return a form for processing uploaded transactions or process submitted
     form and redirect to Transactions HTML page.
     """
+    form = ProcessUploadedTransactionsForm()
+
     csvfilename = (
         session['transaction_csv_dir'] + '/' + session['transaction_csv_file'])
     transactions = []
@@ -380,20 +382,19 @@ def process_transactions():
         reader = csv.reader(csvfile, delimiter=',')
         for row in reader:
             transactions.append(row)
-    os.remove(csvfilename)
-    os.rmdir(session['transaction_csv_dir'])
+
     classify_cols_form = ClassifyTransactionColumnsForm()
-    classify_rows_form = ClassifyTransactionRowsForm()
-    form = ProcessUploadedTransactionsForm()
     for _ in range(0, len(transactions[0])):
         form.col_classifications.append_entry(classify_cols_form)
-    for _ in range(0, len(transactions)):
-        form.row_classifications.append_entry(classify_rows_form)
     for subform in form.col_classifications:
         subform.form.name.choices = [
             ('date', 'Date'), ('description', 'Description'),
             ('dr', 'Debit'), ('cr', 'Credit'), ('drcr', 'Debit/Credit'),
             ('delete', 'Delete')]
+
+    classify_rows_form = ClassifyTransactionRowsForm()
+    for _ in range(0, len(transactions)):
+        form.row_classifications.append_entry(classify_rows_form)
     categories = current_user.categories
     category_names = [
         (category.catname, category.catname) for category in categories]
@@ -406,6 +407,18 @@ def process_transactions():
         subform.form.category_name.choices = category_names
         subform.form.business_name.choices = business_names
         subform.form.action.choices = actions
+
+    if form.validate_on_submit():
+        if form.add.data:
+            pass
+        if form.cancel.data:
+            pass
+        os.remove(csvfilename)
+        os.rmdir(session['transaction_csv_dir'])
+        return redirect(url_for('.transactions_page'))
+
+    # form.process()  # Do this after validate_on_submit or breaks CSRF token
+
     return render_template(
         'process_transactions.html', form=form, transactions=transactions,
         num_transactions=len(transactions), menu="transactions")

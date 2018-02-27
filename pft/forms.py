@@ -154,3 +154,5 @@ class ProcessUploadedTransactionsForm(FlaskForm):
         FormField(ClassifyTransactionColumnsForm))
     row_classifications = FieldList(
         FormField(ClassifyTransactionRowsForm))
+    add = SubmitField('Add')
+    cancel = SubmitField('Cancel')

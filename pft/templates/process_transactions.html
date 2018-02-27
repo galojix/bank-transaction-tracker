@@ -10,6 +10,8 @@
   {{ form.hidden_tag() }}
   {{ wtf.form_errors(form, hiddens="only") }}
 
+  {{ wtf.form_field(form.add) }}
+  {{ wtf.form_field(form.cancel) }}
 
   <table class="table table-striped table-bordered table-hover table-responsive">
 
