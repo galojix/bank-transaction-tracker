@@ -368,6 +368,7 @@ def upload_transactions():
             session['uploaded_transactions'] = transactions
             os.remove(csvfilename)
             os.rmdir(temp_dir)
+            session['upload_account'] = form.account.data
 
         return redirect(url_for('.process_transactions'))
 
@@ -417,7 +418,41 @@ def process_transactions():
 
     if form.validate_on_submit():
         if form.add.data:
-            pass
+            # print(form.col_classifications.data)
+            # print(form.row_classifications.data)
+            if not classifications_valid(form.col_classifications.data):
+                flash('Invalid classifications, please try again.')
+                redirect(url_for('.process_transactions'))
+            for transno, transaction in enumerate(transactions):
+                action = form.row_classifications.data[transno]['action']
+                if action == 'Ignore':
+                    continue
+                amount = 0
+                date = ''
+                for fieldno, field in enumerate(transaction):
+                    classification = (
+                        form.col_classifications.data[fieldno]['name'])
+                    if classification == 'date':
+                        date = transaction[fieldno]
+                    elif classification == 'dr':
+                        print(transaction[fieldno])
+                        amount = abs(float(transaction[fieldno]) * 100)
+                    elif classification == 'cr':
+                        print(transaction[fieldno])
+                        amount = abs(float(transaction[fieldno]) * 100)
+                    elif classification == 'drcr':
+                        print(transaction[fieldno])
+                        amount = abs(float(transaction[fieldno]) * 100)
+                catname = (
+                    form.row_classifications.data[transno]['category_name'])
+                busname = (
+                    form.row_classifications.data[transno]['business_name'])
+                accname = session['upload_account']
+                print(catname, busname, accname)
+                # date = "2018-10-01T08:05"
+                current_user.add_transaction(
+                    amount=amount, date=date, busname=busname, catname=catname,
+                    accname=accname)
         if form.cancel.data:
             pass
         return redirect(url_for('.transactions_page'))
@@ -427,6 +462,11 @@ def process_transactions():
     return render_template(
         'process_transactions.html', form=form, transactions=transactions,
         num_transactions=len(transactions), menu="transactions")
+
+
+def classifications_valid(classifications):
+    """Check that a valid set of classifications has been specified."""
+    return True
 
 
 @web.route('/businesses')
