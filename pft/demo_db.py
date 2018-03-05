@@ -36,7 +36,8 @@ def create_db():
         user.add_category(catname=catname, cattype=cattype)
 
     # Create user's accounts
-    accounts = (("NAB", 50000), ("ANZ", 20000), ("Unknown", 0))
+    accounts = (("NAB", 50000), ("ANZ", 20000), ("St George", 500000),
+                ("Unknown", 0))
     for accname, balance in accounts:
         user.add_account(accname=accname, balance=balance)
 

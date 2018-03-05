@@ -305,7 +305,7 @@ def modify_transaction(transno):
     form.category_name.default = transaction.category.catname
     form.account_name.choices = account_names
     form.account_name.default = transaction.account.accname
-    form.amount.default = '{:,.2f}'.format(transaction.amount / 100)
+    form.amount.default = '{:.2f}'.format(transaction.amount / 100)
 
     if form.validate_on_submit():
         if form.modify.data:
@@ -432,6 +432,12 @@ def process_transactions():
                 for fieldno, field in enumerate(transaction):
                     classification = (
                         form.col_classifications.data[fieldno]['name'])
+                    if (
+                        transaction[fieldno].isspace()
+                        or transaction[fieldno] is None
+                        or not transaction[fieldno]
+                    ):
+                        continue
                     if classification == 'date':
                         date = transaction[fieldno]
                     elif classification == 'dr':
@@ -455,6 +461,7 @@ def process_transactions():
                     accname=accname)
         if form.cancel.data:
             pass
+        session['transactions'] = None
         return redirect(url_for('.transactions_page'))
 
     # form.process()  # Do this after validate_on_submit or breaks CSRF token
