@@ -18,7 +18,13 @@ def create_db():
         email="demo@demo.demo", name="Demo", password="demo", confirmed=True)
     # Create user's businesses
     businesses = ("Acme", "Wonka", "ABC Corp", "Bupa", "Coles", "Galojix",
-                  "Lowes", "Caltex", "Unknown")
+                  "Lowes", "Caltex", "Woolworths", "BankWest", "CBA",
+                  "St George", "ME Bank", "GP", "Pharmacy",
+                  "Yeronga State School", "Cavendish Road SHS", "Mechanic",
+                  "Dentist", "Kids", "State Govt", "Medicare", "Origin",
+                  "Urban Utilties", "Chess Mates", "Rise Tennis", "BCC",
+                  "Restaurant", "World Vision", "Red Cross", "Electrician",
+                  "Plumber", "Other Retailer", "Unknown")
     for business in businesses:
         user.add_business(busname=business)
 
@@ -28,6 +34,28 @@ def create_db():
                   ("Insurance", "Expense"),
                   ("Salary", "Income"),
                   ("Interest", "Income"),
+                  ("School", "Expense"),
+                  ("Bank Fees", "Expense"),
+                  ("Internet and Communications", "Expense"),
+                  ("Car", "Expense"),
+                  ("Kids Allowance", "Expense"),
+                  ("Medical Refund", "Income"),
+                  ("Medical Expense", "Expense"),
+                  ("Electricity", "Expense"),
+                  ("Sport", "Expense"),
+                  ("Water", "Expense"),
+                  ("Rates", "Expense"),
+                  ("Donations", "Expense"),
+                  ("Technology", "Expense"),
+                  ("Furniture", "Expense"),
+                  ("Personal Items", "Expense"),
+                  ("Consumables", "Expense"),
+                  ("Gifts", "Expense"),
+                  ("Eating Out", "Expense"),
+                  ("House Maintenance", "Expense"),
+                  ("House Improvements", "Expense"),
+                  ("Investments", "Expense"),
+                  ("Other Income", "Income"),
                   ("Unspecified Expense", "Expense"),
                   ("Unspecified Income", "Income"),
                   ("Transfer In", "Transfer In"),
@@ -36,45 +64,45 @@ def create_db():
         user.add_category(catname=catname, cattype=cattype)
 
     # Create user's accounts
-    accounts = (("NAB", 50000), ("ANZ", 20000), ("St George", 500000),
-                ("Unknown", 0))
+    accounts = (("NAB", 0), ("ANZ", 0), ("St George", 500000),
+                ("CBA", 0), ("BankWest", 0), ("ME Bank", 0), ("Unknown", 0))
     for accname, balance in accounts:
         user.add_account(accname=accname, balance=balance)
 
     # Create user's transactions
-    transactions = (
-        (7007, "2016-10-01T08:05", "Bupa", "Insurance", "NAB"),
-        (6007, "2016-10-02T08:06", "ABC Corp", "Entertainment", "NAB"),
-        (8008, "2016-10-03T08:07", "Bupa", "Insurance", "NAB"),
-        (700, "2016-10-04T08:15", "Coles", "Food", "ANZ"),
-        (75000, "2016-10-05T08:05", "Coles", "Food", "ANZ"),
-        (85000, "2016-10-06T08:25", "Wonka", "Salary", "ANZ"),
-        (7007, "2016-10-01T08:05", "Bupa", "Insurance", "NAB"),
-        (6007, "2016-10-02T08:06", "ABC Corp", "Entertainment", "NAB"),
-        (8008, "2016-10-03T08:07", "Bupa", "Insurance", "NAB"),
-        (700, "2016-10-04T08:15", "Coles", "Food", "ANZ"),
-        (75000, "2016-10-05T08:05", "Coles", "Food", "ANZ"),
-        (85000, "2016-10-06T08:25", "Wonka", "Salary", "ANZ"),
-        (7007, "2016-10-07T08:05", "Bupa", "Insurance", "NAB"),
-        (6007, "2016-10-08T08:06", "ABC Corp", "Entertainment", "NAB"),
-        (8008, "2016-10-09T08:07", "Bupa", "Insurance", "NAB"),
-        (700, "2016-10-10T08:15", "Coles", "Food", "ANZ"),
-        (75000, "2016-11-11T08:05", "Coles", "Food", "ANZ"),
-        (85000, "2016-10-12T08:25", "Acme", "Interest", "ANZ"),
-        (7007, "2016-10-13T08:05", "Bupa", "Insurance", "NAB"),
-        (6007, "2016-10-14T08:06", "ABC Corp", "Entertainment", "NAB"),
-        (8008, "2016-10-15T08:07", "Bupa", "Insurance", "NAB"),
-        (700, "2016-10-16T08:15", "Coles", "Food", "ANZ"),
-        (75000, "2016-10-17T08:05", "Coles", "Food", "ANZ"),
-        (85000, "2016-10-18T08:25", "Wonka", "Salary", "ANZ"),
-        (7007, "2016-10-19T08:05", "Bupa", "Insurance", "NAB"),
-        (10000, "2016-10-18T08:35", "Unknown", "Transfer Out", "ANZ"),
-        (10000, "2016-10-19T08:45", "Unknown", "Transfer In", "NAB"),
-        (6007, "2016-10-20T08:06", "ABC Corp", "Entertainment", "NAB"),
-        (8008, "2016-10-21T08:07", "Bupa", "Insurance", "NAB"),
-        (700, "2016-10-22T08:15", "Coles", "Food", "ANZ"),
-        (75000, "2016-10-23T08:05", "Coles", "Food", "ANZ"),
-        (85000, "2016-10-24T08:25", "Wonka", "Salary", "ANZ"))
+    transactions = ()
+    # (7007, "2016-10-01T08:05", "Bupa", "Insurance", "NAB"),
+    # (6007, "2016-10-02T08:06", "ABC Corp", "Entertainment", "NAB"),
+    # (8008, "2016-10-03T08:07", "Bupa", "Insurance", "NAB"),
+    # (700, "2016-10-04T08:15", "Coles", "Food", "ANZ"),
+    # (75000, "2016-10-05T08:05", "Coles", "Food", "ANZ"),
+    # (85000, "2016-10-06T08:25", "Wonka", "Salary", "ANZ"),
+    # (7007, "2016-10-01T08:05", "Bupa", "Insurance", "NAB"),
+    # (6007, "2016-10-02T08:06", "ABC Corp", "Entertainment", "NAB"),
+    # (8008, "2016-10-03T08:07", "Bupa", "Insurance", "NAB"),
+    # (700, "2016-10-04T08:15", "Coles", "Food", "ANZ"),
+    # (75000, "2016-10-05T08:05", "Coles", "Food", "ANZ"),
+    # (85000, "2016-10-06T08:25", "Wonka", "Salary", "ANZ"),
+    # (7007, "2016-10-07T08:05", "Bupa", "Insurance", "NAB"),
+    # (6007, "2016-10-08T08:06", "ABC Corp", "Entertainment", "NAB"),
+    # (8008, "2016-10-09T08:07", "Bupa", "Insurance", "NAB"),
+    # (700, "2016-10-10T08:15", "Coles", "Food", "ANZ"),
+    # (75000, "2016-11-11T08:05", "Coles", "Food", "ANZ"),
+    # (85000, "2016-10-12T08:25", "Acme", "Interest", "ANZ"),
+    # (7007, "2016-10-13T08:05", "Bupa", "Insurance", "NAB"),
+    # (6007, "2016-10-14T08:06", "ABC Corp", "Entertainment", "NAB"),
+    # (8008, "2016-10-15T08:07", "Bupa", "Insurance", "NAB"),
+    # (700, "2016-10-16T08:15", "Coles", "Food", "ANZ"),
+    # (75000, "2016-10-17T08:05", "Coles", "Food", "ANZ"),
+    # (85000, "2016-10-18T08:25", "Wonka", "Salary", "ANZ"),
+    # (7007, "2016-10-19T08:05", "Bupa", "Insurance", "NAB"),
+    # (10000, "2016-10-18T08:35", "Unknown", "Transfer Out", "ANZ"),
+    # (10000, "2016-10-19T08:45", "Unknown", "Transfer In", "NAB"),
+    # (6007, "2016-10-20T08:06", "ABC Corp", "Entertainment", "NAB"),
+    # (8008, "2016-10-21T08:07", "Bupa", "Insurance", "NAB"),
+    # (700, "2016-10-22T08:15", "Coles", "Food", "ANZ"),
+    # (75000, "2016-10-23T08:05", "Coles", "Food", "ANZ"),
+    # (85000, "2016-10-24T08:25", "Wonka", "Salary", "ANZ"))
     for amount, date, busname, catname, accname in transactions:
         user.add_transaction(
             amount=amount, date=date, busname=busname, catname=catname,
