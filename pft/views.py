@@ -160,7 +160,10 @@ def search_transactions():
     form = SearchTransactionsForm()
 
     # Form choices and defaults
-    form.start_date.default = current_user.transactions[0].date
+    if current_user.transactions:
+        form.start_date.default = current_user.transactions[0].date
+    else:
+        form.start_date.default = datetime.datetime.now()
     form.end_date.default = datetime.datetime.now()
     form.category_names.choices = [
         (category.catname, category.catname) for category in categories]
@@ -397,7 +400,8 @@ def process_transactions():
         subform.form.name.choices = [
             ('date', 'Date'), ('description', 'Description'),
             ('dr', 'Debit'), ('cr', 'Credit'), ('drcr', 'Debit/Credit'),
-            ('delete', 'Delete')]
+            ('ignore', 'Ignore')]
+        subform.form.name.default = 'date'
 
     classify_rows_form = ClassifyTransactionRowsForm()
     if request.method != 'POST':
@@ -413,8 +417,11 @@ def process_transactions():
         ('Keep', 'Keep'), ('Ignore', 'Ignore')]
     for subform in form.row_classifications:
         subform.form.category_name.choices = category_names
+        subform.form.category_name.default = 'Unspecified Expense'
         subform.form.business_name.choices = business_names
+        subform.form.business_name.default = 'Unknown'
         subform.form.action.choices = actions
+        subform.form.action.default = 'Keep'
 
     if form.validate_on_submit():
         if form.add.data:
@@ -464,6 +471,8 @@ def process_transactions():
         session['transactions'] = None
         return redirect(url_for('.transactions_page'))
 
+    for subform in form.row_classifications:
+        subform.form.process()
     # form.process()  # Do this after validate_on_submit or breaks CSRF token
 
     return render_template(
@@ -481,7 +490,9 @@ def classifications_valid(classifications):
 def businesses_page():
     """Return Businesses HTML page."""
     businesses = current_user.businesses
-    return render_template('businesses.html', businesses=businesses,
+    known_businesses = [
+        business for business in businesses if business.busname != 'Unknown']
+    return render_template('businesses.html', businesses=known_businesses,
                            menu="businesses")
 
 
