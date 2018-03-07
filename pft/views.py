@@ -2,13 +2,12 @@
 from flask import (
     render_template, url_for, redirect, session, Blueprint, flash, request)
 from flask_login import login_required, current_user
-from .database import Transaction, Account, Category, Business
+from .database import Transaction, Account, Category
 from .forms import (
     ModifyTransactionForm, AddTransactionForm, SearchTransactionsForm,
     UploadTransactionsForm, AddAccountForm, ModifyAccountForm,
-    ModifyCategoryForm, AddCategoryForm, AddBusinessForm, ModifyBusinessForm,
-    ProcessUploadedTransactionsForm, ClassifyTransactionColumnsForm,
-    ClassifyTransactionRowsForm)
+    ModifyCategoryForm, AddCategoryForm, ProcessUploadedTransactionsForm,
+    ClassifyTransactionColumnsForm, ClassifyTransactionRowsForm)
 from werkzeug import secure_filename
 from .database import db
 from .reports import graph
@@ -152,7 +151,6 @@ def search_transactions():
     Return a form for searching transactions or process submitted
     form and render Transactions HTML page.
     """
-    businesses = current_user.businesses
     categories = current_user.categories
     category_types = sorted({category.cattype for category in categories})
     accounts = current_user.accounts
@@ -172,9 +170,6 @@ def search_transactions():
         (category_type, category_type) for category_type in category_types]
     form.category_types.default = [
         category_type for category_type in category_types]
-    form.business_names.choices = [
-        (business.busname, business.busname) for business in businesses]
-    form.business_names.default = [business.busname for business in businesses]
     form.account_names.choices = [
         (account.accname, account.accname) for account in accounts]
     form.account_names.default = [account.accname for account in accounts]
@@ -188,7 +183,6 @@ def search_transactions():
             end_date = form.end_date.data
             category_names = form.category_names.data
             category_types = form.category_types.data
-            business_names = form.business_names.data
             account_names = form.account_names.data
             transactions = current_user.transactions
             selected_transactions = []
@@ -198,7 +192,6 @@ def search_transactions():
                     and transaction.date <= end_date
                     and transaction.category.catname in category_names
                     and transaction.category.cattype in category_types
-                    and transaction.business.busname in business_names
                     and transaction.account.accname in account_names
                 ):
                     selected_transactions.append(transaction)
@@ -225,12 +218,9 @@ def add_transaction():
     Return a form for adding a transaction or process submitted
     form and redirect to Transactions HTML page.
     """
-    businesses = current_user.businesses
     categories = current_user.categories
     accounts = current_user.accounts
 
-    business_names = [
-        (business.busname, business.busname) for business in businesses]
     category_names = [
         (category.catname, category.catname) for category in categories]
     account_names = [
@@ -238,8 +228,6 @@ def add_transaction():
 
     form = AddTransactionForm()
     form.date.default = datetime.datetime.now()
-    form.business_name.choices = business_names
-    form.business_name.default = business_names[0]
     form.category_name.choices = category_names
     form.category_name.default = category_names[0]
     form.account_name.choices = account_names
@@ -253,9 +241,6 @@ def add_transaction():
         transaction = Transaction(user=current_user)
         if form.add.data:
             transaction.date = form.date.data
-            for business in businesses:
-                if business.busname == form.business_name.data:
-                    transaction.business = business
             for category in categories:
                 if category.catname == form.category_name.data:
                     transaction.category = category
@@ -289,12 +274,9 @@ def modify_transaction(transno):
     """
     transaction = (
         Transaction.query.filter_by(user=current_user, transno=transno).one())
-    businesses = transaction.user.businesses
     categories = transaction.user.categories
     accounts = transaction.user.accounts
 
-    business_names = [
-        (business.busname, business.busname) for business in businesses]
     category_names = [
         (category.catname, category.catname) for category in categories]
     account_names = [
@@ -302,8 +284,6 @@ def modify_transaction(transno):
 
     form = ModifyTransactionForm()
     form.date.default = transaction.date
-    form.business_name.choices = business_names
-    form.business_name.default = transaction.business.busname
     form.category_name.choices = category_names
     form.category_name.default = transaction.category.catname
     form.account_name.choices = account_names
@@ -313,9 +293,6 @@ def modify_transaction(transno):
     if form.validate_on_submit():
         if form.modify.data:
             transaction.date = form.date.data
-            for business in businesses:
-                if business.busname == form.business_name.data:
-                    transaction.business = business
             for category in categories:
                 if category.catname == form.category_name.data:
                     transaction.category = category
@@ -410,16 +387,11 @@ def process_transactions():
     categories = current_user.categories
     category_names = [
         (category.catname, category.catname) for category in categories]
-    businesses = current_user.businesses
-    business_names = [
-        (business.busname, business.busname) for business in businesses]
     actions = [
         ('Keep', 'Keep'), ('Ignore', 'Ignore')]
     for subform in form.row_classifications:
         subform.form.category_name.choices = category_names
         subform.form.category_name.default = 'Unspecified Expense'
-        subform.form.business_name.choices = business_names
-        subform.form.business_name.default = 'Unknown'
         subform.form.action.choices = actions
         subform.form.action.default = 'Keep'
 
@@ -458,14 +430,9 @@ def process_transactions():
                         amount = abs(float(transaction[fieldno]) * 100)
                 catname = (
                     form.row_classifications.data[transno]['category_name'])
-                busname = (
-                    form.row_classifications.data[transno]['business_name'])
                 accname = session['upload_account']
-                print(catname, busname, accname)
-                # date = "2018-10-01T08:05"
                 current_user.add_transaction(
-                    amount=amount, date=date, busname=busname, catname=catname,
-                    accname=accname)
+                    amount=amount, date=date, catname=catname, accname=accname)
         if form.cancel.data:
             pass
         session['transactions'] = None
@@ -483,100 +450,6 @@ def process_transactions():
 def classifications_valid(classifications):
     """Check that a valid set of classifications has been specified."""
     return True
-
-
-@web.route('/businesses')
-@login_required
-def businesses_page():
-    """Return Businesses HTML page."""
-    businesses = current_user.businesses
-    known_businesses = [
-        business for business in businesses if business.busname != 'Unknown']
-    return render_template('businesses.html', businesses=known_businesses,
-                           menu="businesses")
-
-
-@web.route('/businesses/add', methods=['GET', 'POST'])
-@login_required
-def add_business():
-    """
-    Add a business.
-
-    Return a form for adding a business or process submitted
-    form and redirect to Businesses HTML page.
-    """
-    businesses = current_user.businesses
-
-    form = AddBusinessForm()
-    form.business_name.default = 'New Business'
-
-    if form.validate_on_submit():
-        if form.add.data:
-            for business in businesses:
-                if business.busname == form.business_name.data:
-                    flash('Business already exists.')
-                    return redirect(url_for('.add_business'))
-            business = Business()
-            business.busname = form.business_name.data
-            business.user = current_user
-            db.session.add(business)
-            db.session.commit()
-        elif form.cancel.data:
-            pass
-        return redirect(url_for('.businesses_page'))
-
-    form.process()  # Do this after validate_on_submit or breaks CSRF token
-
-    return render_template(
-        'add_business.html', form=form, menu="businesses")
-
-
-@web.route('/businesses/modify/<int:busno>/', methods=['GET', 'POST'])
-@login_required
-def modify_business(busno):
-    """
-    Modify or delete businesses.
-
-    Return a form for modifying businesses or process submitted
-    form and redirect to Businesses HTML page.
-    """
-    business = (
-        Business.query.filter_by(user=current_user, busno=busno).one())
-    businesses = current_user.businesses
-
-    form = ModifyBusinessForm()
-    form.business_name.default = business.busname
-
-    if form.validate_on_submit():
-        if form.modify.data:
-            for item in businesses:
-                if (
-                    item.busname == form.business_name.data and
-                    item.busname != form.business_name.default
-                ):
-                    flash('Another business already has this name.')
-                    return redirect(url_for('.modify_business', busno=busno))
-            business.busname = form.business_name.data
-            db.session.add(business)
-            db.session.commit()
-        elif form.delete.data:
-            for transaction in current_user.transactions:
-                if transaction.business == business:
-                    unknown_business = Business.query.filter_by(
-                        user=current_user, busname='Unknown').one()
-                    transaction.business = unknown_business
-                    db.session.add(transaction)
-                    db.session.commit()
-            db.session.delete(business)
-            db.session.commit()
-        elif form.cancel.data:
-            pass
-        return redirect(url_for('.businesses_page'))
-
-    form.process()  # Do this after validate_on_submit or breaks CSRF token
-
-    return render_template(
-        'modify_business.html', form=form, busno=busno, menu="businesses")
 
 
 @web.route('/categories')

@@ -27,6 +27,14 @@
                     </ul>
             </li>
 
+            <li {% if menu == "categories" %}class="active"{% endif %} class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Categories<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{url_for('web.categories_page')}}">Search/Modify</a></li>
+                        <li><a href="{{url_for('web.add_category')}}">Add</a></li>
+                    </ul>
+            </li>
+
             <li {% if menu == "transactions" %}class="active"{% endif %} class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">Transactions<span class="caret"></span></a>
                     <ul class="dropdown-menu">
@@ -36,30 +44,13 @@
                     </ul>
             </li>
 
-            <li {% if menu == "businesses" %}class="active"{% endif %} class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Businesses<span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="{{url_for('web.businesses_page')}}">Search/Modify</a></li>
-                        <li><a href="{{url_for('web.add_business')}}">Add</a></li>
-                    </ul>
-            </li>
-
-            <li {% if menu == "categories" %}class="active"{% endif %} class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Categories<span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="{{url_for('web.categories_page')}}">Search/Modify</a></li>
-                        <li><a href="{{url_for('web.add_category')}}">Add</a></li>
-                    </ul>
-            </li>
 
             <li {% if menu == "reports" %}class="active"{% endif %} class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">Reports
                     <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href="{{url_for('web.reports_page', report_name="Expenses by Category" )}}">Expenses by Category</a></li>
-                        <li><a href="{{url_for('web.reports_page', report_name="Expenses by Business" )}}">Expenses by Business</a></li>
                         <li><a href="{{url_for('web.reports_page', report_name="Income by Category" )}}">Income by Category</a></li>
-                        <li><a href="{{url_for('web.reports_page', report_name="Income by Business" )}}">Income by Business</a></li>
                         <li><a href="{{url_for('web.reports_page', report_name="Cash Flow" )}}">Cash Flow</a></li>
                         <li><a href="{{url_for('web.reports_page', report_name="Account Balances" )}}">Account Balances</a></li>
                     </ul>

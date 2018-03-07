@@ -20,7 +20,6 @@
       <th><div class="col-xs-12">{{ wtf.form_field(classification.form.name) }}</div></th>
   {% endfor %}
   <th>Category</th>
-  <th>Business</th>
   <th>Action</th>
   </tr>
 
@@ -32,7 +31,6 @@
       <td>{{ field }}</td>
       {% endfor %}
       <td><div class="col-xs-12">{{ wtf.form_field(form.row_classifications[transno].form.category_name)}}</div></td>
-      <td><div class="col-xs-12">{{ wtf.form_field(form.row_classifications[transno].form.business_name)}}</div></td>
       <td><div class="col-xs-12">{{ wtf.form_field(form.row_classifications[transno].form.action)}}</div></td>
   </tr>
 

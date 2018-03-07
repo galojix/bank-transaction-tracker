@@ -19,9 +19,6 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(64), nullable=False, unique=True, index=True)
     password_hash = db.Column(db.String(250), nullable=False)
     confirmed = db.Column(db.Boolean, default=False)
-    businesses = db.relationship(
-        "Business", order_by="Business.busname", back_populates="user",
-        cascade="all, delete-orphan")
     categories = db.relationship(
         "Category", order_by="Category.catname", back_populates="user",
         cascade="all, delete-orphan")
@@ -46,10 +43,6 @@ class User(UserMixin, db.Model):
         """Instance method that verifies password is correct."""
         return password_verified(password, self.password_hash)
 
-    def add_business(self, busname):
-        """Instance method that adds a business category."""
-        Business(busname=busname, user=self)
-
     def add_category(self, catname, cattype):
         """Instance method that adds a user category."""
         Category(catname=catname, cattype=cattype, user=self)
@@ -58,15 +51,14 @@ class User(UserMixin, db.Model):
         """Instance method that a user account."""
         Account(accname=accname, balance=balance, user=self)
 
-    def add_transaction(self, amount, date, busname, catname, accname):
+    def add_transaction(self, amount, date, catname, accname):
         """Instance method that adds a user transaction."""
         date = dateutil.parser.parse(date)
-        business = [b for b in self.businesses if b.busname == busname][0]
         category = [c for c in self.categories if c.catname == catname][0]
         account = [a for a in self.accounts if a.accname == accname][0]
         Transaction(
-            amount=amount, date=date, user=self, business=business,
-            category=category, account=account)
+            amount=amount, date=date, user=self, category=category,
+            account=account)
 
     def generate_confirmation_token(self, expiration=3600):
         """Generate confirmation token."""
@@ -135,22 +127,6 @@ class User(UserMixin, db.Model):
         return '<User:{num},{name}>'.format(num=self.id, name=self.email)
 
 
-class Business(db.Model):
-    """Class that instantiates a businesses table."""
-
-    __tablename__ = 'businesses'
-    busno = db.Column(db.Integer, primary_key=True)
-    busname = db.Column(db.String(250), nullable=False)
-    id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    user = db.relationship("User", back_populates="businesses")
-    transactions = db.relationship(
-        "Transaction", order_by="Transaction.date", back_populates="business")
-
-    def __repr__(self):
-        """Represent business as business number and name."""
-        return '<Bus:{num},{name}>'.format(num=self.busno, name=self.busname)
-
-
 class Category(db.Model):
     """Class that instantiates a categories table."""
 
@@ -192,9 +168,6 @@ class Transaction(db.Model):
     transno = db.Column(db.Integer, primary_key=True)
     amount = db.Column(db.Integer, nullable=False)
     date = db.Column(db.DateTime, nullable=False)
-    busno = db.Column(
-        db.Integer, db.ForeignKey('businesses.busno'), nullable=False)
-    business = db.relationship(Business, back_populates="transactions")
     catno = db.Column(
         db.Integer, db.ForeignKey('categories.catno'), nullable=False)
     category = db.relationship(Category, back_populates="transactions")

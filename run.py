@@ -2,7 +2,7 @@
 from flask_script import Manager, Shell
 import os
 from pft import create_app
-from pft.database import db, User, Business, Category, Account, Transaction
+from pft.database import db, User, Category, Account, Transaction
 from pft.demo_db import create_db
 import unittest
 
@@ -13,8 +13,8 @@ manager = Manager(app)
 
 def make_shell_context():
     """Create a shell context so that can use REPL."""
-    return dict(app=app, db=db, User=User, Business=Business,
-                Category=Category, Account=Account, Transaction=Transaction)
+    return dict(app=app, db=db, User=User, Category=Category, Account=Account,
+                Transaction=Transaction)
 
 
 manager.add_command("shell", Shell(make_context=make_shell_context))

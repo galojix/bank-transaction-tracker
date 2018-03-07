@@ -11,7 +11,6 @@
         <th>Date</th>
         <th>Category</th>
         <th>Type</th>
-        <th>Business</th>
         <th>Account</th>
         <th class="text-center">Amount</th>
         <th>Action</th>
@@ -23,7 +22,6 @@
        <td>{{transaction.date}}</td>
        <td>{{transaction.category.catname}}</td>
        <td>{{transaction.category.cattype}}</td>
-       <td>{{transaction.business.busname}}</td>
        <td>{{transaction.account.accname}}</td>
        <td class="text-right">{{'{:,.2f}'.format(transaction.amount / 100.0)}}</td>
        <td><a href="{{url_for('.modify_transaction', transno=transaction.transno)}}">Modify</a></td>

@@ -4,7 +4,7 @@ from bokeh.embed import components
 from bokeh.models import DatetimeTickFormatter, ColumnDataSource
 from flask_login import current_user
 from .database import db
-from .database import Transaction, Category, Business, Account
+from .database import Transaction, Category, Account
 from sqlalchemy.sql import func
 from collections import OrderedDict
 from numpy import pi
@@ -14,12 +14,8 @@ def graph(report_name):
     """Report graph."""
     if report_name == "Expenses by Category":
         graph = ExpensesByCategoryPieGraph()
-    elif report_name == "Expenses by Business":
-        graph = ExpensesByBusinessPieGraph()
     elif report_name == "Income by Category":
         graph = IncomeByCategoryPieGraph()
-    elif report_name == "Income by Business":
-        graph = IncomeByBusinessPieGraph()
     elif report_name == "Cash Flow":
         graph = CashFlowLineGraph()
     elif report_name == "Account Balances":
@@ -81,23 +77,6 @@ class ExpensesByCategoryPieGraph(PieGraph):
             .all())
 
 
-class ExpensesByBusinessPieGraph(PieGraph):
-    """Expenses by business pie graph."""
-
-    def __init__(self):
-        """Perform database query."""
-        super().__init__()
-        self.data = (
-            db.session.query(Business.busname, func.sum(Transaction.amount))
-            .filter(Transaction.id == current_user.id)
-            .filter(Transaction.busno == Business.busno)
-            .filter(Transaction.catno == Category.catno)
-            .filter(Category.cattype == 'Expense')
-            .group_by(Business.busname)
-            .order_by(func.sum(Transaction.amount))
-            .all())
-
-
 class IncomeByCategoryPieGraph(PieGraph):
     """Income by category pie graph."""
 
@@ -110,23 +89,6 @@ class IncomeByCategoryPieGraph(PieGraph):
             .filter(Transaction.catno == Category.catno)
             .filter(Category.cattype == 'Income')
             .group_by(Category.catname)
-            .order_by(func.sum(Transaction.amount))
-            .all())
-
-
-class IncomeByBusinessPieGraph(PieGraph):
-    """Income by business pie graph."""
-
-    def __init__(self):
-        """Perform database query."""
-        super().__init__()
-        self.data = (
-            db.session.query(Business.busname, func.sum(Transaction.amount))
-            .filter(Transaction.id == current_user.id)
-            .filter(Transaction.busno == Business.busno)
-            .filter(Transaction.catno == Category.catno)
-            .filter(Category.cattype == 'Income')
-            .group_by(Business.busname)
             .order_by(func.sum(Transaction.amount))
             .all())
 

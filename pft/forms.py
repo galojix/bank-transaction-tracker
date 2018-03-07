@@ -15,7 +15,6 @@ class ModifyTransactionForm(FlaskForm):
 
     date = DateTimeLocalField(
         'Date:', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
-    business_name = SelectField('Business Name:', validators=[DataRequired()])
     category_name = SelectField('Category Name:', validators=[DataRequired()])
     account_name = SelectField('Account Name:', validators=[DataRequired()])
     amount = FloatField('Amount:', validators=[InputRequired()])
@@ -29,7 +28,6 @@ class AddTransactionForm(FlaskForm):
 
     date = DateTimeLocalField(
         'Date:', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
-    business_name = SelectField('Business Name:', validators=[DataRequired()])
     category_name = SelectField('Category Name:', validators=[DataRequired()])
     account_name = SelectField('Account Name:', validators=[DataRequired()])
     amount = FloatField('Amount:', validators=[InputRequired()])
@@ -60,8 +58,6 @@ class SearchTransactionsForm(FlaskForm):
         'Category Names:', validators=[DataRequired()])
     category_types = MultiCheckboxField(
         'Category Types:', validators=[DataRequired()])
-    business_names = MultiCheckboxField(
-        'Business Names:', validators=[DataRequired()])
     account_names = MultiCheckboxField(
         'Account Names:', validators=[DataRequired()])
     search = SubmitField('Search')
@@ -116,23 +112,6 @@ class ModifyCategoryForm(FlaskForm):
     cancel = SubmitField('Cancel')
 
 
-class AddBusinessForm(FlaskForm):
-    """Add business form."""
-
-    business_name = TextField('Business Name:', validators=[DataRequired()])
-    add = SubmitField('Add')
-    cancel = SubmitField('Cancel')
-
-
-class ModifyBusinessForm(FlaskForm):
-    """Modify business form."""
-
-    business_name = TextField('Business Name:', validators=[DataRequired()])
-    modify = SubmitField('Modify')
-    delete = SubmitField('Delete')
-    cancel = SubmitField('Cancel')
-
-
 class ClassifyTransactionColumnsForm(Form):
     """Classify transaction columns form."""
 
@@ -144,7 +123,6 @@ class ClassifyTransactionRowsForm(Form):
     """Classify transaction rows form."""
 
     category_name = SelectField('', validators=[DataRequired()])
-    business_name = SelectField('', validators=[DataRequired()])
     action = SelectField('', validators=[DataRequired()])
 
 
