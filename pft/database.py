@@ -51,14 +51,14 @@ class User(UserMixin, db.Model):
         """Instance method that a user account."""
         Account(accname=accname, balance=balance, user=self)
 
-    def add_transaction(self, amount, date, catname, accname):
+    def add_transaction(self, amount, date, description, catname, accname):
         """Instance method that adds a user transaction."""
         date = dateutil.parser.parse(date)
         category = [c for c in self.categories if c.catname == catname][0]
         account = [a for a in self.accounts if a.accname == accname][0]
         Transaction(
             amount=amount, date=date, user=self, category=category,
-            account=account)
+            description=description, account=account)
 
     def generate_confirmation_token(self, expiration=3600):
         """Generate confirmation token."""
@@ -168,6 +168,7 @@ class Transaction(db.Model):
     transno = db.Column(db.Integer, primary_key=True)
     amount = db.Column(db.Integer, nullable=False)
     date = db.Column(db.DateTime, nullable=False)
+    description = db.Column(db.String(250))
     catno = db.Column(
         db.Integer, db.ForeignKey('categories.catno'), nullable=False)
     category = db.relationship(Category, back_populates="transactions")

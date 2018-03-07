@@ -95,7 +95,8 @@ def create_db():
     # (85000, "2016-10-24T08:25", "Salary", "ANZ"))
     for amount, date, catname, accname in transactions:
         user.add_transaction(
-            amount=amount, date=date, catname=catname, accname=accname)
+            amount=amount, date=date, description='Unknown', catname=catname,
+            accname=accname)
 
     db.session.add(user)
     db.session.commit()
@@ -125,7 +126,8 @@ def create_db():
         (9007, "2016-10-01T08:06", "Entertainment", "NAB"))
     for amount, date, catname, accname in transactions:
         user.add_transaction(
-            amount=amount, date=date, catname=catname, accname=accname)
+            amount=amount, date=date, description='Unknown', catname=catname,
+            accname=accname)
 
     db.session.add(user)
     db.session.commit()

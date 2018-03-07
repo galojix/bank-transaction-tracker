@@ -15,6 +15,7 @@ class ModifyTransactionForm(FlaskForm):
 
     date = DateTimeLocalField(
         'Date:', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
+    description = TextField('Description:', validators=[DataRequired()])
     category_name = SelectField('Category Name:', validators=[DataRequired()])
     account_name = SelectField('Account Name:', validators=[DataRequired()])
     amount = FloatField('Amount:', validators=[InputRequired()])
@@ -28,6 +29,7 @@ class AddTransactionForm(FlaskForm):
 
     date = DateTimeLocalField(
         'Date:', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
+    description = TextField('Description:', validators=[DataRequired()])
     category_name = SelectField('Category Name:', validators=[DataRequired()])
     account_name = SelectField('Account Name:', validators=[DataRequired()])
     amount = FloatField('Amount:', validators=[InputRequired()])

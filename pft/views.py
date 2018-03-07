@@ -228,6 +228,7 @@ def add_transaction():
 
     form = AddTransactionForm()
     form.date.default = datetime.datetime.now()
+    form.description.default = ''
     form.category_name.choices = category_names
     form.category_name.default = category_names[0]
     form.account_name.choices = account_names
@@ -248,6 +249,7 @@ def add_transaction():
                 if account.accname == form.account_name.data:
                     transaction.account = account
             transaction.amount = form.amount.data * 100
+            transaction.description = form.description.data
             db.session.add(transaction)
             db.session.commit()
         elif form.cancel.data:
@@ -284,6 +286,7 @@ def modify_transaction(transno):
 
     form = ModifyTransactionForm()
     form.date.default = transaction.date
+    form.description.default = transaction.description
     form.category_name.choices = category_names
     form.category_name.default = transaction.category.catname
     form.account_name.choices = account_names
@@ -300,6 +303,7 @@ def modify_transaction(transno):
                 if account.accname == form.account_name.data:
                     transaction.account = account
             transaction.amount = form.amount.data * 100
+            transaction.description = form.description.data
             db.session.add(transaction)
             db.session.commit()
         elif form.delete.data:
@@ -408,6 +412,7 @@ def process_transactions():
                     continue
                 amount = 0
                 date = ''
+                description = ''
                 for fieldno, field in enumerate(transaction):
                     classification = (
                         form.col_classifications.data[fieldno]['name'])
@@ -419,6 +424,8 @@ def process_transactions():
                         continue
                     if classification == 'date':
                         date = transaction[fieldno]
+                    elif classification == 'description':
+                        description = transaction[fieldno]
                     elif classification == 'dr':
                         print(transaction[fieldno])
                         amount = abs(float(transaction[fieldno]) * 100)
@@ -432,7 +439,8 @@ def process_transactions():
                     form.row_classifications.data[transno]['category_name'])
                 accname = session['upload_account']
                 current_user.add_transaction(
-                    amount=amount, date=date, catname=catname, accname=accname)
+                    amount=amount, date=date, catname=catname, accname=accname,
+                    description=description)
         if form.cancel.data:
             pass
         session['transactions'] = None
