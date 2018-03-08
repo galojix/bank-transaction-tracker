@@ -1,7 +1,8 @@
 """Module that generates report graphs."""
 from bokeh.plotting import figure
 from bokeh.embed import components
-from bokeh.models import DatetimeTickFormatter, ColumnDataSource
+from bokeh.models import DatetimeTickFormatter, ColumnDataSource, Legend
+from bokeh.palettes import Plasma256, linear_palette
 from flask_login import current_user
 from .database import db
 from .database import Transaction, Category, Account
@@ -45,7 +46,11 @@ class PieGraph():
         totals = [value / max_value for value in totals]
         start_angles = [2 * pi * value for value in totals[:-1]]
         end_angles = [2 * pi * value for value in totals[1:]]
-        colors = ["red", "green", "blue", "orange", "yellow"]
+        num_colors = len(labels)
+        if num_colors <= 256:
+            colors = linear_palette(Plasma256, num_colors)
+        else:
+            colors = linear_palette(Plasma256, 256) * int(num_colors / 256 + 1)
         pie_chart = figure(x_range=(-1, 1), y_range=(-1, 1), logo=None)
         pie_chart.xaxis.visible = False
         pie_chart.yaxis.visible = False
@@ -115,22 +120,27 @@ class LineGraph():
         DATE_TIME_FORMAT = {
             'days': ['%d/%m/%y'], 'months': ['%m/%Y']}
         plot.xaxis.formatter = DatetimeTickFormatter(**DATE_TIME_FORMAT)
+        num_colors = len(self.data)
+        if num_colors > 256:
+            num_colors = 256
+        colors = linear_palette(Plasma256, len(self.data))
+        items = []
         if self.data:
-            for num, item in enumerate(self.data.keys()):
-                dates = self.data[item][0]
-                amounts = self.data[item][1]
-                plot.line(
-                    dates, amounts, legend=item,
-                    line_color=self.get_next_color(num), line_width=2)
+            for num, label in enumerate(self.data.keys()):
+                dates = self.data[label][0]
+                amounts = self.data[label][1]
+                num = num % num_colors  # Start colors again if all used
+                line = plot.line(
+                    dates, amounts, line_color=colors[num], line_width=2)
+                items.append((label, [line]))
         plot.sizing_mode = 'scale_width'
+
+        legend = Legend(items=items, location=(0, 0))
+
+        plot.add_layout(legend, 'below')
+
         script, div = components(plot)
         return script, div
-
-    def get_next_color(self, num):
-        """Generate the next color."""
-        colors = {0: 'green', 1: 'blue', 2: 'orange'}
-        num = num % 3
-        return colors[num]
 
 
 class AccountBalancesLineGraph(LineGraph):
