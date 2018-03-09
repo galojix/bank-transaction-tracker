@@ -184,7 +184,7 @@ class AccountBalancesLineGraph(LineGraph):
             dates = []
             amounts = []
             for date, amount, cattype in transactions:
-                if cattype == 'Expense':
+                if cattype == 'Expense' or cattype == 'Transfer Out':
                     balance -= amount / 100.0
                 else:
                     balance += amount / 100.0
@@ -213,7 +213,7 @@ class CashFlowLineGraph(LineGraph):
         dates = []
         amounts = []
         for date, amount, cattype in transactions:
-            if cattype == 'Expense':
+            if cattype == 'Expense' or cattype == 'Transfer Out':
                 balance -= amount / 100.0
             else:
                 balance += amount / 100.0
