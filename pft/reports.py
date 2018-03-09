@@ -1,7 +1,7 @@
 """Module that generates report graphs."""
 from bokeh.plotting import figure
 from bokeh.embed import components
-from bokeh.models import DatetimeTickFormatter, ColumnDataSource, Legend
+from bokeh.models import DatetimeTickFormatter, Legend
 from bokeh.palettes import Plasma256, linear_palette
 from flask_login import current_user
 from .database import db
@@ -51,17 +51,22 @@ class PieGraph():
             colors = linear_palette(Plasma256, num_colors)
         else:
             colors = linear_palette(Plasma256, 256) * int(num_colors / 256 + 1)
-        pie_chart = figure(x_range=(-1, 1), y_range=(-1, 1), logo=None)
+        pie_chart = figure(
+            x_range=(-1, 1), y_range=(-1, 1), plot_width=600, plot_height=800,
+            logo=None)
         pie_chart.xaxis.visible = False
         pie_chart.yaxis.visible = False
-        source_dict = dict(
-            start_angles=start_angles, end_angles=end_angles, labels=labels,
-            colors=colors, amounts=totals)
-        source = ColumnDataSource(source_dict)
-        pie_chart.wedge(
-            x=0, y=0, radius=0.75, start_angle='start_angles',
-            end_angle='end_angles', color='colors', legend='labels',
-            source=source)
+
+        legend_items = []
+        for num, label in enumerate(labels):
+            wedge = pie_chart.wedge(
+                x=0, y=0, radius=0.75, start_angle=start_angles[num],
+                end_angle=end_angles[num], color=colors[num])
+            legend_items.append((label, [wedge]))
+
+        legend = Legend(items=legend_items, location=(0, 0))
+        pie_chart.add_layout(legend, 'below')
+
         script, div = components(pie_chart)
         return script, div
 
