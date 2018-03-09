@@ -98,7 +98,7 @@ class ModifyAccountForm(FlaskForm):
 class AddCategoryForm(FlaskForm):
     """Add category form."""
 
-    category_name = TextField('Account Name:', validators=[DataRequired()])
+    category_name = TextField('Category Name:', validators=[DataRequired()])
     category_type = SelectField('Category Type:', validators=[DataRequired()])
     add = SubmitField('Add')
     cancel = SubmitField('Cancel')

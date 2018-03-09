@@ -59,7 +59,7 @@ class PieGraph():
         else:
             colors = linear_palette(Plasma256, 256) * int(num_colors / 256 + 1)
         pie_chart = figure(
-            x_range=(-1, 1), y_range=(-1, 1), plot_width=600, plot_height=800,
+            x_range=(-1, 1), y_range=(-1, 1), plot_width=800, plot_height=600,
             logo=None)
         pie_chart.xaxis.visible = False
         pie_chart.yaxis.visible = False
@@ -73,7 +73,7 @@ class PieGraph():
             legend_items.append((label + percent, [wedge]))
 
         legend = Legend(items=legend_items, location=(0, 0))
-        pie_chart.add_layout(legend, 'below')
+        pie_chart.add_layout(legend, 'right')
 
         script, div = components(pie_chart)
         return script, div
