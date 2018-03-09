@@ -34,18 +34,25 @@ class PieGraph():
     def get_html(self):
         """Get HTML components."""
         if self.data:
-            totals = [0]
+            amounts = [0]
             labels = []
             for row in self.data:
                 labels.append(row[0])
-                totals.append(row[1])
+                amounts.append(row[1])
         else:
             labels = ["No Data"]
-            totals = [0, 100]
-        max_value = max(totals)
-        totals = [value / max_value for value in totals]
-        start_angles = [2 * pi * value for value in totals[:-1]]
-        end_angles = [2 * pi * value for value in totals[1:]]
+            amounts = [0, 100]
+        total = sum(amounts)
+        amounts = [value / total for value in amounts]
+        running_totals = []
+        running_totals.append(amounts[0])
+        running_totals.append(amounts[1])
+        for num, value in enumerate(amounts):
+            if num == 0 or num == 1:
+                continue
+            running_totals.append(sum(amounts[0:num + 1]))
+        start_angles = [2 * pi * value for value in running_totals[:-1]]
+        end_angles = [2 * pi * value for value in running_totals[1:]]
         num_colors = len(labels)
         if num_colors <= 256:
             colors = linear_palette(Plasma256, num_colors)
@@ -62,7 +69,8 @@ class PieGraph():
             wedge = pie_chart.wedge(
                 x=0, y=0, radius=0.75, start_angle=start_angles[num],
                 end_angle=end_angles[num], color=colors[num])
-            legend_items.append((label, [wedge]))
+            percent = ' ' + str(round(amounts[num+1] * 100, 1)) + '%'
+            legend_items.append((label + percent, [wedge]))
 
         legend = Legend(items=legend_items, location=(0, 0))
         pie_chart.add_layout(legend, 'below')
