@@ -67,12 +67,12 @@ class PieGraph():
         legend_items = []
         for num, label in enumerate(labels):
             wedge = pie_chart.wedge(
-                x=0, y=0, radius=0.75, start_angle=start_angles[num],
+                x=0, y=0, radius=1, start_angle=start_angles[num],
                 end_angle=end_angles[num], color=colors[num])
             percent = ' ' + str(round(amounts[num+1] * 100, 1)) + '%'
             legend_items.append((label + percent, [wedge]))
 
-        legend = Legend(items=legend_items, location=(0, 0))
+        legend = Legend(items=legend_items[::-1], location=(0, 0))
         pie_chart.add_layout(legend, 'right')
 
         script, div = components(pie_chart)
