@@ -2,7 +2,7 @@
 from bokeh.plotting import figure
 from bokeh.embed import components
 from bokeh.models import DatetimeTickFormatter, Legend
-from bokeh.palettes import Plasma256, linear_palette
+from bokeh.palettes import Plasma256, linear_palette, Category20, Category20b
 from flask_login import current_user
 from .database import db
 from .database import Transaction, Category, Account
@@ -54,10 +54,7 @@ class PieGraph():
         start_angles = [2 * pi * value for value in running_totals[:-1]]
         end_angles = [2 * pi * value for value in running_totals[1:]]
         num_colors = len(labels)
-        if num_colors <= 256:
-            colors = linear_palette(Plasma256, num_colors)
-        else:
-            colors = linear_palette(Plasma256, 256) * int(num_colors / 256 + 1)
+        colors = (Category20[20] + Category20b[20]) * int(num_colors / 20 + 1)
         pie_chart = figure(
             x_range=(-1, 1), y_range=(-1, 1), plot_width=800, plot_height=600,
             logo=None)
