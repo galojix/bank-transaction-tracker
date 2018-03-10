@@ -55,7 +55,7 @@ def modify_account(accno):
 
     form = ModifyAccountForm()
     form.account_name.default = account.accname
-    form.initial_balance.default = '{:,.2f}'.format(account.balance / 100)
+    form.initial_balance.default = '{:.2f}'.format(account.balance / 100)
 
     if form.validate_on_submit():
         if form.modify.data:
@@ -113,7 +113,7 @@ def add_account():
                     return redirect(url_for('.add_account'))
             account = Account()
             account.accname = form.account_name.data
-            account.balance = form.initial_balance.data
+            account.balance = form.initial_balance.data * 100
             account.user = current_user
             db.session.add(account)
             db.session.commit()
@@ -233,7 +233,7 @@ def add_transaction():
     form.category_name.default = category_names[0]
     form.account_name.choices = account_names
     form.account_name.default = account_names[0]
-    form.amount.default = '{:,.2f}'.format(0)
+    form.amount.default = '{:.2f}'.format(0)
 
     if form.validate_on_submit():
         # This must go here or else before_app_request will try to commit
