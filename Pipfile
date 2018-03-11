@@ -7,16 +7,16 @@ name = "pypi"
 
 [packages]
 
-flask = "*"
+Flask = "*"
 bokeh = "*"
-flask-script = "*"
-flask-bootstrap = "*"
-flask-moment = "*"
-flask-login = "*"
+Flask-Script = "*"
+Flask-Bootstrap = "*"
+Flask-Moment = "*"
+Flask-Login = "*"
 passlib = "*"
-flask-wtf = "*"
-flask-mail = "*"
-flask-session = "*"
+Flask-WTF = "*"
+Flask-Mail = "*"
+Flask-Session = "*"
 
 
 [dev-packages]
