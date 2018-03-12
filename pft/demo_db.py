@@ -19,15 +19,17 @@ def create_db():
 
     # Create user's categories
     categories = (("Food", "Expense"),
+                  ("Alcohol", "Expense"),
                   ("Entertainment", "Expense"),
                   ("Insurance", "Expense"),
                   ("Salary", "Income"),
                   ("Interest", "Income"),
                   ("School", "Expense"),
                   ("Bank Fees", "Expense"),
-                  ("Internet and Communications", "Expense"),
+                  ("Holidays", "Expense"),
+                  ("Communications", "Expense"),
                   ("Car", "Expense"),
-                  ("Kids Allowance", "Expense"),
+                  ("Kids", "Expense"),
                   ("Medical Refund", "Income"),
                   ("Medical Expense", "Expense"),
                   ("Electricity", "Expense"),
@@ -38,7 +40,7 @@ def create_db():
                   ("Technology", "Expense"),
                   ("Furniture", "Expense"),
                   ("Personal Items", "Expense"),
-                  ("Consumables", "Expense"),
+                  ("Shopping", "Expense"),
                   ("Gifts", "Expense"),
                   ("Eating Out", "Expense"),
                   ("House Maintenance", "Expense"),
@@ -46,10 +48,13 @@ def create_db():
                   ("Investments", "Expense"),
                   ("Other Income", "Income"),
                   ("Cash Withdrawal", "Expense"),
+                  ("Public Transport", "Expense"),
+                  ("Pets", "Expense"),
                   ("Unspecified Expense", "Expense"),
                   ("Unspecified Income", "Income"),
                   ("Transfer In", "Transfer In"),
-                  ("Transfer Out", "Transfer Out"))
+                  ("Transfer Out", "Transfer Out"),
+                  ("Work", "Expense"),)
     for catname, cattype in categories:
         user.add_category(catname=catname, cattype=cattype)
 
