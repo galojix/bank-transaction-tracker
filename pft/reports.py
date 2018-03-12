@@ -9,6 +9,7 @@ from .database import Transaction, Category, Account
 from sqlalchemy.sql import func
 from collections import OrderedDict
 from numpy import pi
+import datetime
 
 
 def graph(report_name):
@@ -187,7 +188,11 @@ class AccountBalancesLineGraph(LineGraph):
                     balance += amount / 100.0
                 dates.append(date)
                 amounts.append(balance)
-            self.data[accname] = [dates, amounts]
+            if dates:
+                dates.append(datetime.datetime.now())
+                current_balance = amounts[-1]
+                amounts.append(current_balance)
+                self.data[accname] = [dates, amounts]
 
 
 class CashFlowLineGraph(LineGraph):
@@ -216,4 +221,8 @@ class CashFlowLineGraph(LineGraph):
                 balance += amount / 100.0
             dates.append(date)
             amounts.append(balance)
+        if dates:
+            dates.append(datetime.datetime.now())
+            current_balance = amounts[-1]
+            amounts.append(current_balance)
         self.data['Net Total'] = [dates, amounts]
