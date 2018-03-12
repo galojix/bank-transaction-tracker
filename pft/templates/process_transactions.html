@@ -10,8 +10,11 @@
   {{ form.hidden_tag() }}
   {{ wtf.form_errors(form, hiddens="only") }}
 
+  <div class="col-md-12">
   {{ wtf.form_field(form.add) }}
   {{ wtf.form_field(form.cancel) }}
+  {{ wtf.form_field(form.date_format) }}
+  </div>
 
   <table class="table table-striped table-bordered table-hover table-responsive">
 

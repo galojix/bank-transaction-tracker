@@ -51,9 +51,11 @@ class User(UserMixin, db.Model):
         """Instance method that a user account."""
         Account(accname=accname, balance=balance, user=self)
 
-    def add_transaction(self, amount, date, description, catname, accname):
+    def add_transaction(self, amount, date, description, catname, accname,
+                        dayfirst=True, yearfirst=False):
         """Instance method that adds a user transaction."""
-        date = dateutil.parser.parse(date)
+        date = dateutil.parser.parse(
+            date, dayfirst=dayfirst, yearfirst=yearfirst)
         category = [c for c in self.categories if c.catname == catname][0]
         account = [a for a in self.accounts if a.accname == accname][0]
         Transaction(

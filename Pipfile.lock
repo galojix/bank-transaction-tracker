@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a7b76e357b691e064a4ee01edb5062c4e754c88175814a8aea73f00f980b50d9"
+            "sha256": "200f0f830a1cb00463654b1eea0a5c486393e05df56a6a9c7655961a1eb66803"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -154,6 +154,12 @@
             ],
             "version": "==1.7.1"
         },
+        "py-dateutil": {
+            "hashes": [
+                "sha256:7efa2ca17159c590408cb624de9aa10d360f14097cb70dd7559e632f2cf4b048"
+            ],
+            "version": "==2.2"
+        },
         "pyparsing": {
             "hashes": [
                 "sha256:0832bcf47acd283788593e7a0f542407bd9550a55a8a8435214a1960e04bcb04",
@@ -168,10 +174,10 @@
         },
         "python-dateutil": {
             "hashes": [
-                "sha256:891c38b2a02f5bb1be3e4793866c8df49c7d19baabf9c1bad62547e0b4866aca",
-                "sha256:95511bae634d69bc7329ba55e646499a842bc4ec342ad54a8cdb65645a0aad3c"
+                "sha256:07009062406cffd554a9b4135cd2ff167c9bf6b7aac61fe946c93e69fad1bbd8",
+                "sha256:8f95bb7e6edbb2456a51a1fb58c8dca942024b4f5844cae62c90aa88afe6e300"
             ],
-            "version": "==2.6.1"
+            "version": "==2.7.0"
         },
         "pyyaml": {
             "hashes": [

@@ -54,8 +54,14 @@ def create_db():
         user.add_category(catname=catname, cattype=cattype)
 
     # Create user's accounts
-    accounts = (("NAB", 0), ("ANZ", 0), ("St George", 500000),
-                ("CBA", 0), ("BankWest", 0), ("ME Bank", 0), ("Unknown", 0))
+    accounts = (
+        ("St George Term Deposit", 25000000),
+        ("St George Transaction", 500000),
+        ("CBA Credit Card", 0),
+        ("BankWest Credit Card", 0),
+        ("BankWest Term Deposit", 25000000),
+        ("ME Bank Term Deposit", 25000000),
+        ("Unknown", 0))
     for accname, balance in accounts:
         user.add_account(accname=accname, balance=balance)
 

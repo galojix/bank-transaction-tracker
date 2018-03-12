@@ -137,3 +137,4 @@ class ProcessUploadedTransactionsForm(FlaskForm):
         FormField(ClassifyTransactionRowsForm))
     add = SubmitField('Add')
     cancel = SubmitField('Cancel')
+    date_format = SelectField('Date Format:', validators=[DataRequired()])

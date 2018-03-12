@@ -370,6 +370,9 @@ def process_transactions():
     form and redirect to Transactions HTML page.
     """
     form = ProcessUploadedTransactionsForm()
+    form.date_format.choices = [
+        ('DMY', 'DD/MM/YY'), ('MDY', 'MM/DD/YY'),
+        ('YMD', 'YY/MM/DD'), ('YDM', 'YY/DD/MM')]
 
     transactions = session['uploaded_transactions']
 
@@ -438,9 +441,26 @@ def process_transactions():
                 catname = (
                     form.row_classifications.data[transno]['category_name'])
                 accname = session['upload_account']
-                current_user.add_transaction(
-                    amount=amount, date=date, catname=catname, accname=accname,
-                    description=description)
+                if form.date_format.data == 'DMY':
+                    current_user.add_transaction(
+                        amount=amount, date=date, catname=catname,
+                        accname=accname, description=description)
+                elif form.date_format.data == 'MDY':
+                    current_user.add_transaction(
+                        amount=amount, date=date, catname=catname,
+                        accname=accname, description=description,
+                        dayfirst=False)
+                elif form.date_format.data == 'YMD':
+                    current_user.add_transaction(
+                        amount=amount, date=date, catname=catname,
+                        accname=accname, description=description,
+                        dayfirst=False, yearfirst=True)
+                elif form.date_format.data == 'YDM':
+                    current_user.add_transaction(
+                        amount=amount, date=date, catname=catname,
+                        accname=accname, description=description,
+                        yearfirst=True)
+
         if form.cancel.data:
             pass
         session['transactions'] = None
