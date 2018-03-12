@@ -430,13 +430,10 @@ def process_transactions():
                     elif classification == 'description':
                         description = transaction[fieldno]
                     elif classification == 'dr':
-                        print(transaction[fieldno])
                         amount = abs(float(transaction[fieldno]) * 100)
                     elif classification == 'cr':
-                        print(transaction[fieldno])
                         amount = abs(float(transaction[fieldno]) * 100)
                     elif classification == 'drcr':
-                        print(transaction[fieldno])
                         amount = abs(float(transaction[fieldno]) * 100)
                 catname = (
                     form.row_classifications.data[transno]['category_name'])
