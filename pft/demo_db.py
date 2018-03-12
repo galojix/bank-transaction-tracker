@@ -60,17 +60,12 @@ def create_db():
 
     # Create user's accounts
     accounts = (
-        ("St George Term Deposit", 25000000),
-        ("St George Transaction", 500000),
-        ("CBA Credit Card", 0),
-        ("BankWest Credit Card", 0),
-        ("BankWest Term Deposit", 25000000),
-        ("ME Bank Term Deposit", 25000000),
-        ("Unknown", 0))
-    for accname, balance in accounts:
-        user.add_account(accname=accname, balance=balance)
+        "St George Term Deposit", "St George Transaction", "CBA Credit Card",
+        "BankWest Credit Card", "BankWest Term Deposit",
+        "ME Bank Term Deposit", "Unknown")
+    for accname in accounts:
+        user.add_account(accname=accname)
 
-    # Create user's transactions
     transactions = ()
     # (7007, "2016-10-01T08:05", "Insurance", "NAB"),
     # (6007, "2016-10-02T08:06", "Entertainment", "NAB"),
@@ -127,9 +122,9 @@ def create_db():
         user.add_category(catname=catname, cattype=cattype)
 
     # Create user's accounts
-    accounts = (("NAB", 50000), ("ANZ", 20000), ("Unknown", 0))
-    for accname, balance in accounts:
-        user.add_account(accname=accname, balance=balance)
+    accounts = ("NAB", "ANZ", "Unknown")
+    for accname in accounts:
+        user.add_account(accname=accname)
 
     # Create user's transactions
     transactions = (

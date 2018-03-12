@@ -47,9 +47,9 @@ class User(UserMixin, db.Model):
         """Instance method that adds a user category."""
         Category(catname=catname, cattype=cattype, user=self)
 
-    def add_account(self, accname, balance):
+    def add_account(self, accname):
         """Instance method that a user account."""
-        Account(accname=accname, balance=balance, user=self)
+        Account(accname=accname, user=self)
 
     def add_transaction(self, amount, date, description, catname, accname,
                         dayfirst=True, yearfirst=False):
@@ -152,7 +152,6 @@ class Account(db.Model):
     __tablename__ = 'accounts'
     accno = db.Column(db.Integer, primary_key=True)
     accname = db.Column(db.String(250), nullable=False)
-    balance = db.Column(db.Integer, nullable=False)
     id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship(User, back_populates="accounts")
     transactions = db.relationship(

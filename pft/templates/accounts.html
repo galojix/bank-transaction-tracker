@@ -8,7 +8,6 @@
 <table class="table table-striped table-bordered table-hover table-responsive">
     <tr>
         <th>Account Name</th>
-        <th class="right">Initial Balance</th>
         <th>Action</th>
     </tr>
 
@@ -16,8 +15,7 @@
 
    <tr>
        <td>{{account.accname}}</td>
-       <td class="right">{{'{:,.2f}'.format(account.balance / 100.0)}}</td>
-       <td><a href="{{url_for('.modify_account', accno=account.accno)}}">Modify</a></td>              
+       <td><a href="{{url_for('.modify_account', accno=account.accno)}}">Modify</a></td>
     </tr>
 
    {% endfor %}

@@ -166,11 +166,7 @@ class AccountBalancesLineGraph(LineGraph):
             .order_by(Account.accname)
             .all())
         for accname, accno in accounts:
-            balance = (
-                db.session.query(func.sum(Account.balance))
-                .filter(Account.id == current_user.id)
-                .filter(Account.accname == accname)
-                .first()[0] / 100.0)
+            balance = 0
             transactions = (
                 db.session.query(
                     Transaction.date, Transaction.amount, Category.cattype)
@@ -201,10 +197,7 @@ class CashFlowLineGraph(LineGraph):
     def __init__(self):
         """Perform database query and populate data structure."""
         super().__init__()
-        balance = (
-            db.session.query(func.sum(Account.balance))
-            .filter(Account.id == current_user.id)
-            .first()[0] / 100.0)
+        balance = 0
         transactions = (
             db.session.query(
                 Transaction.date, Transaction.amount, Category.cattype)

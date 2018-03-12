@@ -55,7 +55,6 @@ def modify_account(accno):
 
     form = ModifyAccountForm()
     form.account_name.default = account.accname
-    form.initial_balance.default = '{:.2f}'.format(account.balance / 100)
 
     if form.validate_on_submit():
         if form.modify.data:
@@ -67,7 +66,6 @@ def modify_account(accno):
                     flash('Another account already has this name.')
                     return redirect(url_for('.modify_account', accno=accno))
             account.accname = form.account_name.data
-            account.balance = form.initial_balance.data * 100
             db.session.add(account)
             db.session.commit()
         elif form.delete.data:
@@ -103,7 +101,6 @@ def add_account():
 
     form = AddAccountForm()
     form.account_name.default = 'New Account'
-    form.initial_balance.default = 0
 
     if form.validate_on_submit():
         if form.add.data:
@@ -113,7 +110,6 @@ def add_account():
                     return redirect(url_for('.add_account'))
             account = Account()
             account.accname = form.account_name.data
-            account.balance = form.initial_balance.data * 100
             account.user = current_user
             db.session.add(account)
             db.session.commit()
