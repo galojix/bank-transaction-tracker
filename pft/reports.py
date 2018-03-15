@@ -69,8 +69,7 @@ class PieGraph():
         num_colors = len(labels)
         colors = (Category20[20] + Category20b[20]) * int(num_colors / 20 + 1)
         pie_chart = figure(
-            x_range=(-1, 1), y_range=(-1, 1), plot_width=800, plot_height=600,
-            logo=None)
+            x_range=(-1, 1), y_range=(-1, 1), logo=None)
         pie_chart.xaxis.visible = False
         pie_chart.yaxis.visible = False
 
