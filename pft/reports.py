@@ -2,7 +2,7 @@
 from bokeh.plotting import figure
 from bokeh.embed import components
 from bokeh.models import DatetimeTickFormatter, Legend
-from bokeh.palettes import Plasma256, linear_palette, Category20, Category20b
+from bokeh.palettes import Category20, Category20b
 from flask import session
 from flask_login import current_user
 from .database import db
@@ -158,16 +158,14 @@ class LineGraph():
         DATE_TIME_FORMAT = {
             'days': ['%d/%m/%y'], 'months': ['%m/%Y']}
         plot.xaxis.formatter = DatetimeTickFormatter(**DATE_TIME_FORMAT)
+
         num_colors = len(self.data)
-        if num_colors > 256:
-            num_colors = 256
-        colors = linear_palette(Plasma256, len(self.data))
+        colors = (Category20[20] + Category20b[20]) * int(num_colors / 20 + 1)
         items = []
         if self.data:
             for num, label in enumerate(self.data.keys()):
                 dates = self.data[label][0]
                 amounts = self.data[label][1]
-                num = num % num_colors  # Start colors again if all used
                 line = plot.line(
                     dates, amounts, line_color=colors[num], line_width=2)
                 items.append((label, [line]))
