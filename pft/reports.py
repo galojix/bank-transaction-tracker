@@ -257,4 +257,4 @@ class CashFlowLineGraph(LineGraph):
             dates.append(datetime.datetime.now())
             current_balance = amounts[-1]
             amounts.append(current_balance)
-        self.data['Net Total'] = [dates, amounts]
+        self.data['Total Cash'] = [dates, amounts]
