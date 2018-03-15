@@ -7,7 +7,7 @@ from .forms import (
     ModifyTransactionForm, AddTransactionForm, SearchTransactionsForm,
     UploadTransactionsForm, AddAccountForm, ModifyAccountForm,
     ModifyCategoryForm, AddCategoryForm, ProcessUploadedTransactionsForm,
-    ClassifyTransactionColumnsForm, ClassifyTransactionRowsForm)
+    ClassifyTransactionColumnsForm, ClassifyTransactionRowsForm, ReportForm)
 from werkzeug import secure_filename
 from .database import db
 from .reports import graph
@@ -591,10 +591,35 @@ def modify_category(catno):
         'modify_category.html', form=form, catno=catno, menu="categories")
 
 
-@web.route('/reports/<report_name>/')
+@web.route('/reports/<report_name>/', methods=['GET', 'POST'])
 @login_required
 def reports_page(report_name):
     """Return reports HTML page."""
+    accounts = current_user.accounts
+
+    account_names = [
+        (account.accname, account.accname) for account in accounts]
+    account_names.append(("All", "All"))
+
+    form = ReportForm()
+    thirty_days_ago = datetime.datetime.now() - datetime.timedelta(days=30)
+    form.start_date.default = session.get('start_date', thirty_days_ago)
+    form.end_date.default = session.get('end_date', datetime.datetime.now())
+    form.account_name.default = session.get('account_name', 'All')
+    form.account_name.choices = account_names
+
+    if form.validate_on_submit():
+        if form.refresh.data:
+            session['start_date'] = form.start_date.data
+            session['end_date'] = form.end_date.data
+            session['account_name'] = form.account_name.data
+        elif form.cancel.data:
+            pass
+        return redirect(url_for('.reports_page', report_name=report_name))
+
+    form.process()  # Do this after validate_on_submit or breaks CSRF token
+
     return render_template(
-        'reports.html', report_name=report_name, graph=graph(report_name),
-        menu="reports")
+        'reports.html', report_name=report_name, menu="reports", form=form,
+        graph=graph(report_name)
+        )

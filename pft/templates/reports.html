@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}PFT{% endblock %}
 
@@ -21,6 +22,42 @@
 
 {% block page_content %}
 <h2>{{report_name}}</h2>
+
+<form class="form form-horizontal" method="post" role="form" enctype="multipart/form-data">
+{{ form.hidden_tag() }}
+{{ wtf.form_errors(form, hiddens="only") }}
+
+<div class="row">
+<div class="col-md-3">
+{{ wtf.form_field(form.start_date)}}
+</div>
+
+<div class="col-md-3">
+{{ wtf.form_field(form.end_date)}}
+</div>
+
+
+{% if report_name == 'Account Balances' %}
+<div class="col-md-3">
+{{ wtf.form_field(form.account_name)}}
+</div>
+{% else %}
+<div class="col-md-3 invisible">
+{{ wtf.form_field(form.account_name)}}
+</div>
+{% endif %}
+<div class="col-md-3">
+</div>
+
+
+</div>
+
+<div class="col-md-12">
+{{ wtf.form_field(form.refresh)}}
+</div>
+
+</form>
+
 
 <div class="row">
   <div class="col-sm-5">

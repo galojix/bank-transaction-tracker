@@ -134,3 +134,14 @@ class ProcessUploadedTransactionsForm(FlaskForm):
     add = SubmitField('Add')
     cancel = SubmitField('Cancel')
     date_format = SelectField('Date Format:', validators=[DataRequired()])
+
+
+class ReportForm(FlaskForm):
+    """Report form."""
+
+    start_date = DateTimeLocalField(
+        'Start Date:', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
+    end_date = DateTimeLocalField(
+        'End Date:', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
+    account_name = SelectField('Account Name:', validators=[DataRequired()])
+    refresh = SubmitField('Refresh')

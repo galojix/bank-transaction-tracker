@@ -3,6 +3,7 @@ from bokeh.plotting import figure
 from bokeh.embed import components
 from bokeh.models import DatetimeTickFormatter, Legend
 from bokeh.palettes import Plasma256, linear_palette, Category20, Category20b
+from flask import session
 from flask_login import current_user
 from .database import db
 from .database import Transaction, Category, Account
@@ -14,23 +15,34 @@ import datetime
 
 def graph(report_name):
     """Report graph."""
+    start_date = session.get('start_date', None)
+    end_date = session.get('end_date', None)
+    account_name = session.get('account_name', None)
     if report_name == "Expenses by Category":
-        graph = ExpensesByCategoryPieGraph()
+        graph = ExpensesByCategoryPieGraph(start_date, end_date)
     elif report_name == "Income by Category":
-        graph = IncomeByCategoryPieGraph()
+        graph = IncomeByCategoryPieGraph(start_date, end_date)
     elif report_name == "Cash Flow":
-        graph = CashFlowLineGraph()
+        graph = CashFlowLineGraph(start_date, end_date)
     elif report_name == "Account Balances":
-        graph = AccountBalancesLineGraph()
+        graph = AccountBalancesLineGraph(start_date, end_date, account_name)
     return graph.get_html()
 
 
 class PieGraph():
     """Pie graph."""
 
-    def __init__(self):
+    def __init__(self, start_date=None, end_date=None):
         """Initialise."""
         self.data = []
+        if start_date is None:
+            self.start_date = datetime.datetime(year=1, month=1, day=1)
+        else:
+            self.start_date = start_date
+        if end_date is None:
+            self.end_date = datetime.datetime.now()
+        else:
+            self.end_date = end_date
 
     def get_html(self):
         """Get HTML components."""
@@ -80,14 +92,17 @@ class PieGraph():
 class ExpensesByCategoryPieGraph(PieGraph):
     """Expenses by category pie graph."""
 
-    def __init__(self):
+    def __init__(self, start_date, end_date):
         """Perform database query."""
-        super().__init__()
+        super().__init__(start_date, end_date)
+        print(self.start_date, self.end_date)
         self.data = (
             db.session.query(Category.catname, func.sum(Transaction.amount))
             .filter(Transaction.id == current_user.id)
             .filter(Transaction.catno == Category.catno)
             .filter(Category.cattype == 'Expense')
+            .filter(Transaction.date >= self.start_date)
+            .filter(Transaction.date <= self.end_date)
             .group_by(Category.catname)
             .order_by(func.sum(Transaction.amount))
             .all())
@@ -96,14 +111,16 @@ class ExpensesByCategoryPieGraph(PieGraph):
 class IncomeByCategoryPieGraph(PieGraph):
     """Income by category pie graph."""
 
-    def __init__(self):
+    def __init__(self, start_date=None, end_date=None):
         """Perform database query."""
-        super().__init__()
+        super().__init__(start_date, end_date)
         self.data = (
             db.session.query(Category.catname, func.sum(Transaction.amount))
             .filter(Transaction.id == current_user.id)
             .filter(Transaction.catno == Category.catno)
             .filter(Category.cattype == 'Income')
+            .filter(Transaction.date >= self.start_date)
+            .filter(Transaction.date <= self.end_date)
             .group_by(Category.catname)
             .order_by(func.sum(Transaction.amount))
             .all())
@@ -118,9 +135,19 @@ class LineGraph():
                          ...                              }
     """
 
-    def __init__(self):
+    def __init__(self, start_date=None, end_date=None, account_name=None):
         """Initialise."""
         self.data = OrderedDict()
+        if start_date is None:
+            self.start_date = datetime.datetime(year=1, month=1, day=1)
+        else:
+            self.start_date = start_date
+        if end_date is None:
+            self.end_date = datetime.datetime.now()
+        else:
+            self.end_date = end_date
+        if account_name is None:
+            self.account_name = 'All'
 
     def get_html(self):
         """Get HTML components."""
@@ -144,7 +171,7 @@ class LineGraph():
                 line = plot.line(
                     dates, amounts, line_color=colors[num], line_width=2)
                 items.append((label, [line]))
-        plot.sizing_mode = 'scale_width'
+                plot.sizing_mode = 'scale_width'
 
         legend = Legend(items=items, location=(0, 0))
 
@@ -157,14 +184,22 @@ class LineGraph():
 class AccountBalancesLineGraph(LineGraph):
     """Account balances line graph."""
 
-    def __init__(self):
+    def __init__(self, start_date, end_date, account_name):
         """Perform database query and populate data structure."""
-        super().__init__()
-        accounts = (
-            db.session.query(Account.accname, Account.accno)
-            .filter(Account.id == current_user.id)
-            .order_by(Account.accname)
-            .all())
+        super().__init__(start_date, end_date, account_name)
+        if account_name == 'All':
+            accounts = (
+                db.session.query(Account.accname, Account.accno)
+                .filter(Account.id == current_user.id)
+                .order_by(Account.accname)
+                .all())
+        else:
+            accounts = (
+                db.session.query(Account.accname, Account.accno)
+                .filter(Account.id == current_user.id)
+                .filter(Account.accname == account_name)
+                .order_by(Account.accname)
+                .all())
         for accname, accno in accounts:
             balance = 0
             transactions = (
@@ -173,6 +208,8 @@ class AccountBalancesLineGraph(LineGraph):
                 .filter(Transaction.id == current_user.id)
                 .filter(Transaction.accno == accno)
                 .filter(Transaction.catno == Category.catno)
+                .filter(Transaction.date >= self.start_date)
+                .filter(Transaction.date <= self.end_date)
                 .order_by(Transaction.date)
                 .all())
             dates = []
@@ -194,15 +231,17 @@ class AccountBalancesLineGraph(LineGraph):
 class CashFlowLineGraph(LineGraph):
     """Cash flow line graph."""
 
-    def __init__(self):
+    def __init__(self, start_date, end_date):
         """Perform database query and populate data structure."""
-        super().__init__()
+        super().__init__(start_date, end_date)
         balance = 0
         transactions = (
             db.session.query(
                 Transaction.date, Transaction.amount, Category.cattype)
             .filter(Transaction.id == current_user.id)
             .filter(Transaction.catno == Category.catno)
+            .filter(Transaction.date >= self.start_date)
+            .filter(Transaction.date <= self.end_date)
             .order_by(Transaction.date)
             .all())
         dates = []
