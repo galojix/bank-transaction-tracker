@@ -69,20 +69,29 @@ class PieGraph():
         num_colors = len(labels)
         colors = (Category20[20] + Category20b[20]) * int(num_colors / 20 + 1)
         pie_chart = figure(
-            x_range=(-1, 1), y_range=(-1, 1), logo=None)
-        pie_chart.xaxis.visible = False
-        pie_chart.yaxis.visible = False
+            x_range=(-1, 1), y_range=(-1, 1), logo=None, plot_width=200,
+            plot_height=200)
+        pie_chart.axis.visible = False
+        pie_chart.grid.visible = False
+        pie_chart.outline_line_color = None
+        pie_chart.sizing_mode = 'scale_width'
 
-        legend_items = []
         for num, label in enumerate(labels):
-            wedge = pie_chart.wedge(
-                x=0, y=0, radius=1, start_angle=start_angles[num],
-                end_angle=end_angles[num], color=colors[num])
             percent = ' ' + str(round(amounts[num+1] * 100, 1)) + '%'
-            legend_items.append((label + percent, [wedge]))
+            legend = label + percent
+            if num <= 10:
+                pie_chart.wedge(
+                    x=0, y=0, radius=1, start_angle=start_angles[num],
+                    end_angle=end_angles[num], color=colors[num],
+                    legend=legend)
+            else:
+                pie_chart.wedge(
+                    x=0, y=0, radius=1, start_angle=start_angles[num],
+                    end_angle=end_angles[num], color=colors[num])
 
-        legend = Legend(items=legend_items[::-1], location=(0, 0))
-        pie_chart.add_layout(legend, 'right')
+        pie_chart.legend.label_text_font_size = '10pt'
+        pie_chart.legend.location = "bottom_left"
+        pie_chart.legend.background_fill_alpha = 0.3
 
         script, div = components(pie_chart)
         return script, div
@@ -103,7 +112,7 @@ class ExpensesByCategoryPieGraph(PieGraph):
             .filter(Transaction.date >= self.start_date)
             .filter(Transaction.date <= self.end_date)
             .group_by(Category.catname)
-            .order_by(func.sum(Transaction.amount))
+            .order_by(func.sum(Transaction.amount).desc())
             .all())
 
 
