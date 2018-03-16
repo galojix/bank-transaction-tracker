@@ -130,7 +130,7 @@ class IncomeByCategoryPieGraph(PieGraph):
             .filter(Transaction.date >= self.start_date)
             .filter(Transaction.date <= self.end_date)
             .group_by(Category.catname)
-            .order_by(func.sum(Transaction.amount))
+            .order_by(func.sum(Transaction.amount).desc())
             .all())
 
 
