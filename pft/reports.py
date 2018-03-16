@@ -1,7 +1,7 @@
 """Module that generates report graphs."""
 from bokeh.plotting import figure
 from bokeh.embed import components
-from bokeh.models import DatetimeTickFormatter, Legend
+from bokeh.models import DatetimeTickFormatter, NumeralTickFormatter, Legend
 from bokeh.palettes import Category20, Category20b
 from flask import session
 from flask_login import current_user
@@ -166,6 +166,7 @@ class LineGraph():
         DATE_TIME_FORMAT = {
             'days': ['%d/%m/%y'], 'months': ['%m/%Y']}
         plot.xaxis.formatter = DatetimeTickFormatter(**DATE_TIME_FORMAT)
+        plot.yaxis.formatter = NumeralTickFormatter(format="$0,0")
 
         num_colors = len(self.data)
         colors = (Category20[20] + Category20b[20]) * int(num_colors / 20 + 1)
@@ -182,6 +183,7 @@ class LineGraph():
         legend = Legend(items=items, location=(0, 0))
 
         plot.add_layout(legend, 'below')
+        plot.legend.click_policy = 'hide'
 
         script, div = components(plot)
         return script, div
