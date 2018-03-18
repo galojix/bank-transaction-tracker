@@ -227,8 +227,11 @@ class AccountBalancesLineGraph(LineGraph):
                     balance -= amount / 100.0
                 else:
                     balance += amount / 100.0
-                dates.append(date)
-                amounts.append(balance)
+                if dates and date == dates[-1]:  # If same date, adjust balance
+                    amounts[-1] = balance
+                else:  # Add new date, balance to plot
+                    dates.append(date)
+                    amounts.append(balance)
             if dates:
                 dates.append(datetime.datetime.now())
                 current_balance = amounts[-1]
@@ -259,8 +262,11 @@ class CashFlowLineGraph(LineGraph):
                 balance -= amount / 100.0
             else:
                 balance += amount / 100.0
-            dates.append(date)
-            amounts.append(balance)
+            if dates and date == dates[-1]:  # If same date, adjust balance
+                amounts[-1] = balance
+            else:  # Add new date, balance to plot
+                dates.append(date)
+                amounts.append(balance)
         if dates:
             dates.append(datetime.datetime.now())
             current_balance = amounts[-1]
