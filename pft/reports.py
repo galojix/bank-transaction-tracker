@@ -2,7 +2,7 @@
 from bokeh.plotting import figure
 from bokeh.embed import components
 from bokeh.models import DatetimeTickFormatter, NumeralTickFormatter, Legend
-from bokeh.palettes import Category20, Category20b
+from bokeh.palettes import Category20, Category20b, Category10
 from flask import session
 from flask_login import current_user
 from .database import db
@@ -169,14 +169,14 @@ class LineGraph():
         plot.yaxis.formatter = NumeralTickFormatter(format="$0,0")
 
         num_colors = len(self.data)
-        colors = (Category20[20] + Category20b[20]) * int(num_colors / 20 + 1)
+        colors = Category10[10] * int(num_colors / 10 + 1)
         items = []
         if self.data:
             for num, label in enumerate(self.data.keys()):
                 dates = self.data[label][0]
                 amounts = self.data[label][1]
                 line = plot.line(
-                    dates, amounts, line_color=colors[num], line_width=2)
+                    dates, amounts, line_color=colors[num], line_width=3)
                 items.append((label, [line]))
                 plot.sizing_mode = 'scale_width'
 
