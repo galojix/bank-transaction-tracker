@@ -199,6 +199,7 @@ class AccountBalancesLineGraph(LineGraph):
             accounts = (
                 db.session.query(Account.accname, Account.accno)
                 .filter(Account.id == current_user.id)
+                .filter(Account.accname != 'Unknown')
                 .order_by(Account.accname)
                 .all())
         else:
@@ -216,8 +217,6 @@ class AccountBalancesLineGraph(LineGraph):
                 .filter(Transaction.id == current_user.id)
                 .filter(Transaction.accno == accno)
                 .filter(Transaction.catno == Category.catno)
-                .filter(Transaction.date >= self.start_date)
-                .filter(Transaction.date <= self.end_date)
                 .order_by(Transaction.date)
                 .all())
             dates = []
@@ -227,16 +226,24 @@ class AccountBalancesLineGraph(LineGraph):
                     balance -= amount / 100.0
                 else:
                     balance += amount / 100.0
-                if dates and date == dates[-1]:  # If same date, adjust balance
+                # If same date, adjust balance
+                if dates and date == dates[-1]:
                     amounts[-1] = balance
-                else:  # Add new date, balance to plot
+                # Add new date, balance to plot
+                elif date >= self.start_date and date <= self.end_date:
                     dates.append(date)
                     amounts.append(balance)
-            if dates:
+            now = datetime.datetime.now()
+            if dates and self.end_date > now:  # Add final plot point
                 dates.append(datetime.datetime.now())
                 current_balance = amounts[-1]
                 amounts.append(current_balance)
-                self.data[accname] = [dates, amounts]
+            if not dates:  # If no transactions in period, add balances
+                dates.append(self.start_date)
+                amounts.append(balance)
+                dates.append(now)
+                amounts.append(balance)
+            self.data[accname] = [dates, amounts]
 
 
 class CashFlowLineGraph(LineGraph):
@@ -251,8 +258,6 @@ class CashFlowLineGraph(LineGraph):
                 Transaction.date, Transaction.amount, Category.cattype)
             .filter(Transaction.id == current_user.id)
             .filter(Transaction.catno == Category.catno)
-            .filter(Transaction.date >= self.start_date)
-            .filter(Transaction.date <= self.end_date)
             .order_by(Transaction.date)
             .all())
         dates = []
@@ -262,13 +267,16 @@ class CashFlowLineGraph(LineGraph):
                 balance -= amount / 100.0
             else:
                 balance += amount / 100.0
-            if dates and date == dates[-1]:  # If same date, adjust balance
+            # If same date, adjust balance
+            if dates and date == dates[-1]:
                 amounts[-1] = balance
-            else:  # Add new date, balance to plot
+            # Add new date, balance to plot
+            elif date >= self.start_date and date <= self.end_date:
                 dates.append(date)
                 amounts.append(balance)
-        if dates:
-            dates.append(datetime.datetime.now())
+        now = datetime.datetime.now()
+        if dates and self.end_date > now:  # Add final plot point
+            dates.append(now)
             current_balance = amounts[-1]
             amounts.append(current_balance)
         self.data['Total Cash'] = [dates, amounts]
