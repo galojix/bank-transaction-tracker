@@ -172,11 +172,12 @@ class LineGraph():
         colors = Category10[10] * int(num_colors / 10 + 1)
         items = []
         if self.data:
-            for num, label in enumerate(self.data.keys()):
-                dates = self.data[label][0]
-                amounts = self.data[label][1]
-                line = plot.line(
-                    dates, amounts, line_color=colors[num], line_width=3)
+            for num, label in enumerate(self.data):
+                dates = list(self.data[label].keys())
+                amounts = list(self.data[label].values())
+                line = plot.step(
+                    dates, amounts, line_color=colors[num], line_width=3,
+                    mode='after')
                 items.append((label, [line]))
                 plot.sizing_mode = 'scale_width'
 
@@ -195,6 +196,7 @@ class AccountBalancesLineGraph(LineGraph):
     def __init__(self, start_date, end_date, account_name):
         """Perform database query and populate data structure."""
         super().__init__(start_date, end_date, account_name)
+
         if account_name == 'All':
             accounts = (
                 db.session.query(Account.accname, Account.accno)
@@ -211,6 +213,8 @@ class AccountBalancesLineGraph(LineGraph):
                 .all())
         for accname, accno in accounts:
             balance = 0
+            start_balance = 0
+            end_balance = 0
             transactions = (
                 db.session.query(
                     Transaction.date, Transaction.amount, Category.cattype)
@@ -219,31 +223,23 @@ class AccountBalancesLineGraph(LineGraph):
                 .filter(Transaction.catno == Category.catno)
                 .order_by(Transaction.date)
                 .all())
-            dates = []
-            amounts = []
+            balance_data = OrderedDict()
             for date, amount, cattype in transactions:
                 if cattype == 'Expense' or cattype == 'Transfer Out':
                     balance -= amount / 100.0
                 else:
                     balance += amount / 100.0
-                # If same date, adjust balance
-                if dates and date == dates[-1]:
-                    amounts[-1] = balance
-                # Add new date, balance to plot
-                elif date >= self.start_date and date <= self.end_date:
-                    dates.append(date)
-                    amounts.append(balance)
-            now = datetime.datetime.now()
-            if dates and self.end_date > now:  # Add final plot point
-                dates.append(datetime.datetime.now())
-                current_balance = amounts[-1]
-                amounts.append(current_balance)
-            if not dates:  # If no transactions in period, add balances
-                dates.append(self.start_date)
-                amounts.append(balance)
-                dates.append(now)
-                amounts.append(balance)
-            self.data[accname] = [dates, amounts]
+                if date < start_date:
+                    start_balance = balance
+                elif date <= end_date:
+                    end_balance = balance
+                    balance_data[date] = balance
+
+            balance_data[start_date] = start_balance
+            balance_data.move_to_end(start_date, last=False)
+            balance_data[end_date] = end_balance
+
+            self.data[accname] = balance_data
 
 
 class CashFlowLineGraph(LineGraph):
@@ -252,31 +248,31 @@ class CashFlowLineGraph(LineGraph):
     def __init__(self, start_date, end_date):
         """Perform database query and populate data structure."""
         super().__init__(start_date, end_date)
+
+        transactions = current_user.transactions
+
         balance = 0
-        transactions = (
-            db.session.query(
-                Transaction.date, Transaction.amount, Category.cattype)
-            .filter(Transaction.id == current_user.id)
-            .filter(Transaction.catno == Category.catno)
-            .order_by(Transaction.date)
-            .all())
-        dates = []
-        amounts = []
-        for date, amount, cattype in transactions:
-            if cattype == 'Expense' or cattype == 'Transfer Out':
-                balance -= amount / 100.0
+        start_balance = 0
+        end_balance = 0
+
+        cash_flow_data = OrderedDict()
+
+        for transaction in transactions:
+            if (
+                transaction.category.cattype == 'Expense'
+                or transaction.category.cattype == 'Transfer Out'
+            ):
+                balance -= transaction.amount / 100.0
             else:
-                balance += amount / 100.0
-            # If same date, adjust balance
-            if dates and date == dates[-1]:
-                amounts[-1] = balance
-            # Add new date, balance to plot
-            elif date >= self.start_date and date <= self.end_date:
-                dates.append(date)
-                amounts.append(balance)
-        now = datetime.datetime.now()
-        if dates and self.end_date > now:  # Add final plot point
-            dates.append(now)
-            current_balance = amounts[-1]
-            amounts.append(current_balance)
-        self.data['Total Cash'] = [dates, amounts]
+                balance += transaction.amount / 100.0
+            if transaction.date < start_date:
+                start_balance = balance
+            elif transaction.date <= end_date:
+                end_balance = balance
+                cash_flow_data[transaction.date] = balance
+
+        cash_flow_data[start_date] = start_balance
+        cash_flow_data.move_to_end(start_date, last=False)
+        cash_flow_data[end_date] = end_balance
+
+        self.data['Total Cash'] = cash_flow_data
