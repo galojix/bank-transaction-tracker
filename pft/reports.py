@@ -6,7 +6,7 @@ from bokeh.palettes import Category20, Category20b, Category10
 from flask import session
 from flask_login import current_user
 from .database import db
-from .database import Transaction, Category, Account
+from .database import Transaction, Category
 from sqlalchemy.sql import func
 from collections import OrderedDict
 from numpy import pi
@@ -197,49 +197,39 @@ class AccountBalancesLineGraph(LineGraph):
         """Perform database query and populate data structure."""
         super().__init__(start_date, end_date, account_name)
 
+        accounts = []
         if account_name == 'All':
-            accounts = (
-                db.session.query(Account.accname, Account.accno)
-                .filter(Account.id == current_user.id)
-                .filter(Account.accname != 'Unknown')
-                .order_by(Account.accname)
-                .all())
+            accounts = current_user.accounts
         else:
-            accounts = (
-                db.session.query(Account.accname, Account.accno)
-                .filter(Account.id == current_user.id)
-                .filter(Account.accname == account_name)
-                .order_by(Account.accname)
-                .all())
-        for accname, accno in accounts:
+            accounts = [
+                account for account in current_user.accounts
+                if account.accname == account_name]
+
+        for account in accounts:
             balance = 0
             start_balance = 0
             end_balance = 0
-            transactions = (
-                db.session.query(
-                    Transaction.date, Transaction.amount, Category.cattype)
-                .filter(Transaction.id == current_user.id)
-                .filter(Transaction.accno == accno)
-                .filter(Transaction.catno == Category.catno)
-                .order_by(Transaction.date)
-                .all())
+            transactions = account.transactions
             balance_data = OrderedDict()
-            for date, amount, cattype in transactions:
-                if cattype == 'Expense' or cattype == 'Transfer Out':
-                    balance -= amount / 100.0
+            for transaction in transactions:
+                if (
+                    transaction.category.cattype == 'Expense'
+                    or transaction.category.cattype == 'Transfer Out'
+                ):
+                    balance -= transaction.amount / 100.0
                 else:
-                    balance += amount / 100.0
-                if date < start_date:
+                    balance += transaction.amount / 100.0
+                if transaction.date < start_date:
                     start_balance = balance
-                elif date <= end_date:
+                elif transaction.date <= end_date:
                     end_balance = balance
-                    balance_data[date] = balance
+                    balance_data[transaction.date] = balance
 
             balance_data[start_date] = start_balance
             balance_data.move_to_end(start_date, last=False)
             balance_data[end_date] = end_balance
 
-            self.data[accname] = balance_data
+            self.data[account.accname] = balance_data
 
 
 class CashFlowLineGraph(LineGraph):
