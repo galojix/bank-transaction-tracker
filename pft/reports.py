@@ -69,8 +69,8 @@ class PieGraph():
         num_colors = len(labels)
         colors = (Category20[20] + Category20b[20]) * int(num_colors / 20 + 1)
         pie_chart = figure(
-            x_range=(-1, 1), y_range=(-1, 1), logo=None, plot_width=200,
-            plot_height=200)
+            x_range=(-1, 1), y_range=(-1, 1), logo=None, plot_width=300,
+            plot_height=300, toolbar_location='right')
         pie_chart.axis.visible = False
         pie_chart.grid.visible = False
         pie_chart.outline_line_color = None
@@ -161,6 +161,7 @@ class LineGraph():
         """Get HTML components."""
         plot = figure(
             x_axis_type='datetime', x_axis_label='Date', y_axis_label='Amount',
+            plot_width=300, plot_height=400, toolbar_location='right',
             logo=None)
 
         DATE_TIME_FORMAT = {
