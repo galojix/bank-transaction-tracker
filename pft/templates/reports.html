@@ -21,32 +21,32 @@
 
 
 {% block page_content %}
-<h2>{{report_name}}</h2>
+<h3>{{report_name}}</h3>
 
 <form class="form form-horizontal" method="post" role="form" enctype="multipart/form-data">
 {{ form.hidden_tag() }}
 {{ wtf.form_errors(form, hiddens="only") }}
 
 <div class="row">
-<div class="col-md-3">
+<div class="col-md-2">
 {{ wtf.form_field(form.start_date)}}
 </div>
 
-<div class="col-md-3">
+<div class="col-md-2">
 {{ wtf.form_field(form.end_date)}}
 </div>
 
 
 {% if report_name == 'Account Balances' %}
-<div class="col-md-3">
+<div class="col-md-2">
 {{ wtf.form_field(form.account_name)}}
 </div>
 {% else %}
-<div class="col-md-3 invisible">
+<div class="col-md-2 hidden">
 {{ wtf.form_field(form.account_name)}}
 </div>
 {% endif %}
-<div class="col-md-3">
+<div class="col-md-6">
 </div>
 
 
@@ -60,11 +60,11 @@
 
 
 <div class="row">
-  <div class="col-md-5 nopadding">
+  <div class="col-md-4 nopadding">
       {{graph[1]|safe}}
   </div>
 
-  <div class="col-md-7">
+  <div class="col-md-8">
   </div>
 
 </div>
