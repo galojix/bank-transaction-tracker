@@ -42,9 +42,9 @@
     background-color: #ffffff;
 }
 /* Workaround for fixed to top navbar */
-body {
+/*body {
     padding-top: 50px;
-}
+}*/
 /* Remove padding for plots */
 .nopadding {
    padding: 0 !important;
