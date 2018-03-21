@@ -21,55 +21,38 @@
 
 
 {% block page_content %}
-<h3>{{report_name}}:</h3>
+<h4>{{report_name}}:</h4>
 
 <div class="row">
   <div class="col-md-5 nopadding">
       {{graph[1]|safe}}
   </div>
 
-  <div class="col-md-7">
-  </div>
 
-</div>
-
-<form class="form form-horizontal" method="post" role="form" enctype="multipart/form-data">
+<form class="form form-horizontal small" method="post" role="form" enctype="multipart/form-data">
 {{ form.hidden_tag() }}
 {{ wtf.form_errors(form, hiddens="only") }}
 
-<div class="row">
 <div class="col-md-2">
 {{ wtf.form_field(form.start_date)}}
-</div>
 
-<div class="col-md-2">
 {{ wtf.form_field(form.end_date)}}
-</div>
 
 
 {% if report_name == 'Account Balances' %}
-<div class="col-md-2">
 {{ wtf.form_field(form.account_name)}}
-</div>
 {% else %}
-<div class="col-md-2 hidden">
+<div class="hidden">
 {{ wtf.form_field(form.account_name)}}
 </div>
 {% endif %}
-<div class="col-md-6">
-</div>
 
 
-</div>
 
-<div class="row">
-<div class="col-md-12">
 {{ wtf.form_field(form.refresh)}}
-</div>
-</div>
 
 </form>
 
-
+</div>
 
 {% endblock %}

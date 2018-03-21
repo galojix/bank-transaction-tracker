@@ -1,7 +1,7 @@
 """Module that generates report graphs."""
 from bokeh.plotting import figure
 from bokeh.embed import components
-from bokeh.models import DatetimeTickFormatter, NumeralTickFormatter, Legend
+from bokeh.models import DatetimeTickFormatter, NumeralTickFormatter
 from bokeh.palettes import Category20, Category20b, Category10
 from flask import session
 from flask_login import current_user
@@ -161,7 +161,7 @@ class LineGraph():
         """Get HTML components."""
         plot = figure(
             x_axis_type='datetime', x_axis_label='Date', y_axis_label='Amount',
-            plot_width=300, plot_height=400, toolbar_location='right',
+            plot_width=300, plot_height=300, toolbar_location='right',
             logo=None)
 
         DATE_TIME_FORMAT = {
@@ -171,22 +171,19 @@ class LineGraph():
 
         num_colors = len(self.data)
         colors = Category10[10] * int(num_colors / 10 + 1)
-        items = []
         if self.data:
             for num, label in enumerate(self.data):
                 dates = list(self.data[label].keys())
                 amounts = list(self.data[label].values())
-                line = plot.step(
+                plot.step(
                     dates, amounts, line_color=colors[num], line_width=3,
-                    mode='after')
-                items.append((label, [line]))
+                    mode='after', legend=label)
                 plot.sizing_mode = 'scale_width'
 
-        legend = Legend(items=items, location=(0, 0))
-
-        plot.add_layout(legend, 'below')
         plot.legend.click_policy = 'hide'
         plot.legend.label_text_font_size = '8pt'
+        plot.legend.location = "top_right"
+        plot.legend.background_fill_alpha = 0.3
 
         script, div = components(plot)
         return script, div
