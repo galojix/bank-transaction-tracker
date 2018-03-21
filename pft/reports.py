@@ -186,6 +186,7 @@ class LineGraph():
 
         plot.add_layout(legend, 'below')
         plot.legend.click_policy = 'hide'
+        plot.legend.label_text_font_size = '8pt'
 
         script, div = components(plot)
         return script, div
@@ -200,7 +201,9 @@ class AccountBalancesLineGraph(LineGraph):
 
         accounts = []
         if account_name == 'All':
-            accounts = current_user.accounts
+            accounts = [
+                account for account in current_user.accounts
+                if account.accname != 'Unknown']
         else:
             accounts = [
                 account for account in current_user.accounts
