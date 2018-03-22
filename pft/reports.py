@@ -76,10 +76,12 @@ class PieGraph():
         pie_chart.outline_line_color = None
         pie_chart.sizing_mode = 'scale_width'
 
+        raw_data = []
+
         for num, label in enumerate(labels):
             percent = ' ' + str(round(amounts[num+1] * 100, 1)) + '%'
             legend = label + percent
-            if num <= 10:
+            if num <= 12:
                 pie_chart.wedge(
                     x=0, y=0, radius=1, start_angle=start_angles[num],
                     end_angle=end_angles[num], color=colors[num],
@@ -88,13 +90,17 @@ class PieGraph():
                 pie_chart.wedge(
                     x=0, y=0, radius=1, start_angle=start_angles[num],
                     end_angle=end_angles[num], color=colors[num])
+            raw_data.append((label, percent))
 
         pie_chart.legend.label_text_font_size = '10pt'
         pie_chart.legend.location = "bottom_left"
         pie_chart.legend.background_fill_alpha = 0.3
+        pie_chart.legend.glyph_height = 15
+        pie_chart.legend.glyph_width = 15
+        pie_chart.legend.label_height = 15
 
         script, div = components(pie_chart)
-        return script, div
+        return script, div, raw_data
 
 
 class ExpensesByCategoryPieGraph(PieGraph):
