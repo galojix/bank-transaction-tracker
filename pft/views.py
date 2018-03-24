@@ -230,6 +230,7 @@ def add_transaction():
     form.account_name.choices = account_names
     form.account_name.default = account_names[0]
     form.amount.default = '{:.2f}'.format(0)
+    form.description.default = 'Description'
 
     if form.validate_on_submit():
         # This must go here or else before_app_request will try to commit
