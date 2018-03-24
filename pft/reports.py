@@ -70,11 +70,13 @@ class PieGraph():
         colors = (Category20[20] + Category20b[20]) * int(num_colors / 20 + 1)
         pie_chart = figure(
             x_range=(-1, 1), y_range=(-1, 1), logo=None, plot_width=300,
-            plot_height=300, toolbar_location='right')
+            plot_height=300, toolbar_location='right', tools="save")
         pie_chart.axis.visible = False
         pie_chart.grid.visible = False
         pie_chart.outline_line_color = None
         pie_chart.sizing_mode = 'scale_width'
+        pie_chart.toolbar_location = 'below'
+        pie_chart.toolbar.active_drag = None
 
         raw_data = []
 
@@ -83,12 +85,12 @@ class PieGraph():
             legend = label + percent
             if num <= 12:
                 pie_chart.wedge(
-                    x=0, y=0, radius=1, start_angle=start_angles[num],
+                    x=0, y=0, radius=0.9, start_angle=start_angles[num],
                     end_angle=end_angles[num], color=colors[num],
                     legend=legend)
             else:
                 pie_chart.wedge(
-                    x=0, y=0, radius=1, start_angle=start_angles[num],
+                    x=0, y=0, radius=0.9, start_angle=start_angles[num],
                     end_angle=end_angles[num], color=colors[num])
             raw_data.append((label, percent))
 
@@ -168,7 +170,7 @@ class LineGraph():
         plot = figure(
             x_axis_type='datetime', x_axis_label='Date', y_axis_label='Amount',
             plot_width=300, plot_height=300, toolbar_location='right',
-            logo=None)
+            tools="pan,wheel_zoom,box_zoom, save, reset", logo=None)
 
         DATE_TIME_FORMAT = {
             'days': ['%d/%m/%y'], 'months': ['%m/%Y']}
@@ -190,6 +192,8 @@ class LineGraph():
         plot.legend.label_text_font_size = '8pt'
         plot.legend.location = "top_right"
         plot.legend.background_fill_alpha = 0.3
+        plot.toolbar_location = 'below'
+        plot.toolbar.active_drag = None
 
         script, div = components(plot)
         return script, div
