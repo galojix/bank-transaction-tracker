@@ -70,7 +70,8 @@ class PieGraph():
         colors = (Category20[20] + Category20b[20]) * int(num_colors / 20 + 1)
         pie_chart = figure(
             x_range=(-1, 1), y_range=(-1, 1), logo=None, plot_width=300,
-            plot_height=300, toolbar_location='right', tools="save")
+            plot_height=300, toolbar_location='right',
+            tools="wheel_zoom,save, reset")
         pie_chart.axis.visible = False
         pie_chart.grid.visible = False
         pie_chart.outline_line_color = None
