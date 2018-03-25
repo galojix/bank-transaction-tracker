@@ -605,8 +605,11 @@ def reports_page(report_name):
     form = ReportForm()
     thirty_days_ago = datetime.datetime.now() - datetime.timedelta(days=30)
     form.start_date.default = session.get('start_date', thirty_days_ago)
+    session['start_date'] = form.start_date.default
     form.end_date.default = session.get('end_date', datetime.datetime.now())
+    session['end_date'] = form.end_date.default
     form.account_name.default = session.get('account_name', 'All')
+    session['account_name'] = form.account_name.default
     form.account_name.choices = account_names
 
     if form.validate_on_submit():
