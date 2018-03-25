@@ -242,7 +242,11 @@ class AccountBalancesLineGraph(LineGraph):
 
             balance_data[start_date] = start_balance
             balance_data.move_to_end(start_date, last=False)
-            balance_data[end_date] = end_balance
+            now = datetime.datetime.now()
+            if end_date > now:
+                balance_data[now] = end_balance
+            else:
+                balance_data[end_date] = end_balance
 
             self.data[account.accname] = balance_data
 
@@ -281,6 +285,10 @@ class CashFlowLineGraph(LineGraph):
 
         cash_flow_data[start_date] = start_balance
         cash_flow_data.move_to_end(start_date, last=False)
-        cash_flow_data[end_date] = end_balance
+        now = datetime.datetime.now()
+        if end_date > now:
+            cash_flow_data[now] = end_balance
+        else:
+            cash_flow_data[end_date] = end_balance
 
         self.data['Total Cash'] = cash_flow_data
