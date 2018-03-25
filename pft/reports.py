@@ -237,6 +237,9 @@ class AccountBalancesLineGraph(LineGraph):
                     end_balance = balance
                     balance_data[transaction.date] = balance
 
+            if not balance_data:
+                end_balance = start_balance
+
             balance_data[start_date] = start_balance
             balance_data.move_to_end(start_date, last=False)
             balance_data[end_date] = end_balance
@@ -272,6 +275,9 @@ class CashFlowLineGraph(LineGraph):
             elif transaction.date <= end_date:
                 end_balance = balance
                 cash_flow_data[transaction.date] = balance
+
+        if not cash_flow_data:
+            end_balance = start_balance
 
         cash_flow_data[start_date] = start_balance
         cash_flow_data.move_to_end(start_date, last=False)
