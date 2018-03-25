@@ -22,21 +22,21 @@
         </div>
 
         <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-2 pre-scrollable">
         {{ form.category_names.label }}
         {% for subfield in form.category_names %}
             {{ wtf.form_field(subfield) }}
         {% endfor %}
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-2 pre-scrollable">
         {{ form.category_types.label }}
         {% for subfield in form.category_types %}
             {{ wtf.form_field(subfield) }}
         {% endfor %}
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-2 pre-scrollable">
         {{ form.account_names.label }}
         {% for subfield in form.account_names %}
             {{ wtf.form_field(subfield) }}

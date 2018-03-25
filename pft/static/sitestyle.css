@@ -47,3 +47,7 @@
    margin: 0 !important;
    margin-right: 10px !important;
 }
+/* Add some margin for when columns collapse */
+[class*="col-"] {
+    margin-bottom: 15px;
+}
