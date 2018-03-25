@@ -84,7 +84,7 @@ class PieGraph():
         for num, label in enumerate(labels):
             percent = ' ' + str(round(amounts[num+1] * 100, 1)) + '%'
             legend = label + percent
-            if num <= 12:
+            if num <= 10:
                 pie_chart.wedge(
                     x=0, y=0, radius=0.9, start_angle=start_angles[num],
                     end_angle=end_angles[num], color=colors[num],

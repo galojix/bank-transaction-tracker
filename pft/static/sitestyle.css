@@ -41,12 +41,9 @@
     color: #000000;
     background-color: #ffffff;
 }
-/* Workaround for fixed to top navbar */
-/*body {
-    padding-top: 50px;
-}*/
-/* Remove padding for plots */
+/* Remove padding for plots but leave margin for touch scrolling on right */
 .nopadding {
    padding: 0 !important;
    margin: 0 !important;
+   margin-right: 10px !important;
 }
