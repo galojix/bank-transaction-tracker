@@ -6,44 +6,54 @@
 {% block page_content %}
 
 <h2>Search Transactions: </h2>
-<div class="col-md-12">
+
+
     <form class="form form-horizontal" method="post" role="form">
         {{ form.hidden_tag() }}
         {{ wtf.form_errors(form, hiddens="only") }}
 
+        <div class="row">
+        <div class="col-md-2">
         {{ wtf.form_field(form.start_date) }}
+        </div>
+        <div class="col-md-2">
         {{ wtf.form_field(form.end_date) }}
+        </div>
+        </div>
 
-        <div class="col-md-4">
+        <div class="row">
+        <div class="col-md-3">
         {{ form.category_names.label }}
         {% for subfield in form.category_names %}
             {{ wtf.form_field(subfield) }}
         {% endfor %}
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-3">
         {{ form.category_types.label }}
         {% for subfield in form.category_types %}
             {{ wtf.form_field(subfield) }}
         {% endfor %}
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-3">
         {{ form.account_names.label }}
         {% for subfield in form.account_names %}
             {{ wtf.form_field(subfield) }}
         {% endfor %}
         </div>
+        </div>
 
+        <div class="row">
         <div class="col-md-12">
         {{ wtf.form_field(form.search) }}
         {{ wtf.form_field(form.cancel) }}
+        </div>
         </div>
 
     </form>
 
 
 
-</div>
 
 {% endblock %}
