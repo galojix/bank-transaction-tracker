@@ -158,6 +158,11 @@ class CategoryPattern(db.Model):
     catname = db.Column(db.String(250), db.ForeignKey('categories.catno'))
     category = db.relationship(Category, back_populates="category_patterns")
 
+    def __repr__(self):
+        """Represent category pattern as pattern number and pattern."""
+        return '<CatPattern:{num},{name}>'.format(
+            num=self.pattern_no, name=self.pattern)
+
 
 class Account(db.Model):
     """Class that instantiates an accounts table."""
