@@ -12,4 +12,40 @@
 </div>
 </div>
 
+<div class="row">
+<div class="col-md-2">
+<h4>Category Patterns:</h4>
+<table class="table table-striped table-bordered table-hover table-responsive">
+    <tr>
+        <th>Category Pattern</th>
+        <th>Action</th>
+    </tr>
+
+   {% for pattern in patterns %}
+
+   <tr>
+       <td>{{pattern.pattern}}</td>
+       <td><a href="{{url_for('.modify_pattern', pattern_no=pattern.pattern_no)}}">Modify</a></td>
+   </tr>
+
+
+   {% endfor %}
+
+</table>
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-2">
+    <a href="{{url_for('.add_pattern', catno=catno)}}">
+        <button type="button" class="btn btn-default">Add</button>
+    </a>
+    <a href="{{url_for('.categories_page')}}">
+        <button type="button" class="btn btn-default">Cancel</button>
+    </a>
+
+</div>
+</div>
+
+
 {% endblock %}

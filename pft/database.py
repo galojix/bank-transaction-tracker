@@ -155,7 +155,7 @@ class CategoryPattern(db.Model):
     __tablename__ = 'categorypatterns'
     pattern_no = db.Column(db.Integer, primary_key=True)
     pattern = db.Column(db.String(250), nullable=False)
-    catname = db.Column(db.String(250), db.ForeignKey('categories.catno'))
+    catno = db.Column(db.Integer, db.ForeignKey('categories.catno'))
     category = db.relationship(Category, back_populates="category_patterns")
 
     def __repr__(self):

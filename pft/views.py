@@ -2,12 +2,13 @@
 from flask import (
     render_template, url_for, redirect, session, Blueprint, flash, request)
 from flask_login import login_required, current_user
-from .database import Transaction, Account, Category
+from .database import Transaction, Account, Category, CategoryPattern
 from .forms import (
     ModifyTransactionForm, AddTransactionForm, SearchTransactionsForm,
     UploadTransactionsForm, AddAccountForm, ModifyAccountForm,
     ModifyCategoryForm, AddCategoryForm, ProcessUploadedTransactionsForm,
-    ClassifyTransactionColumnsForm, ClassifyTransactionRowsForm, ReportForm)
+    ClassifyTransactionColumnsForm, ClassifyTransactionRowsForm, ReportForm,
+    AddPatternForm, ModifyPatternForm)
 from werkzeug import secure_filename
 from .database import db
 from .reports import graph
@@ -589,7 +590,90 @@ def modify_category(catno):
     form.process()  # Do this after validate_on_submit or breaks CSRF token
 
     return render_template(
-        'modify_category.html', form=form, catno=catno, menu="categories")
+        'modify_category.html', form=form, catno=catno,
+        patterns=category.category_patterns, menu="categories")
+
+
+@web.route('/patterns/add/<int:catno>/', methods=['GET', 'POST'])
+@login_required
+def add_pattern(catno):
+    """
+    Add a pattern.
+
+    Return a form for adding a pattern or process submitted
+    form and redirect to modify category page.
+    """
+    category = [
+        category for category in current_user.categories
+        if category.catno == catno][0]
+
+    form = AddPatternForm()
+    form.pattern.default = 'New Pattern'
+
+    if form.validate_on_submit():
+        if form.add.data:
+            for pattern in category.category_patterns:
+                if pattern.pattern == form.pattern.data:
+                    flash('Pattern already exists.')
+                    return redirect(url_for('.add_pattern', catno=catno))
+            category_pattern = CategoryPattern()
+            category_pattern.pattern = form.pattern.data
+            category_pattern.category = category
+            db.session.add(category_pattern)
+            db.session.commit()
+        elif form.cancel.data:
+            pass
+        return redirect(url_for('.modify_category', catno=catno))
+
+    form.process()  # Do this after validate_on_submit or breaks CSRF token
+
+    return render_template(
+        'add_pattern.html', form=form, menu="categories")
+
+
+@web.route('/patterns/modify/<int:pattern_no>/', methods=['GET', 'POST'])
+@login_required
+def modify_pattern(pattern_no):
+    """
+    Modify or delete patterns.
+
+    Return a form for modifying patterns or process submitted
+    form and redirect to modify category page.
+    """
+    category_pattern = (
+        CategoryPattern.query.filter_by(
+            pattern_no=pattern_no).one())
+    catno = category_pattern.catno
+    category_patterns = CategoryPattern.query.filter_by(catno=catno).all()
+
+    form = ModifyPatternForm()
+    form.pattern.default = category_pattern.pattern
+
+    if form.validate_on_submit():
+        if form.modify.data:
+            for item in category_patterns:
+                if (
+                    item.pattern == form.pattern.data and
+                    item.pattern != form.pattern.default
+                ):
+                    flash('Another pattern already has this name.')
+                    return redirect(url_for(
+                        '.modify_pattern', pattern_no=pattern_no))
+            category_pattern.pattern = form.pattern.data
+            db.session.add(category_pattern)
+            db.session.commit()
+        elif form.delete.data:
+            db.session.delete(category_pattern)
+            db.session.commit()
+        elif form.cancel.data:
+            pass
+        return redirect(url_for('.modify_category', catno=catno))
+
+    form.process()  # Do this after validate_on_submit or breaks CSRF token
+
+    return render_template(
+        'modify_pattern.html', form=form, pattern_no=pattern_no,
+        menu="categories")
 
 
 @web.route('/reports/<report_name>/', methods=['GET', 'POST'])
