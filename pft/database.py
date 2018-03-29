@@ -140,7 +140,7 @@ class Category(db.Model):
     user = db.relationship(User, back_populates="categories")
     transactions = db.relationship(
         "Transaction", order_by="Transaction.date", back_populates="category")
-    category_patterns = db.relationship(
+    patterns = db.relationship(
         "CategoryPattern", order_by="CategoryPattern.pattern",
         back_populates="category")
 
@@ -156,7 +156,7 @@ class CategoryPattern(db.Model):
     pattern_no = db.Column(db.Integer, primary_key=True)
     pattern = db.Column(db.String(250), nullable=False)
     catno = db.Column(db.Integer, db.ForeignKey('categories.catno'))
-    category = db.relationship(Category, back_populates="category_patterns")
+    category = db.relationship(Category, back_populates="patterns")
 
     def __repr__(self):
         """Represent category pattern as pattern number and pattern."""

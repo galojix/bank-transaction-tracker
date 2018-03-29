@@ -591,7 +591,7 @@ def modify_category(catno):
 
     return render_template(
         'modify_category.html', form=form, catno=catno,
-        patterns=category.category_patterns, menu="categories")
+        patterns=category.patterns, menu="categories")
 
 
 @web.route('/patterns/add/<int:catno>/', methods=['GET', 'POST'])
@@ -612,14 +612,14 @@ def add_pattern(catno):
 
     if form.validate_on_submit():
         if form.add.data:
-            for pattern in category.category_patterns:
+            for pattern in category.patterns:
                 if pattern.pattern == form.pattern.data:
                     flash('Pattern already exists.')
                     return redirect(url_for('.add_pattern', catno=catno))
-            category_pattern = CategoryPattern()
-            category_pattern.pattern = form.pattern.data
-            category_pattern.category = category
-            db.session.add(category_pattern)
+            pattern = CategoryPattern()
+            pattern.pattern = form.pattern.data
+            pattern.category = category
+            db.session.add(pattern)
             db.session.commit()
         elif form.cancel.data:
             pass
@@ -640,18 +640,18 @@ def modify_pattern(pattern_no):
     Return a form for modifying patterns or process submitted
     form and redirect to modify category page.
     """
-    category_pattern = (
+    pattern = (
         CategoryPattern.query.filter_by(
             pattern_no=pattern_no).one())
-    catno = category_pattern.catno
-    category_patterns = CategoryPattern.query.filter_by(catno=catno).all()
+    catno = pattern.catno
+    patterns = CategoryPattern.query.filter_by(catno=catno).all()
 
     form = ModifyPatternForm()
-    form.pattern.default = category_pattern.pattern
+    form.pattern.default = pattern.pattern
 
     if form.validate_on_submit():
         if form.modify.data:
-            for item in category_patterns:
+            for item in patterns:
                 if (
                     item.pattern == form.pattern.data and
                     item.pattern != form.pattern.default
@@ -659,11 +659,11 @@ def modify_pattern(pattern_no):
                     flash('Another pattern already has this name.')
                     return redirect(url_for(
                         '.modify_pattern', pattern_no=pattern_no))
-            category_pattern.pattern = form.pattern.data
-            db.session.add(category_pattern)
+            pattern.pattern = form.pattern.data
+            db.session.add(pattern)
             db.session.commit()
         elif form.delete.data:
-            db.session.delete(category_pattern)
+            db.session.delete(pattern)
             db.session.commit()
         elif form.cancel.data:
             pass
