@@ -140,10 +140,23 @@ class Category(db.Model):
     user = db.relationship(User, back_populates="categories")
     transactions = db.relationship(
         "Transaction", order_by="Transaction.date", back_populates="category")
+    category_patterns = db.relationship(
+        "CategoryPattern", order_by="CategoryPattern.pattern",
+        back_populates="category")
 
     def __repr__(self):
         """Represent category as category number and name."""
         return '<Cat:{num},{name}>'.format(num=self.catno, name=self.catname)
+
+
+class CategoryPattern(db.Model):
+    """Class that instantiates a category pattern table."""
+
+    __tablename__ = 'categorypatterns'
+    pattern_no = db.Column(db.Integer, primary_key=True)
+    pattern = db.Column(db.String(250), nullable=False)
+    catname = db.Column(db.String(250), db.ForeignKey('categories.catno'))
+    category = db.relationship(Category, back_populates="category_patterns")
 
 
 class Account(db.Model):
