@@ -374,6 +374,11 @@ def process_transactions():
 
     transactions = session['uploaded_transactions']
 
+    pattern_match = {}
+    for category in current_user.categories:
+        for pattern in category.patterns:
+            pattern_match[pattern.pattern] = pattern.category.catname
+
     classify_cols_form = ClassifyTransactionColumnsForm()
     if request.method != 'POST':
         for _ in range(0, len(transactions[0])):
@@ -394,9 +399,14 @@ def process_transactions():
         (category.catname, category.catname) for category in categories]
     actions = [
         ('Keep', 'Keep'), ('Ignore', 'Ignore')]
-    for subform in form.row_classifications:
+    for num, subform in enumerate(form.row_classifications):
         subform.form.category_name.choices = category_names
         subform.form.category_name.default = 'Unspecified Expense'
+        for pattern in pattern_match:
+            print(transactions[num])
+            for field in transactions[num]:
+                if pattern in field:
+                    subform.form.category_name.default = pattern_match[pattern]
         subform.form.action.choices = actions
         subform.form.action.default = 'Keep'
 
