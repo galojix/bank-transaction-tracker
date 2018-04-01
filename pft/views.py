@@ -128,11 +128,9 @@ def add_account():
 @login_required
 def transactions_page():
     """Return Transactions HTML page."""
-    transactions = current_user.transactions
     transaction_numbers = session.get('transactions')
-    if transaction_numbers:
-        transactions = [
-            transaction for transaction in transactions
+    transactions = [
+            transaction for transaction in current_user.transactions
             if transaction.transno in transaction_numbers]
     return render_template(
         'transactions.html', transactions=transactions,
