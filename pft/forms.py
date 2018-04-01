@@ -3,7 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms.form import Form
 from wtforms import (
     SubmitField, SelectField, FloatField, SelectMultipleField, TextField,
-    FieldList, FormField)
+    FieldList, FormField, BooleanField)
 from wtforms.fields.html5 import DateTimeLocalField
 from wtforms.validators import DataRequired, InputRequired
 from flask_wtf.file import FileField, FileRequired
@@ -56,10 +56,16 @@ class SearchTransactionsForm(FlaskForm):
         'Start Date:', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
     end_date = DateTimeLocalField(
         'End Date:', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
+    category_names_selectall = BooleanField(
+        'Select/Unselect All', default=True)
     category_names = MultiCheckboxField(
         'Category Names:', validators=[DataRequired()])
+    category_types_selectall = BooleanField(
+        'Select/Unselect All', default=True)
     category_types = MultiCheckboxField(
         'Category Types:', validators=[DataRequired()])
+    account_names_selectall = BooleanField(
+        'Select/Unselect All', default=True)
     account_names = MultiCheckboxField(
         'Account Names:', validators=[DataRequired()])
     search = SubmitField('Search')
