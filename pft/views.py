@@ -128,7 +128,7 @@ def add_account():
 @login_required
 def transactions_page():
     """Return Transactions HTML page."""
-    transaction_numbers = session.get('transactions')
+    transaction_numbers = session.get('transactions', (-1,))
     transactions = [
             transaction for transaction in current_user.transactions
             if transaction.transno in transaction_numbers]
@@ -466,7 +466,8 @@ def process_transactions():
 
         if form.cancel.data:
             pass
-        session['transactions'] = None
+        session['transactions'] = [
+            transaction.transno for transaction in current_user.transactions]
         return redirect(url_for('.transactions_page'))
 
     for subform in form.row_classifications:
