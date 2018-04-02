@@ -22,25 +22,30 @@
         </div>
 
         <div class="row">
-        <div class="col-md-2 pre-scrollable">
+        <div class="col-md-2">
         {{ form.category_names.label }}
         {{ wtf.form_field(form.category_names_selectall) }}
+        <div class="pre-scrollable">
         {% for subfield in form.category_names %}
             {{ wtf.form_field(subfield) }}
         {% endfor %}
         </div>
+        </div>
 
-        <div class="col-md-2 pre-scrollable">
+        <div class="col-md-2">
         {{ form.category_types.label }}
         {{ wtf.form_field(form.category_types_selectall) }}
+        <div class="pre-scrollable">
         {% for subfield in form.category_types %}
             {{ wtf.form_field(subfield) }}
         {% endfor %}
         </div>
+        </div>
 
-        <div class="col-md-2 pre-scrollable">
+        <div class="col-md-2">
         {{ form.account_names.label }}
         {{ wtf.form_field(form.account_names_selectall) }}
+        <div class="pre-scrollable">
         {% for subfield in form.account_names %}
             {{ wtf.form_field(subfield) }}
         {% endfor %}
