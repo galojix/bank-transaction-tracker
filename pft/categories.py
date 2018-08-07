@@ -3,6 +3,13 @@ from nltk.stem.snowball import SnowballStemmer
 from .database import db, Transaction, Category
 from sklearn import model_selection
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_selection import SelectPercentile, f_classif
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import accuracy_score
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn import preprocessing
+from sklearn import svm
+from time import time
 import string
 
 
@@ -22,7 +29,8 @@ def collect_data():
     for transaction, category in transactions:
         description = stem_description(transaction.description)
         feature_data.append(description)
-        label_data.append(category.catname)  # transaction.catno ?
+        label_data.append(transaction.catno)  # category.catname ?
+    print("Amount of data: ", len(feature_data))
     return feature_data, label_data
 
 
@@ -59,57 +67,61 @@ def vectorize_data(features_train, features_test):
                                  stop_words='english')
     features_train_transformed = vectorizer.fit_transform(features_train)
     features_test_transformed = vectorizer.transform(features_test)
+    print('Number of features: ', len(vectorizer.get_feature_names()))
     return features_train_transformed, features_test_transformed
 
 
-# Feature Selection
-# from sklearn.feature_selection import SelectPercentile, f_classif
-# selector = SelectPercentile(f_classif, percentile=10)
-# selector.fit(features_train_transformed, labels_train)
-# features_train_transformed = selector.transform(
-#     features_train_transformed).toarray()
-# features_test_transformed  = selector.transform(
-#    features_test_transformed).toarray()
-# Now have:
-# features_train_transformed, features_test_transformed,
-# labels_train,labels_test
+def feature_selection(features_train, features_test, labels_train):
+    """Feature selection."""
+    selector = SelectPercentile(f_classif, percentile=100)
+    selector.fit(features_train, labels_train)
+    features_train_transformed = selector.transform(features_train).toarray()
+    features_test_transformed = selector.transform(features_test).toarray()
+    return features_train_transformed, features_test_transformed
 
-# Algorithms/Classifiers
-#
-# Try Naive Bayes and Adaboost
-#
-# from sklearn.naive_bayes import GaussianNB
-# clf = GaussianNB()
-# t0 = time()
-# clf.fit(features_train, labels_train)
-# print "training time:", round(time()- t0, 3), "s"
-# t0 = time()
-# predict = clf.predict(features_test)
-# print "predict time:", round(time()- t0, 3), "s"
-#
-# from sklearn.ensemble import AdaBoostClassifier
-# from time import time
-# clf = AdaBoostClassifier()
-# print('Fitting:')
-# start_time = time()
-# clf.fit(features_train, labels_train)
-# duration = time() - start_time
-# print('Training time:', duration)
-# print('Predicting:')
-# start_time = time()
-# predict = clf.predict(features_test)
-# duration = time() - start_time
-# print('Prediction time:', duration)
 
-# Evaluation of classifiers
-#
-# from sklearn.metrics import accuracy_score
-# accuracy = accuracy_score(labels_test, predict)
-# print(accuracy)
-#
-# from sklearn.metrics import accuracy_score
-# accuracy = accuracy_score(labels_test, predict)
-# print('Accuracy:', accuracy)
+def naive_bayes(features_train, labels_train, features_test):
+    clf = GaussianNB()
+    t0 = time()
+    clf.fit(features_train, labels_train)
+    print("training time:", round(time() - t0, 3), "s")
+    t0 = time()
+    predict = clf.predict(features_test)
+    print("predict time:", round(time() - t0, 3), "s")
+    return predict
+
+
+def adaboost(features_train, labels_train, features_test):
+    clf = AdaBoostClassifier()
+    t0 = time()
+    clf.fit(features_train, labels_train)
+    print("training time:", round(time() - t0, 3), "s")
+    t0 = time()
+    predict = clf.predict(features_test)
+    print("predict time:", round(time() - t0, 3), "s")
+    return predict
+
+
+def svm_predict(features_train, labels_train, features_test):
+    scaler = preprocessing.StandardScaler().fit(features_train)
+    features_train = scaler.transform(features_train)
+    features_test = scaler.transform(features_test)
+    clf = svm.SVC()
+    t0 = time()
+    clf.fit(features_train, labels_train)
+    print("training time:", round(time() - t0, 3), "s")
+    t0 = time()
+    predict = clf.predict(features_test)
+    print("predict time:", round(time() - t0, 3), "s")
+    return predict
+
+
+
+def accuracy(labels_test, predict):
+    score = accuracy_score(labels_test, predict)
+    return score
+
+
 #
 # from sklearn.metrics import accuracy_score
 # accuracy = accuracy_score(labels_test, predict)
