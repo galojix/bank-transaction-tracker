@@ -16,6 +16,9 @@ flask-mail = "*"
 flask-session = "*"
 py-dateutil = "*"
 flask-sqlalchemy = "*"
+nltk = "*"
+sklearn = "*"
+scipy = "*"
 
 [dev-packages]
 

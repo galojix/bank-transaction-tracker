@@ -5,6 +5,7 @@ from pft import create_app
 from pft.database import db, User, Category, Account, Transaction
 from pft.demo_db import create_db
 import unittest
+from pft.categories import collect_data, split_data
 
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
@@ -33,6 +34,21 @@ def demo():
     print("Creating a new demo database...")
     create_db()
     print("Done.")
+
+
+@manager.command
+def categories():
+    """Test ML transaction categorization."""
+    feature_data, label_data = collect_data()
+    features_train, features_test, labels_train, labels_test = split_data(
+        feature_data, label_data)
+    print(features_train)
+    print()
+    print(features_test)
+    print()
+    print(labels_train)
+    print()
+    print(labels_test)
 
 
 if __name__ == '__main__':

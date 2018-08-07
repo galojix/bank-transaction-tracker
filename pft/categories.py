@@ -1,30 +1,65 @@
 """Module that uses machine learning techniques to categorise transactions."""
+from nltk.stem.snowball import SnowballStemmer
+from .database import db, Transaction, Category
+from sklearn import model_selection
+from sklearn.feature_extraction.text import TfidfVectorizer
+import string
 
-# Collect data from database
-#
-# Read transactions (descriptions and categories) from database
-# For each description:
-#     Add string of space separated stemmed words to feature_data list
-#     Add category to label_data list
 
-# Split data into Train and Test
-#
-# from sklearn import cross_validation
-# features_train, features_test, labels_train, labels_test
-#     = cross_validation.train_test_split(feature_data, label_data,
-#                                         test_size=0.1, random_state=42)
+def collect_data():
+    """Read transactions (descriptions and categories) from database.
 
-# Vectorize the feature data ie. create bag of words
-#
-# Go from strings to lists of numbers
-# TfIdf vectorize feature_data list into bag of words:
-#     (trans_no, word_no) freq_of_word_no
-#     vectorizer.get_feature_names()[word_no] is feature name
-# from sklearn.feature_extraction.text import TfidfVectorizer
-# vectorizer = TfidfVectorizer(sublinear_tf=True, max_df=0.5,
-#                              stop_words='english')
-# features_train_transformed = vectorizer.fit_transform(features_train)
-# features_test_transformed  = vectorizer.transform(features_test)
+    Add string of space separated stemmed words to feature_data list
+    Add category to label_data list
+    """
+    feature_data = []
+    label_data = []
+    transactions = (
+        db.session.query(Transaction, Category)
+        .filter(Transaction.id == 1)
+        .filter(Transaction.catno == Category.catno)
+        .all())
+    for transaction, category in transactions:
+        description = stem_description(transaction.description)
+        feature_data.append(description)
+        label_data.append(category.catname)  # transaction.catno ?
+    return feature_data, label_data
+
+
+def stem_description(description):
+    """Stem the transaction description."""
+    translator = str.maketrans('', '', string.punctuation)
+    description = description.translate(translator)  # Remove punctuation
+    stemmer = SnowballStemmer("english")
+    description_list = description.split()
+    stemmed_list = []
+    for word in description_list:
+        stemmed_list.append(stemmer.stem(word))
+    stemmed_description = " ".join(stemmed_list)
+    return stemmed_description
+
+
+def split_data(feature_data, label_data):
+    """Split data into train and test."""
+    features_train, features_test, labels_train, labels_test = (
+        model_selection.train_test_split(
+            feature_data, label_data, test_size=0.1, random_state=42))
+    return features_train, features_test, labels_train, labels_test
+
+
+def vectorize_data(features_train, features_test):
+    """Vectorize the feature data ie. create bag of words.
+
+    Go from strings to lists of numbers
+    (trans_no, word_no) freq_of_word_no
+     vectorizer.get_feature_names()[word_no] is feature name
+
+    """
+    vectorizer = TfidfVectorizer(sublinear_tf=True, max_df=0.5,
+                                 stop_words='english')
+    features_train_transformed = vectorizer.fit_transform(features_train)
+    features_test_transformed = vectorizer.transform(features_test)
+    return features_train_transformed, features_test_transformed
 
 
 # Feature Selection
