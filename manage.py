@@ -44,13 +44,13 @@ def categories():
     feature_data, label_data = collect_data()
     features_train, features_test, labels_train, labels_test = split_data(
         feature_data, label_data)
-    features_train, features_test = vectorize_data(features_train, features_test)
-    features_train, features_test = feature_selection(features_train, features_test, labels_train)
+    features_train, features_test = vectorize_data(
+        features_train, features_test)
+    features_train, features_test = feature_selection(
+        features_train, features_test, labels_train)
+    predict = adaboost(features_train, labels_train, features_test)
+    predict = svm_predict(features_train, labels_train, features_test)
     predict = naive_bayes(features_train, labels_train, features_test)
-    # predict = naive_bayes(features_train.toarray(), labels_train, features_test.toarray())
-    #  predict = adaboost(features_train.toarray(), labels_train, features_test.toarray())
-    # predict = svm_predict(features_train.toarray(), labels_train, features_test.toarray())
-    # predict = svm_predict(features_train, labels_train, features_test)
     score = accuracy(labels_test, predict)
     print('Score: ', score)
     # print(features_train)

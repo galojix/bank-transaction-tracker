@@ -9,7 +9,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn import preprocessing
 from sklearn import svm
-from time import time
+# from time import time
 import string
 
 
@@ -81,63 +81,45 @@ def feature_selection(features_train, features_test, labels_train):
 
 
 def naive_bayes(features_train, labels_train, features_test):
+    """Naive Bayes."""
     clf = GaussianNB()
-    t0 = time()
+    # t0 = time()
     clf.fit(features_train, labels_train)
-    print("training time:", round(time() - t0, 3), "s")
-    t0 = time()
+    # print("training time:", round(time() - t0, 3), "s")
+    # t0 = time()
     predict = clf.predict(features_test)
-    print("predict time:", round(time() - t0, 3), "s")
+    # print("predict time:", round(time() - t0, 3), "s")
     return predict
 
 
 def adaboost(features_train, labels_train, features_test):
+    """Adaboost algorithm."""
     clf = AdaBoostClassifier()
-    t0 = time()
+    # t0 = time()
     clf.fit(features_train, labels_train)
-    print("training time:", round(time() - t0, 3), "s")
-    t0 = time()
+    # print("training time:", round(time() - t0, 3), "s")
+    # t0 = time()
     predict = clf.predict(features_test)
-    print("predict time:", round(time() - t0, 3), "s")
+    # print("predict time:", round(time() - t0, 3), "s")
     return predict
 
 
 def svm_predict(features_train, labels_train, features_test):
+    """SVM algorithm."""
     scaler = preprocessing.StandardScaler().fit(features_train)
     features_train = scaler.transform(features_train)
     features_test = scaler.transform(features_test)
     clf = svm.SVC()
-    t0 = time()
+    # t0 = time()
     clf.fit(features_train, labels_train)
-    print("training time:", round(time() - t0, 3), "s")
-    t0 = time()
+    # print("training time:", round(time() - t0, 3), "s")
+    # t0 = time()
     predict = clf.predict(features_test)
-    print("predict time:", round(time() - t0, 3), "s")
+    # print("predict time:", round(time() - t0, 3), "s")
     return predict
 
 
-
 def accuracy(labels_test, predict):
+    """Accuracy."""
     score = accuracy_score(labels_test, predict)
     return score
-
-
-#
-# from sklearn.metrics import accuracy_score
-# accuracy = accuracy_score(labels_test, predict)
-# results = zip(labels_test, predict)
-# print(results)
-# true_positives = 0
-# false_negatives = 0
-# false_positives = 0
-# for result in results:
-#     if result[0] == 1.0 and result[1] == 1.0:  # true positive
-#         true_positives += 1
-#     if result[0] == 1.0 and result[1] == 0.0:  # false negative
-#         false_negatives += 1
-#     if result[0] == 0.0 and result[1] == 1.0:  # false positive
-#         false_positives += 1
-# recall = float(true_positives) / (true_positives + false_negatives)
-# precision = float(true_positives) / (true_positives + false_positives)
-# print('Recall: ', recall)
-# print('Precision: ', precision)
