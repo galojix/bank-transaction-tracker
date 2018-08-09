@@ -12,7 +12,24 @@ from sklearn import svm
 import string
 
 
-def collect_data():
+def test_classification(user_id):
+    """Test transaction classification for user id."""
+    feature_data, label_data = collect_data(1)
+    print("Amount of data: ", len(feature_data))
+    features_train, features_test, labels_train, labels_test = split_data(
+        feature_data, label_data)
+    features_train, features_test, num_features = vectorize_data(
+        features_train, features_test)
+    print('Number of features: ', num_features)
+    features_train, features_test = feature_selection(
+        features_train, features_test, labels_train)
+    # predict = svm_predict(features_train, labels_train, features_test)
+    predict = naive_bayes(features_train, labels_train, features_test)
+    score = accuracy(labels_test, predict)
+    print('Score: ', score)
+
+
+def collect_data(user_id):
     """Read transactions (descriptions and categories) from database.
 
     Add string of space separated stemmed words to feature_data list
@@ -22,14 +39,13 @@ def collect_data():
     label_data = []
     transactions = (
         db.session.query(Transaction, Category)
-        .filter(Transaction.id == 1)
+        .filter(Transaction.id == user_id)
         .filter(Transaction.catno == Category.catno)
         .all())
     for transaction, category in transactions:
         description = stem_description(transaction.description)
         feature_data.append(description)
         label_data.append(category.catname)  # transaction.catno?
-    print("Amount of data: ", len(feature_data))
     return feature_data, label_data
 
 
@@ -66,8 +82,8 @@ def vectorize_data(features_train, features_test):
                                  stop_words='english')
     features_train_transformed = vectorizer.fit_transform(features_train)
     features_test_transformed = vectorizer.transform(features_test)
-    print('Number of features: ', len(vectorizer.get_feature_names()))
-    return features_train_transformed, features_test_transformed
+    num_features = len(vectorizer.get_feature_names())
+    return features_train_transformed, features_test_transformed, num_features
 
 
 def feature_selection(features_train, features_test, labels_train):
@@ -89,7 +105,6 @@ def naive_bayes(features_train, labels_train, features_test):
     predict = clf.predict(features_test)
     # print("predict time:", round(time() - t0, 3), "s")
     return predict
-
 
 
 def svm_predict(features_train, labels_train, features_test):
