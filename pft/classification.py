@@ -8,13 +8,14 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import accuracy_score
 from sklearn import preprocessing
 from sklearn import svm
-# from time import time
+from flask_login import current_user
+from flask import session
 import string
 
 
 def test_classification(user_id):
     """Test transaction classification for user id."""
-    feature_data, label_data = collect_data(1)
+    feature_data, label_data = collect_data_test(1)
     print("Amount of data: ", len(feature_data))
     features_train, features_test, labels_train, labels_test = split_data(
         feature_data, label_data)
@@ -29,7 +30,42 @@ def test_classification(user_id):
     print('Score: ', score)
 
 
-def collect_data(user_id):
+def predict_categories():
+    """Predict transaction categories."""
+    features_train, labels_train = collect_data()
+    features_test = get_test_features()
+    features_train, features_test, num_features = vectorize_data(
+        features_train, features_test)
+    features_train, features_test = feature_selection(
+        features_train, features_test, labels_train)
+    predict = naive_bayes(features_train, labels_train, features_test)
+    return predict
+
+
+def collect_data():
+    """Get existing transaction descriptions and categories."""
+    feature_data = []
+    label_data = []
+    transactions = current_user.transactions
+    for transaction in transactions:
+        description = stem_description(transaction.description)
+        feature_data.append(description)
+        label_data.append(transaction.category.catname)
+    return feature_data, label_data
+
+
+def get_test_features():
+    """Get test features from uploaded transactions."""
+    features_test = []
+    transactions = session['uploaded_transactions']
+    for transaction in transactions:
+        description = " ".join(transaction)
+        description = stem_description(description)
+        features_test.append(description)
+    return features_test
+
+
+def collect_data_test(user_id):
     """Read transactions (descriptions and categories) from database.
 
     Add string of space separated stemmed words to feature_data list

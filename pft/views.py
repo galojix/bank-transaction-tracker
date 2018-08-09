@@ -9,6 +9,7 @@ from .forms import (
     ModifyCategoryForm, AddCategoryForm, ProcessUploadedTransactionsForm,
     ClassifyTransactionColumnsForm, ClassifyTransactionRowsForm, ReportForm,
     AddPatternForm, ModifyPatternForm)
+from .classification import predict_categories
 from werkzeug import secure_filename
 from .database import db
 from .reports import graph
@@ -372,10 +373,11 @@ def process_transactions():
 
     transactions = session['uploaded_transactions']
 
-    pattern_match = {}
-    for category in current_user.categories:
-        for pattern in category.patterns:
-            pattern_match[pattern.pattern] = pattern.category.catname
+    # pattern_match = {}
+    # for category in current_user.categories:
+    #     for pattern in category.patterns:
+    #         pattern_match[pattern.pattern] = pattern.category.catname
+    predicted_categories = predict_categories()
 
     classify_cols_form = ClassifyTransactionColumnsForm()
     if request.method != 'POST':
@@ -400,11 +402,12 @@ def process_transactions():
     for num, subform in enumerate(form.row_classifications):
         subform.form.category_name.choices = category_names
         subform.form.category_name.default = 'Unspecified Expense'
-        for pattern in pattern_match:
-            print(transactions[num])
-            for field in transactions[num]:
-                if pattern in field:
-                    subform.form.category_name.default = pattern_match[pattern]
+        # for pattern in pattern_match:
+        #     print(transactions[num])
+        #     for field in transactions[num]:
+        #         if pattern in field:
+        #           subform.form.category_name.default = pattern_match[pattern]
+        subform.form.category_name.default = predicted_categories[num]
         subform.form.action.choices = actions
         subform.form.action.default = 'Keep'
 
