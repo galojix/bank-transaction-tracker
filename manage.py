@@ -7,7 +7,7 @@ from pft.demo_db import create_db
 import unittest
 from pft.categories import (
     collect_data, split_data, vectorize_data, feature_selection, naive_bayes,
-    adaboost, svm_predict, accuracy)
+    svm_predict, accuracy)
 
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
@@ -48,7 +48,6 @@ def categories():
         features_train, features_test)
     features_train, features_test = feature_selection(
         features_train, features_test, labels_train)
-    predict = adaboost(features_train, labels_train, features_test)
     predict = svm_predict(features_train, labels_train, features_test)
     predict = naive_bayes(features_train, labels_train, features_test)
     score = accuracy(labels_test, predict)

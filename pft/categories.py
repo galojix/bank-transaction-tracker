@@ -6,7 +6,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_selection import SelectPercentile, f_classif
 from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import accuracy_score
-from sklearn.ensemble import AdaBoostClassifier
 from sklearn import preprocessing
 from sklearn import svm
 # from time import time
@@ -29,7 +28,7 @@ def collect_data():
     for transaction, category in transactions:
         description = stem_description(transaction.description)
         feature_data.append(description)
-        label_data.append(transaction.catno)  # category.catname ?
+        label_data.append(category.catname)  # transaction.catno?
     print("Amount of data: ", len(feature_data))
     return feature_data, label_data
 
@@ -91,17 +90,6 @@ def naive_bayes(features_train, labels_train, features_test):
     # print("predict time:", round(time() - t0, 3), "s")
     return predict
 
-
-def adaboost(features_train, labels_train, features_test):
-    """Adaboost algorithm."""
-    clf = AdaBoostClassifier()
-    # t0 = time()
-    clf.fit(features_train, labels_train)
-    # print("training time:", round(time() - t0, 3), "s")
-    # t0 = time()
-    predict = clf.predict(features_test)
-    # print("predict time:", round(time() - t0, 3), "s")
-    return predict
 
 
 def svm_predict(features_train, labels_train, features_test):
