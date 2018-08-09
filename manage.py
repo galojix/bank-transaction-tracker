@@ -5,7 +5,7 @@ from pft import create_app
 from pft.database import db, User, Category, Account, Transaction
 from pft.demo_db import create_db
 import unittest
-from pft.categories import (
+from pft.classification import (
     collect_data, split_data, vectorize_data, feature_selection, naive_bayes,
     svm_predict, accuracy)
 
@@ -39,7 +39,7 @@ def demo():
 
 
 @manager.command
-def categories():
+def classify():
     """Test ML transaction categorization."""
     feature_data, label_data = collect_data()
     features_train, features_test, labels_train, labels_test = split_data(
