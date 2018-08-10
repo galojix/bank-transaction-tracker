@@ -13,21 +13,20 @@ from flask import session
 import string
 
 
-def test_classification(user_name):
-    """Test transaction classification for user id."""
-    feature_data, label_data = collect_data_test(user_name)
-    print("Amount of data: ", len(feature_data))
+def classification_score(user_name):
+    """Calculate transaction classification score for user."""
+    feature_data, label_data = collect_data_for_user(user_name)
+    data_size = len(feature_data)
     features_train, features_test, labels_train, labels_test = split_data(
         feature_data, label_data)
     features_train, features_test, num_features = vectorize_data(
         features_train, features_test)
-    print('Number of features: ', num_features)
     features_train, features_test = feature_selection(
         features_train, features_test, labels_train)
     # predict = svm_predict(features_train, labels_train, features_test)
-    predict = naive_bayes(features_train, labels_train, features_test)
+    predict = naive_bayes_predict(features_train, labels_train, features_test)
     score = accuracy(labels_test, predict)
-    print('Score: ', score)
+    return score, data_size, num_features
 
 
 def predict_categories():
@@ -38,7 +37,7 @@ def predict_categories():
         features_train, features_test)
     features_train, features_test = feature_selection(
         features_train, features_test, labels_train)
-    predict = naive_bayes(features_train, labels_train, features_test)
+    predict = naive_bayes_predict(features_train, labels_train, features_test)
     return predict
 
 
@@ -65,7 +64,7 @@ def get_test_features():
     return features_test
 
 
-def collect_data_test(user_name):
+def collect_data_for_user(user_name):
     """Read transactions (descriptions and categories) from database.
 
     Add string of space separated stemmed words to feature_data list
@@ -82,7 +81,7 @@ def collect_data_test(user_name):
     for transaction, category, user in transactions:
         description = stem_description(transaction.description)
         feature_data.append(description)
-        label_data.append(category.catname)  # transaction.catno?
+        label_data.append(category.catname)
     return feature_data, label_data
 
 
@@ -132,7 +131,7 @@ def feature_selection(features_train, features_test, labels_train):
     return features_train_transformed, features_test_transformed
 
 
-def naive_bayes(features_train, labels_train, features_test):
+def naive_bayes_predict(features_train, labels_train, features_test):
     """Naive Bayes."""
     clf = GaussianNB()
     # t0 = time()

@@ -5,7 +5,7 @@ from pft import create_app
 from pft.database import db, User, Category, Account, Transaction
 from pft.demo_db import create_db
 import unittest
-from pft.classification import test_classification
+from pft.classification import classification_score
 
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
@@ -37,4 +37,7 @@ def demo():
 @click.argument('name')
 def classify(name):
     """Test transaction categorization for user name."""
-    test_classification(name)
+    score, data_size, num_features = classification_score(name)
+    print('Score: ', score)
+    print('Data Size: ', data_size)
+    print('Number of Features: ', num_features)
