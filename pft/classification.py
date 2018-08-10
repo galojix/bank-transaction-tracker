@@ -1,6 +1,6 @@
 """Module that uses machine learning techniques to categorise transactions."""
 from nltk.stem.snowball import SnowballStemmer
-from .database import db, Transaction, Category
+from .database import db, Transaction, Category, User
 from sklearn import model_selection
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_selection import SelectPercentile, f_classif
@@ -13,9 +13,9 @@ from flask import session
 import string
 
 
-def test_classification(user_id):
+def test_classification(user_name):
     """Test transaction classification for user id."""
-    feature_data, label_data = collect_data_test(1)
+    feature_data, label_data = collect_data_test(user_name)
     print("Amount of data: ", len(feature_data))
     features_train, features_test, labels_train, labels_test = split_data(
         feature_data, label_data)
@@ -65,7 +65,7 @@ def get_test_features():
     return features_test
 
 
-def collect_data_test(user_id):
+def collect_data_test(user_name):
     """Read transactions (descriptions and categories) from database.
 
     Add string of space separated stemmed words to feature_data list
@@ -74,11 +74,12 @@ def collect_data_test(user_id):
     feature_data = []
     label_data = []
     transactions = (
-        db.session.query(Transaction, Category)
-        .filter(Transaction.id == user_id)
+        db.session.query(Transaction, Category, User)
+        .filter(User.name == user_name)
+        .filter(Transaction.id == User.id)
         .filter(Transaction.catno == Category.catno)
         .all())
-    for transaction, category in transactions:
+    for transaction, category, user in transactions:
         description = stem_description(transaction.description)
         feature_data.append(description)
         label_data.append(category.catname)  # transaction.catno?
