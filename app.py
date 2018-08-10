@@ -2,8 +2,7 @@
 import os
 import click
 from pft import create_app
-from pft.database import db, User, Category, Account, Transaction
-from pft.demo_db import create_db
+from pft.database import db, User, Category, Account, Transaction, create_db
 import unittest
 from pft.classification import classification_score
 
@@ -26,11 +25,17 @@ def test():
 
 
 @app.cli.command()
-def demo():
-    """Create a demo database."""
-    print("Creating a new demo database...")
-    create_db()
-    print("Done.")
+def newdb():
+    """Create a new empty database."""
+    print('This operation will overwrite any existing databases.')
+    ans = input('Are you sure you want to create a new empty database y/n ? ')
+    if ans == 'y':
+        print('Creating new empty database...')
+        create_db()
+        print("Done.")
+        print("Do not forget to change the demo account password!!!")
+    else:
+        print('No action taken.')
 
 
 @app.cli.command()

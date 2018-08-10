@@ -189,3 +189,66 @@ def empty_database():
     """Delete existing database tables and recreate empty ones."""
     db.drop_all()  # Drop all existing tables
     db.create_all()  # Create new tables
+
+
+def create_db():
+    """Create new database."""
+    empty_database()
+    # Create demo user
+    user = User(
+        email="demo@demo.demo", name="Demo", password="demo", confirmed=True)
+
+    # Create demo user's default categories
+    categories = (("Food", "Expense"),
+                  ("Alcohol", "Expense"),
+                  ("Entertainment", "Expense"),
+                  ("Insurance", "Expense"),
+                  ("Salary", "Income"),
+                  ("Interest Earned", "Income"),
+                  ("Interest Paid", "Expense"),
+                  ("Loan Repayment", "Expense"),
+                  ("School", "Expense"),
+                  ("Bank Fees", "Expense"),
+                  ("Holidays", "Expense"),
+                  ("Communications", "Expense"),
+                  ("Car", "Expense"),
+                  ("Kids", "Expense"),
+                  ("Medical Refund", "Income"),
+                  ("Medical Expense", "Expense"),
+                  ("Electricity", "Expense"),
+                  ("Sport", "Expense"),
+                  ("Water", "Expense"),
+                  ("Rates", "Expense"),
+                  ("Donations", "Expense"),
+                  ("Technology", "Expense"),
+                  ("Furniture", "Expense"),
+                  ("Personal Items", "Expense"),
+                  ("Shopping", "Expense"),
+                  ("Gifts", "Expense"),
+                  ("Eating Out", "Expense"),
+                  ("House Maintenance", "Expense"),
+                  ("House Improvements", "Expense"),
+                  ("Investments", "Expense"),
+                  ("Other Income", "Income"),
+                  ("Cash Withdrawal", "Expense"),
+                  ("Public Transport", "Expense"),
+                  ("Pets", "Expense"),
+                  ("Unspecified Expense", "Expense"),
+                  ("Unspecified Income", "Income"),
+                  ("Transfer In", "Transfer In"),
+                  ("Transfer Out", "Transfer Out"),
+                  ("Work", "Expense"),)
+    for catname, cattype in categories:
+        user.add_category(catname=catname, cattype=cattype)
+
+    # Create demo user's default accounts
+    accounts = (
+        "St George Term Deposit", "St George Transaction", "CBA Credit Card",
+        "BankWest Credit Card", "BankWest Term Deposit",
+        "ME Bank Term Deposit", "NAB Transaction", "ANZ Transaction",
+        "Unknown")
+    for accname in accounts:
+        user.add_account(accname=accname)
+
+    db.session.add(user)
+    db.session.commit()
