@@ -253,6 +253,8 @@ def add_transaction():
         # Clear search parameters
         if 'transactions' in session:
             del session['transactions']
+        session['transactions'] = [
+            transaction.transno for transaction in current_user.transactions]
         return redirect(url_for('.transactions_page'))
 
     form.process()  # Do this after validate_on_submit or breaks CSRF token
