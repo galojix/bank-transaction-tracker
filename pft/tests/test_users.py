@@ -46,7 +46,7 @@ class UserModelTestCase(unittest.TestCase):
 
     def test_valid_confirmation_token(self):
         """Test valid confirmation token."""
-        u = User(email='test1', password='cat')
+        u = User(name='test1', email='test1', password='cat')
         db.session.add(u)
         db.session.commit()
         token = u.generate_confirmation_token()
@@ -54,8 +54,8 @@ class UserModelTestCase(unittest.TestCase):
 
     def test_invalid_confirmation_token(self):
         """Test invalid confirmation token."""
-        u1 = User(email='test1', password='cat')
-        u2 = User(email='test2', password='dog')
+        u1 = User(name='test1', email='test1', password='cat')
+        u2 = User(name='test2', email='test2', password='dog')
         db.session.add(u1)
         db.session.add(u2)
         db.session.commit()
@@ -64,7 +64,7 @@ class UserModelTestCase(unittest.TestCase):
 
     def test_expired_confirmation_token(self):
         """Test expired confirmation token."""
-        u = User(email='test1', password='cat')
+        u = User(name='test1', email='test1', password='cat')
         db.session.add(u)
         db.session.commit()
         token = u.generate_confirmation_token(1)
