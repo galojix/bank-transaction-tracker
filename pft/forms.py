@@ -116,23 +116,6 @@ class ModifyCategoryForm(FlaskForm):
     cancel = SubmitField('Cancel')
 
 
-class AddPatternForm(FlaskForm):
-    """Add pattern form."""
-
-    pattern = TextField('Pattern:', validators=[DataRequired()])
-    add = SubmitField('Add')
-    cancel = SubmitField('Cancel')
-
-
-class ModifyPatternForm(FlaskForm):
-    """Modify pattern form."""
-
-    pattern = TextField('Pattern:', validators=[DataRequired()])
-    modify = SubmitField('Modify')
-    delete = SubmitField('Delete')
-    cancel = SubmitField('Cancel')
-
-
 class ClassifyTransactionColumnsForm(Form):
     """Classify transaction columns form."""
 
