@@ -76,19 +76,8 @@ def register():
         user = User(
             name=form.name.data, email=form.email.data,
             password=form.password.data)
-        # Add default categories
-        user.add_category(catname="Unspecified Expense", cattype="Expense")
-        user.add_category(catname="Unspecified Income", cattype="Income")
-        user.add_category(
-            catname="Transfer In", cattype="Transfer In")
-        user.add_category(
-            catname="Transfer Out", cattype="Transfer Out")
-        # Add default account
-        user.add_account(accname="Unknown", balance=0)
-        # Add default business
-        user.add_business(busname="Unknown")
+        user.add_categories_accounts()
         db.session.add(user)
-
         db.session.commit()
         token = user.generate_confirmation_token()
         send_email(

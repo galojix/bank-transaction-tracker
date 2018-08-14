@@ -47,8 +47,43 @@ class User(UserMixin, db.Model):
         """Instance method that adds a user category."""
         Category(catname=catname, cattype=cattype, user=self)
 
+    def add_categories_accounts(self):
+        """Add standard categories and accounts."""
+        categories = (("Bank Fees", "Expense"),
+                      ("Education, Training, Sport", "Expense"),
+                      ("Entertainment", "Expense"),
+                      ("Food and Groceries", "Expense"),
+                      ("Gifts and Donations", "Expense"),
+                      ("Health Care", "Expense"),
+                      ("Holidays", "Expense"),
+                      ("Housing", "Expense"),
+                      ("Interest and Investment Income", "Income"),
+                      ("Investment Expenses", "Expense"),
+                      ("Kids", "Expense"),
+                      ("Pets", "Expense"),
+                      ("Refunds", "Income"),
+                      ("Salary", "Income"),
+                      ("Shopping", "Expense"),
+                      ("Transfer In", "Transfer In"),
+                      ("Transfer Out", "Transfer Out"),
+                      ("Transport", "Expense"),
+                      ("Unspecified Expense", "Expense"),
+                      ("Unspecified Income", "Income"),
+                      ("Utilities", "Expense"),
+                      ("Work Expenses", "Expense"),)
+        for catname, cattype in categories:
+            self.add_category(catname=catname, cattype=cattype)
+
+        accounts = (
+            "Bank A Term Deposit", "Bank A Transaction",
+            "Bank B Credit Card", "Bank C Credit Card", "Bank D Term Deposit",
+            "Bank E Term Deposit", "Bank F Transaction", "Bank G Transaction",
+            "Unknown")
+        for accname in accounts:
+            self.add_account(accname=accname)
+
     def add_account(self, accname):
-        """Instance method that a user account."""
+        """Instance method that adds a user account."""
         Account(accname=accname, user=self)
 
     def add_transaction(self, amount, date, description, catname, accname,
@@ -192,63 +227,10 @@ def empty_database():
 
 
 def create_db():
-    """Create new database."""
+    """Create new database and demo user."""
     empty_database()
-    # Create demo user
     user = User(
         email="demo@demo.demo", name="Demo", password="demo", confirmed=True)
-
-    # Create demo user's default categories
-    categories = (("Food", "Expense"),
-                  ("Alcohol", "Expense"),
-                  ("Entertainment", "Expense"),
-                  ("Insurance", "Expense"),
-                  ("Salary", "Income"),
-                  ("Interest Earned", "Income"),
-                  ("Interest Paid", "Expense"),
-                  ("Loan Repayment", "Expense"),
-                  ("School", "Expense"),
-                  ("Bank Fees", "Expense"),
-                  ("Holidays", "Expense"),
-                  ("Communications", "Expense"),
-                  ("Car", "Expense"),
-                  ("Kids", "Expense"),
-                  ("Medical Refund", "Income"),
-                  ("Medical Expense", "Expense"),
-                  ("Electricity", "Expense"),
-                  ("Sport", "Expense"),
-                  ("Water", "Expense"),
-                  ("Rates", "Expense"),
-                  ("Donations", "Expense"),
-                  ("Technology", "Expense"),
-                  ("Furniture", "Expense"),
-                  ("Personal Items", "Expense"),
-                  ("Shopping", "Expense"),
-                  ("Gifts", "Expense"),
-                  ("Eating Out", "Expense"),
-                  ("House Maintenance", "Expense"),
-                  ("House Improvements", "Expense"),
-                  ("Investments", "Expense"),
-                  ("Other Income", "Income"),
-                  ("Cash Withdrawal", "Expense"),
-                  ("Public Transport", "Expense"),
-                  ("Pets", "Expense"),
-                  ("Unspecified Expense", "Expense"),
-                  ("Unspecified Income", "Income"),
-                  ("Transfer In", "Transfer In"),
-                  ("Transfer Out", "Transfer Out"),
-                  ("Work", "Expense"),)
-    for catname, cattype in categories:
-        user.add_category(catname=catname, cattype=cattype)
-
-    # Create demo user's default accounts
-    accounts = (
-        "St George Term Deposit", "St George Transaction", "CBA Credit Card",
-        "BankWest Credit Card", "BankWest Term Deposit",
-        "ME Bank Term Deposit", "NAB Transaction", "ANZ Transaction",
-        "Unknown")
-    for accname in accounts:
-        user.add_account(accname=accname)
-
+    user.add_categories_accounts()
     db.session.add(user)
     db.session.commit()
