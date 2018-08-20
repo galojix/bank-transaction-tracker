@@ -34,6 +34,12 @@ class RegistrationForm(FlaskForm):
     password2 = PasswordField('Confirm password', validators=[Required()])
     submit = SubmitField('Register')
 
+    def validate_username(self, name):
+        """Validate user name."""
+        user = User.query.filter_by(name=name.data).first()
+        if user is not None:
+            raise ValidationError('Name already registered.')
+
     def validate_email(self, field):
         """Validate email address."""
         if User.query.filter_by(email=field.data).first():
