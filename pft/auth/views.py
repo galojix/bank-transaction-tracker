@@ -2,6 +2,7 @@
 from flask import render_template, url_for, request, redirect, session, flash,\
     Blueprint
 from flask_login import login_required, login_user, logout_user, current_user
+from werkzeug.urls import url_parse
 from datetime import datetime
 from ..database import User
 from .forms import (
@@ -53,8 +54,10 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
         if user is not None and user.verify_password(form.password.data):
             login_user(user, form.remember_me.data)
-            return redirect(
-                request.args.get('next') or url_for('web.home_page'))
+            next_page = request.args.get('next')
+            if not next_page or url_parse(next_page).netloc != '':
+                next_page = url_for('web.home_page')
+            return redirect(next_page)
         flash('Invalid email or password.')
     session['login_time'] = datetime.utcnow()
     return render_template('auth/login.html', form=form)
