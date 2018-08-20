@@ -49,6 +49,8 @@ def resend_confirmation():
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     """Login and return home page."""
+    if current_user.is_authenticated:
+        return redirect(url_for('web.home_page'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
@@ -74,6 +76,8 @@ def logout():
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
     """User registration form."""
+    if current_user.is_authenticated:
+        return redirect(url_for('web.home_page'))
     form = RegistrationForm()
     if form.validate_on_submit():
         user = User(
