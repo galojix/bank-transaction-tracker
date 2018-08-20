@@ -33,6 +33,9 @@ def predict_categories():
     """Predict transaction categories."""
     features_train, labels_train = collect_data()
     features_test = get_test_features()
+    if len(features_train) == 0:
+        predict = ['Unspecified Expense' for _ in features_test]
+        return predict
     features_train, features_test, num_features = vectorize_data(
         features_train, features_test)
     features_train, features_test = feature_selection(
