@@ -3,4 +3,4 @@ pft/__pycache__/
 *.sqlite
 venv/
 flask_session/
-
+.flaskenv

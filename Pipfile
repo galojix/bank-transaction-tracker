@@ -19,6 +19,9 @@ flask-sqlalchemy = "*"
 nltk = "*"
 sklearn = "*"
 scipy = "*"
+"psycopg2-binary" = "*"
+flask-migrate = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
