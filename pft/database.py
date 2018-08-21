@@ -169,8 +169,8 @@ class Category(db.Model):
 
     __tablename__ = 'categories'
     catno = db.Column(db.Integer, primary_key=True)
-    catname = db.Column(db.String(250), nullable=False)
-    cattype = db.Column(db.String(250), nullable=False)
+    catname = db.Column(db.String(250), nullable=False, index=True)
+    cattype = db.Column(db.String(250), nullable=False, index=True)
     id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship(User, back_populates="categories")
     transactions = db.relationship(
@@ -186,7 +186,7 @@ class Account(db.Model):
 
     __tablename__ = 'accounts'
     accno = db.Column(db.Integer, primary_key=True)
-    accname = db.Column(db.String(250), nullable=False)
+    accname = db.Column(db.String(250), nullable=False, index=True)
     id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship(User, back_populates="accounts")
     transactions = db.relationship(
@@ -203,7 +203,7 @@ class Transaction(db.Model):
     __tablename__ = 'transactions'
     transno = db.Column(db.Integer, primary_key=True)
     amount = db.Column(db.Integer, nullable=False)
-    date = db.Column(db.DateTime, nullable=False)
+    date = db.Column(db.DateTime, nullable=False, index=True)
     description = db.Column(db.String(250))
     catno = db.Column(
         db.Integer, db.ForeignKey('categories.catno'), nullable=False)
