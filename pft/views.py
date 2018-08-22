@@ -460,6 +460,7 @@ def process_transactions():
 
         if form.cancel.data:
             pass
+        db.session.commit()  # So that transactions get numbers
         session['transactions'] = [
             transaction.transno for transaction in current_user.transactions]
         return redirect(url_for('.transactions_page'))
