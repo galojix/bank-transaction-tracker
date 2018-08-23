@@ -26,7 +26,8 @@ web = Blueprint('web', __name__)
 def home_page():
     """Return Home HTML page."""
     return render_template(
-        'home.html', login_time=session.get('login_time'), menu="home")
+        'home.html', current_time=datetime.datetime.utcnow(),
+        login_time=session.get('login_time'), menu="home")
 
 
 @web.route('/accounts')
