@@ -408,11 +408,9 @@ def process_transactions():
 
     if form.validate_on_submit():
         if form.add.data:
-            # print(form.col_classifications.data)
-            # print(form.row_classifications.data)
             if not classifications_valid(form.col_classifications.data):
                 flash('Invalid classifications, please try again.')
-                redirect(url_for('.process_transactions'))
+                return redirect(url_for('.process_transactions'))
             for transno, transaction in enumerate(transactions):
                 action = form.row_classifications.data[transno]['action']
                 if action == 'Ignore':
@@ -422,7 +420,7 @@ def process_transactions():
                 description = ''
                 for fieldno, field in enumerate(transaction):
                     classification = (
-                        form.col_classifications.data[fieldno]['name'])
+                        form.col_classifications.data[fieldno]['column_label'])
                     if (
                         transaction[fieldno].isspace()
                         or transaction[fieldno] is None
@@ -482,7 +480,23 @@ def process_transactions():
 
 def classifications_valid(classifications):
     """Check that a valid set of classifications has been specified."""
-    return True
+    counts = {
+        'date': 0,
+        'description': 0,
+        'dr': 0,
+        'cr': 0,
+        'drcr': 0,
+        'ignore': 0,
+    }
+    for classification in classifications:
+        counts[classification['column_label']] += 1
+    if counts['date'] != 1 or counts['description'] != 1:
+        return False
+    if counts['dr'] == 1 and counts['cr'] == 1 and counts['drcr'] == 0:
+        return True
+    elif counts['dr'] == 0 and counts['cr'] == 0 and counts['drcr'] == 1:
+        return True
+    return False
 
 
 @web.route('/categories')
