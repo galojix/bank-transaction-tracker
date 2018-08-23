@@ -119,7 +119,7 @@ class ModifyCategoryForm(FlaskForm):
 class ClassifyTransactionColumnsForm(Form):
     """Classify transaction columns form."""
 
-    name = SelectField(
+    column_label = SelectField(
         'Define column:', validators=[DataRequired()], choices=[])
 
 
@@ -137,7 +137,7 @@ class ProcessUploadedTransactionsForm(FlaskForm):
         FormField(ClassifyTransactionColumnsForm))
     row_classifications = FieldList(
         FormField(ClassifyTransactionRowsForm))
-    add = SubmitField('Add')
+    add = SubmitField('Proceed')
     cancel = SubmitField('Cancel')
     date_format = SelectField('Date Format:', validators=[DataRequired()])
 

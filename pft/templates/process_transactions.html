@@ -20,7 +20,7 @@
 
   <tr>
   {% for classification in form.col_classifications %}
-      <th><div class="col-xs-12">{{ wtf.form_field(classification.form.name) }}</div></th>
+      <th><div class="col-xs-12">{{ wtf.form_field(classification.form.column_label) }}</div></th>
   {% endfor %}
   <th>Category</th>
   <th>Action</th>
@@ -40,6 +40,11 @@
  {% endfor %}
 
   </table>
+
+  <div class="col-md-12">
+  {{ wtf.form_field(form.add) }}
+  {{ wtf.form_field(form.cancel) }}
+  </div>
 
 </form>
 

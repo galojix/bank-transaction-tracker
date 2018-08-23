@@ -10,6 +10,7 @@ from sklearn import preprocessing
 from sklearn import svm
 from flask_login import current_user
 from flask import session
+from dateutil.parser import parse
 import string
 
 
@@ -42,6 +43,58 @@ def predict_categories():
         features_train, features_test, labels_train)
     predict = naive_bayes_predict(features_train, labels_train, features_test)
     return predict
+
+
+def predict_columns():
+    """Predict transaction column labels."""
+    result = []
+    transactions = session['uploaded_transactions']
+    for _ in range(len(transactions[0])):
+        result.append('ignore')
+    header_row = False
+    for i, value in enumerate(transactions[0]):
+        if 'date' in value.lower():
+            result[i] = 'date'
+            header_row = True
+        elif 'description' in value.lower() or 'narration' in value.lower():
+            result[i] = 'description'
+            header_row = True
+        elif 'dr' in value.lower() and 'cr' in value.lower():
+            result[i] = 'drcr'
+            header_row = True
+        elif 'debit' in value.lower() or 'dr' in value.lower():
+            result[i] = 'dr'
+            header_row = True
+        elif 'credit' in value.lower() or 'cr' in value.lower():
+            result[i] = 'cr'
+            header_row = True
+    if not header_row:
+        for i, value in enumerate(transactions[1]):
+            if is_number(value):
+                result[i] = 'drcr'
+            elif is_date(value):
+                result[i] = 'date'
+            elif len(value) > 10:
+                result[i] = 'description'
+    return result, header_row
+
+
+def is_date(string):
+    """Is string a date."""
+    try:
+        parse(string)
+        return True
+    except ValueError:
+        return False
+
+
+def is_number(s):
+    """Is string a number."""
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
 
 
 def collect_data():

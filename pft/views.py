@@ -8,7 +8,7 @@ from .forms import (
     UploadTransactionsForm, AddAccountForm, ModifyAccountForm,
     ModifyCategoryForm, AddCategoryForm, ProcessUploadedTransactionsForm,
     ClassifyTransactionColumnsForm, ClassifyTransactionRowsForm, ReportForm)
-from .classification import predict_categories
+from .classification import predict_categories, predict_columns
 from werkzeug import secure_filename
 from .database import db
 from .reports import graph
@@ -374,17 +374,18 @@ def process_transactions():
     transactions = session['uploaded_transactions']
 
     predicted_categories = predict_categories()
+    predicted_columns, header_row = predict_columns()
 
     classify_cols_form = ClassifyTransactionColumnsForm()
     if request.method != 'POST':
         for _ in range(0, len(transactions[0])):
             form.col_classifications.append_entry(classify_cols_form)
-    for subform in form.col_classifications:
-        subform.form.name.choices = [
+    for num, subform in enumerate(form.col_classifications):
+        subform.form.column_label.choices = [
             ('date', 'Date'), ('description', 'Description'),
             ('dr', 'Debit'), ('cr', 'Credit'), ('drcr', 'Debit/Credit'),
             ('ignore', 'Ignore')]
-        subform.form.name.default = 'date'
+        subform.form.column_label.default = predicted_columns[num]  # 'date'
 
     classify_rows_form = ClassifyTransactionRowsForm()
     if request.method != 'POST':
@@ -397,10 +398,13 @@ def process_transactions():
         ('Keep', 'Keep'), ('Ignore', 'Ignore')]
     for num, subform in enumerate(form.row_classifications):
         subform.form.category_name.choices = category_names
-        # subform.form.category_name.default = 'Unspecified Expense'
         subform.form.category_name.default = predicted_categories[num]
         subform.form.action.choices = actions
-        subform.form.action.default = 'Keep'
+        if num == 0 and header_row:
+            subform.form.action.default = 'Ignore'
+            subform.form.category_name.default = 'Unspecified Expense'
+        else:
+            subform.form.action.default = 'Keep'
 
     if form.validate_on_submit():
         if form.add.data:
@@ -466,7 +470,9 @@ def process_transactions():
         return redirect(url_for('.transactions_page'))
 
     for subform in form.row_classifications:
-        subform.form.process()
+        subform.form.process()  # Ensure default values take effect
+    for subform in form.col_classifications:
+        subform.form.process()  # Ensure default values take effect
     # form.process()  # Do this after validate_on_submit or breaks CSRF token
 
     return render_template(
