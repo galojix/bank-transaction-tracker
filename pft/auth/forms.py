@@ -89,3 +89,10 @@ class ChangeEmailForm(FlaskForm):
         """Validate email address."""
         if User.query.filter_by(email=field.data).first():
             raise ValidationError('Email already registered.')
+
+
+class DeleteUserForm(FlaskForm):
+    """Delete user form."""
+
+    yes = SubmitField('Yes')
+    no = SubmitField('No')

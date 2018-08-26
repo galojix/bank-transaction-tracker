@@ -7,7 +7,7 @@ from datetime import datetime
 from ..database import User
 from .forms import (
     LoginForm, RegistrationForm, ChangeEmailForm, ChangePasswordForm,
-    PasswordResetForm, PasswordResetRequestForm)
+    PasswordResetForm, PasswordResetRequestForm, DeleteUserForm)
 from ..database import db
 from ..email import send_email
 
@@ -192,3 +192,18 @@ def change_email(token):
     else:
         flash('Invalid request.')
     return redirect(url_for('web.home_page'))
+
+
+@auth.route('/delete_user', methods=['GET', 'POST'])
+@login_required
+def delete_user():
+    """Delete user and data."""
+    form = DeleteUserForm()
+    if form.validate_on_submit():
+        if form.yes.data:
+            db.session.delete(current_user)
+            db.session.commit()
+        elif form.no.data:
+            pass
+        return redirect(url_for('web.home_page'))
+    return render_template('auth/delete_user.html', form=form, menu="home")
