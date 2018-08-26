@@ -346,7 +346,8 @@ def upload_transactions():
             with open(csvfilename, newline='') as csvfile:
                 reader = csv.reader(csvfile, delimiter=',')
                 for row in reader:
-                    transactions.append(row)
+                    if ''.join(row).strip():  # Skip blank lines
+                        transactions.append(row)
             session['uploaded_transactions'] = transactions
             os.remove(csvfilename)
             os.rmdir(temp_dir)
