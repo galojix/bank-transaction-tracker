@@ -15,7 +15,6 @@ class User(UserMixin, db.Model):
 
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), nullable=False)
     email = db.Column(db.String(64), nullable=False, unique=True, index=True)
     password_hash = db.Column(db.String(250), nullable=False)
     confirmed = db.Column(db.Boolean, default=False)

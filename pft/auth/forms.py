@@ -21,10 +21,6 @@ class LoginForm(FlaskForm):
 class RegistrationForm(FlaskForm):
     """User registration form."""
 
-    name_validators = [Length(1, 64), DataRequired(), Regexp(
-        '^[A-Za-z][A-Za-z0-9_.]*$', 0, 'Names must have only letters, numbers,'
-        ' dots or underscores')]
-    name = StringField('Name', validators=name_validators)
     email_validators = [DataRequired(), Length(1, 64), Email()]
     email = StringField('Email', validators=email_validators)
     password_validators = [
@@ -33,12 +29,6 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('Password', validators=password_validators)
     password2 = PasswordField('Confirm password', validators=[Required()])
     submit = SubmitField('Register')
-
-    def validate_username(self, name):
-        """Validate user name."""
-        user = User.query.filter_by(name=name.data).first()
-        if user is not None:
-            raise ValidationError('Name already registered.')
 
     def validate_email(self, field):
         """Validate email address."""

@@ -6,7 +6,7 @@
 
 <h2>Welcome to PFT</h2>
     {% if current_user.is_authenticated %}
-        <p>You are logged in as {{ current_user.name }}.</p>
+        <p>You are logged in as {{ current_user.email }}.</p>
         <p>The current date is {{ moment(current_time).format('LL') }}.</p>
         <p>You logged in {{ moment(login_time).fromNow(refresh=True) }}.</p>
     {% else %}
