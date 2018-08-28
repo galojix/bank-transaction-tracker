@@ -115,7 +115,7 @@ class ExpensesByCategoryPieGraph(PieGraph):
         print(self.start_date, self.end_date)
         self.data = (
             db.session.query(Category.catname, func.sum(Transaction.amount))
-            .filter(Transaction.id == current_user.id)
+            .filter(Transaction.group_id == current_user.group().group_id)
             .filter(Transaction.catno == Category.catno)
             .filter(Category.cattype == 'Expense')
             .filter(Transaction.date >= self.start_date)
@@ -133,7 +133,7 @@ class IncomeByCategoryPieGraph(PieGraph):
         super().__init__(start_date, end_date)
         self.data = (
             db.session.query(Category.catname, func.sum(Transaction.amount))
-            .filter(Transaction.id == current_user.id)
+            .filter(Transaction.group_id == current_user.group().group_id)
             .filter(Transaction.catno == Category.catno)
             .filter(Category.cattype == 'Income')
             .filter(Transaction.date >= self.start_date)
@@ -210,11 +210,11 @@ class AccountBalancesLineGraph(LineGraph):
         accounts = []
         if account_name == 'All':
             accounts = [
-                account for account in current_user.accounts
+                account for account in current_user.group().accounts
                 if account.accname != 'Unknown']
         else:
             accounts = [
-                account for account in current_user.accounts
+                account for account in current_user.group().accounts
                 if account.accname == account_name]
 
         for account in accounts:
@@ -258,7 +258,7 @@ class CashFlowLineGraph(LineGraph):
         """Perform database query and populate data structure."""
         super().__init__(start_date, end_date)
 
-        transactions = current_user.transactions
+        transactions = current_user.group().transactions
 
         balance = 0
         start_balance = 0

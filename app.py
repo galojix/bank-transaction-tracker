@@ -2,7 +2,8 @@
 import os
 import click
 from pft import create_app
-from pft.database import db, User, Category, Account, Transaction, create_db
+from pft.database import (
+    db, User, Category, Account, Transaction, Group, MemberShip, create_db)
 import unittest
 from pft.classification import classification_score
 
@@ -14,7 +15,7 @@ app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 def make_shell_context():
     """Create a shell context so that can use REPL."""
     return dict(app=app, db=db, User=User, Category=Category, Account=Account,
-                Transaction=Transaction)
+                Transaction=Transaction, Group=Group, MemberShip=MemberShip)
 
 
 @app.cli.command()

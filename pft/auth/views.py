@@ -4,7 +4,7 @@ from flask import render_template, url_for, request, redirect, session, flash,\
 from flask_login import login_required, login_user, logout_user, current_user
 from werkzeug.urls import url_parse
 from datetime import datetime
-from ..database import User
+from ..database import User, Group, MemberShip
 from .forms import (
     LoginForm, RegistrationForm, ChangeEmailForm, ChangePasswordForm,
     PasswordResetForm, PasswordResetRequestForm, DeleteUserForm)
@@ -82,8 +82,12 @@ def register():
     if form.validate_on_submit():
         user = User(
             email=form.email.data, password=form.password.data)
-        user.add_categories_accounts()
+        group = Group(name='Group:' + form.email.data)
+        group.add_categories_accounts()
+        membership = MemberShip(user=user, group=group, active=True)
         db.session.add(user)
+        db.session.add(group)
+        db.session.add(membership)
         db.session.commit()
         token = user.generate_confirmation_token()
         send_email(

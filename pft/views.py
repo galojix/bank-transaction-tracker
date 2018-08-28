@@ -34,7 +34,10 @@ def home_page():
 @login_required
 def accounts_page():
     """Return Accounts HTML page."""
-    accounts = current_user.accounts
+    # for membership in current_user.memberships:
+    #     if membership.active:
+    #         accounts = membership.group.accounts
+    accounts = current_user.group().accounts
     known_accounts = [
         account for account in accounts if account.accname != 'Unknown']
     return render_template(
@@ -51,8 +54,8 @@ def modify_account(accno):
     form and redirect to Accounts HTML page.
     """
     account = (
-        Account.query.filter_by(user=current_user, accno=accno).one())
-    accounts = current_user.accounts
+        Account.query.filter_by(group=current_user.group(), accno=accno).one())
+    accounts = current_user.group().accounts
 
     form = ModifyAccountForm()
     form.account_name.default = account.accname
@@ -70,10 +73,10 @@ def modify_account(accno):
             db.session.add(account)
             db.session.commit()
         elif form.delete.data:
-            for transaction in current_user.transactions:
+            for transaction in current_user.group().transactions:
                 if transaction.account == account:
                     unknown_account = Account.query.filter_by(
-                        user=current_user, accname='Unknown').one()
+                        group=current_user.group(), accname='Unknown').one()
                     transaction.account = unknown_account
                     db.session.add(transaction)
                     db.session.commit()
@@ -98,7 +101,7 @@ def add_account():
     Return a form for adding an account or process submitted
     form and redirect to Accounts HTML page.
     """
-    accounts = current_user.accounts
+    accounts = current_user.group().accounts
 
     form = AddAccountForm()
     form.account_name.default = 'New Account'
@@ -111,7 +114,7 @@ def add_account():
                     return redirect(url_for('.add_account'))
             account = Account()
             account.accname = form.account_name.data
-            account.user = current_user
+            account.group = current_user.group()
             db.session.add(account)
             db.session.commit()
         elif form.cancel.data:
@@ -130,7 +133,7 @@ def transactions_page():
     """Return Transactions HTML page."""
     transaction_numbers = session.get('transactions', (-1,))
     transactions = [
-            transaction for transaction in current_user.transactions
+            transaction for transaction in current_user.group().transactions
             if transaction.transno in transaction_numbers]
     return render_template(
         'transactions.html', transactions=transactions,
@@ -146,14 +149,14 @@ def search_transactions():
     Return a form for searching transactions or process submitted
     form and render Transactions HTML page.
     """
-    categories = current_user.categories
+    categories = current_user.group().categories
     category_types = sorted({category.cattype for category in categories})
-    accounts = current_user.accounts
+    accounts = current_user.group().accounts
 
     form = SearchTransactionsForm()
 
     # Form choices and defaults
-    if current_user.transactions:
+    if current_user.group().transactions:
         form.start_date.default = current_user.transactions[0].date
     else:
         form.start_date.default = datetime.datetime.now()
@@ -179,7 +182,7 @@ def search_transactions():
             category_names = form.category_names.data
             category_types = form.category_types.data
             account_names = form.account_names.data
-            transactions = current_user.transactions
+            transactions = current_user.group().transactions
             selected_transactions = []
             for transaction in transactions:
                 if (
@@ -191,7 +194,7 @@ def search_transactions():
                 ):
                     selected_transactions.append(transaction)
         elif form.cancel.data:
-            selected_transactions = current_user.transactions
+            selected_transactions = current_user.group().transactions
 
         session['transactions'] = [
             transaction.transno for transaction in selected_transactions]
@@ -213,8 +216,8 @@ def add_transaction():
     Return a form for adding a transaction or process submitted
     form and redirect to Transactions HTML page.
     """
-    categories = current_user.categories
-    accounts = current_user.accounts
+    categories = current_user.group().categories
+    accounts = current_user.group().accounts
 
     category_names = [
         (category.catname, category.catname) for category in categories]
@@ -235,7 +238,7 @@ def add_transaction():
         # This must go here or else before_app_request will try to commit
         # transaction with NULL fields when SQLALCHEMY_COMMIT_ON_TEARDOWN
         # is set to True
-        transaction = Transaction(user=current_user)
+        transaction = Transaction(group=current_user.group())
         if form.add.data:
             transaction.date = form.date.data
             for category in categories:
@@ -254,7 +257,8 @@ def add_transaction():
         if 'transactions' in session:
             del session['transactions']
         session['transactions'] = [
-            transaction.transno for transaction in current_user.transactions]
+            transaction.transno for transaction in current_user
+            .group().transactions]
         return redirect(url_for('.transactions_page'))
 
     form.process()  # Do this after validate_on_submit or breaks CSRF token
@@ -273,9 +277,10 @@ def modify_transaction(transno):
     form and redirect to Transactions HTML page.
     """
     transaction = (
-        Transaction.query.filter_by(user=current_user, transno=transno).one())
-    categories = transaction.user.categories
-    accounts = transaction.user.accounts
+        Transaction.query.filter_by(
+            group=current_user.group(), transno=transno).one())
+    categories = transaction.group.categories
+    accounts = transaction.group.accounts
 
     category_names = [
         (category.catname, category.catname) for category in categories]
@@ -328,7 +333,7 @@ def upload_transactions():
     form and redirect to Transactions HTML page.
     """
     form = UploadTransactionsForm()
-    accounts = current_user.accounts
+    accounts = current_user.group().accounts
     account_names = [
         (account.accname, account.accname) for account in accounts]
     form.account.choices = account_names
@@ -393,7 +398,7 @@ def process_transactions():
     if request.method != 'POST':
         for _ in range(0, len(transactions)):
             form.row_classifications.append_entry(classify_rows_form)
-    categories = current_user.categories
+    categories = current_user.group().categories
     category_names = [
         (category.catname, category.catname) for category in categories]
     actions = [
@@ -443,21 +448,21 @@ def process_transactions():
                     form.row_classifications.data[transno]['category_name'])
                 accname = session['upload_account']
                 if form.date_format.data == 'DMY':
-                    current_user.add_transaction(
+                    current_user.group().add_transaction(
                         amount=amount, date=date, catname=catname,
                         accname=accname, description=description)
                 elif form.date_format.data == 'MDY':
-                    current_user.add_transaction(
+                    current_user.group().add_transaction(
                         amount=amount, date=date, catname=catname,
                         accname=accname, description=description,
                         dayfirst=False)
                 elif form.date_format.data == 'YMD':
-                    current_user.add_transaction(
+                    current_user.group().add_transaction(
                         amount=amount, date=date, catname=catname,
                         accname=accname, description=description,
                         dayfirst=False, yearfirst=True)
                 elif form.date_format.data == 'YDM':
-                    current_user.add_transaction(
+                    current_user.group().add_transaction(
                         amount=amount, date=date, catname=catname,
                         accname=accname, description=description,
                         yearfirst=True)
@@ -466,7 +471,8 @@ def process_transactions():
             pass
         db.session.commit()  # So that transactions get numbers
         session['transactions'] = [
-            transaction.transno for transaction in current_user.transactions]
+            transaction.transno for transaction in current_user
+            .group().transactions]
         return redirect(url_for('.transactions_page'))
 
     for subform in form.row_classifications:
@@ -505,7 +511,7 @@ def classifications_valid(classifications):
 @login_required
 def categories_page():
     """Return Categories HTML page."""
-    categories = current_user.categories
+    categories = current_user.group().categories
     known_categories = [
         category for category in categories if (
             category.catname != 'Unspecified Expense' and
@@ -523,7 +529,7 @@ def add_category():
     Return a form for adding a category or process submitted
     form and redirect to Categories HTML page.
     """
-    categories = current_user.categories
+    categories = current_user.group().categories
 
     form = AddCategoryForm()
     form.category_name.default = 'New Category'
@@ -541,7 +547,7 @@ def add_category():
             category = Category()
             category.catname = form.category_name.data
             category.cattype = form.category_type.data
-            category.user = current_user
+            category.group = current_user.group()
             db.session.add(category)
             db.session.commit()
         elif form.cancel.data:
@@ -564,12 +570,13 @@ def modify_category(catno):
     form and redirect to Categories HTML page.
     """
     category = (
-        Category.query.filter_by(user=current_user, catno=catno).one())
+        Category.query.filter_by(
+            group=current_user.group(), catno=catno).one())
     unspecified_expense = (Category.query.filter_by(
-        user=current_user, catname='Unspecified Expense').one())
+        group=current_user.group(), catname='Unspecified Expense').one())
     unspecified_income = (Category.query.filter_by(
-        user=current_user, catname='Unspecified Income').one())
-    categories = current_user.categories
+        group=current_user.group(), catname='Unspecified Income').one())
+    categories = current_user.group().categories
 
     form = ModifyCategoryForm()
     form.category_name.default = category.catname
@@ -592,7 +599,7 @@ def modify_category(catno):
             db.session.add(category)
             db.session.commit()
         elif form.delete.data:
-            for transaction in current_user.transactions:
+            for transaction in current_user.group().transactions:
                 if (
                     transaction.category == category and
                     category.cattype == 'Expense'
@@ -623,7 +630,7 @@ def modify_category(catno):
 @login_required
 def reports_page(report_name):
     """Return reports HTML page."""
-    accounts = current_user.accounts
+    accounts = current_user.group().accounts
 
     account_names = [
         (account.accname, account.accname) for account in accounts]

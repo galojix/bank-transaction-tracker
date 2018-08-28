@@ -101,7 +101,7 @@ def collect_data():
     """Get existing transaction descriptions and categories."""
     feature_data = []
     label_data = []
-    transactions = current_user.transactions
+    transactions = current_user.group().transactions
     for transaction in transactions:
         description = stem_description(transaction.description)
         feature_data.append(description)
