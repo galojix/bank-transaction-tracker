@@ -157,7 +157,7 @@ def search_transactions():
 
     # Form choices and defaults
     if current_user.group().transactions:
-        form.start_date.default = current_user.transactions[0].date
+        form.start_date.default = current_user.group().transactions[0].date
     else:
         form.start_date.default = datetime.datetime.now()
     form.end_date.default = datetime.datetime.now()
