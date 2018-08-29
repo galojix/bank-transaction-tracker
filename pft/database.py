@@ -201,7 +201,7 @@ class MemberShip(db.Model):
 
     def __repr__(self):
         """Represent membership as user_id and group_id."""
-        return '<Cat:{num1},{num2}>'.format(num1=self.id, num2=self.group_id)
+        return '<Mem:{num1},{num2}>'.format(num1=self.id, num2=self.group_id)
 
 
 class Category(db.Model):
