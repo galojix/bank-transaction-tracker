@@ -23,7 +23,7 @@
    <tr>
        <td>{{ memberships[loop.index-1].group.name}}</td>
        <td><a href="{{url_for('.modify_group', group_id=memberships[loop.index-1].group.group_id)}}">Modify</a></td>
-       <td>{{ wtf.form_field(subfield) }}</td>
+       <td>{{ subfield }}</td>
    </tr>
 
 
