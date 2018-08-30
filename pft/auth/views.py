@@ -7,7 +7,8 @@ from datetime import datetime
 from ..database import User, Group, MemberShip
 from .forms import (
     LoginForm, RegistrationForm, ChangeEmailForm, ChangePasswordForm,
-    PasswordResetForm, PasswordResetRequestForm, DeleteUserForm)
+    PasswordResetForm, PasswordResetRequestForm, DeleteUserForm,
+    ChangeGroupForm)
 from ..database import db
 from ..email import send_email
 
@@ -210,3 +211,43 @@ def delete_user():
             pass
         return redirect(url_for('web.home_page'))
     return render_template('auth/delete_user.html', form=form, menu="home")
+
+
+@auth.route('/change_group', methods=['GET', 'POST'])
+@login_required
+def change_group():
+    """Change active group."""
+    form = ChangeGroupForm()
+    memberships = current_user.memberships
+    form.groups.choices = []
+    for member in memberships:
+        form.groups.choices.append((str(member.group.group_id), ''))
+        if member.active:
+            active_member = member
+            form.groups.default = str(active_member.group.group_id)
+            print(form.groups.default)
+    if form.validate_on_submit():
+        if form.submit.data:
+            new_active_group_id = int(form.groups.data)
+            active_member.active = False
+            for member in memberships:
+                if member.group.group_id == new_active_group_id:
+                    member.active = True
+            db.session.add(member)
+            db.session.commit()
+        elif form.cancel.data:
+            pass
+        return redirect(url_for('web.home_page'))
+
+    form.process()  # Do this after validate_on_submit or breaks CSRF token
+
+    return render_template(
+        'auth/change_group.html', memberships=memberships,
+        form=form, menu="home")
+
+
+@auth.route('/modify_group', methods=['GET', 'POST'])
+@login_required
+def modify_group():
+    """Modify group."""
+    pass

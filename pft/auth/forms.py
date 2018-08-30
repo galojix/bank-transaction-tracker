@@ -1,9 +1,10 @@
 """Module that handles the authorization forms."""
 from flask_wtf import FlaskForm
 from wtforms import (
-    SubmitField, StringField, PasswordField, BooleanField, ValidationError)
+    SubmitField, StringField, PasswordField, BooleanField, ValidationError,
+    RadioField)
 from wtforms.validators import (
-    Required, Length, Email, EqualTo, DataRequired, Regexp)
+    Required, Length, Email, EqualTo, DataRequired)
 from ..database import User
 
 
@@ -86,3 +87,11 @@ class DeleteUserForm(FlaskForm):
 
     yes = SubmitField('Yes')
     no = SubmitField('No')
+
+
+class ChangeGroupForm(FlaskForm):
+    """Change group form."""
+
+    groups = RadioField('', validators=[DataRequired()])
+    submit = SubmitField('Submit')
+    cancel = SubmitField('Cancel')

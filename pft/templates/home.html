@@ -7,7 +7,9 @@
 <h2>Welcome to PFT</h2>
     {% if current_user.is_authenticated %}
         <p>You are logged in as {{ current_user.email }}.</p>
+        <p>Your current group is {{ current_user.group().name }}.</p>
         <p>The current date is {{ moment(current_time).format('LL') }}.</p>
+        <p>Login time: {{ moment(login_time).format('MMMM Do YYYY, h:mm:ss a') }}
         <p>You logged in {{ moment(login_time).fromNow(refresh=True) }}.</p>
     {% else %}
         <p>Personal Finance Tracker (PFT) is an application for tracking your personal income and expenditure.</p>
