@@ -15,6 +15,8 @@
     <tr>
         <th>Group Name</th>
         <th>Action</th>
+        <th>Action</th>
+        <th>Action</th>
         <th>Active</th>
     </tr>
 
@@ -22,7 +24,9 @@
 
    <tr>
        <td>{{ memberships[loop.index-1].group.name}}</td>
-       <td><a href="{{url_for('.modify_group', group_id=memberships[loop.index-1].group.group_id)}}">Modify</a></td>
+       <td><a href="{{url_for('.modify_group_name', group_id=memberships[loop.index-1].group.group_id)}}">Change Name</a></td>
+       <td><a href="{{url_for('.add_group_member', group_id=memberships[loop.index-1].group.group_id)}}">Add Member</a></td>
+       <td><a href="{{url_for('.delete_group_member', group_id=memberships[loop.index-1].group.group_id)}}">Delete Member</a></td>
        <td>{{ subfield }}</td>
    </tr>
 

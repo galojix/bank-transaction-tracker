@@ -2,9 +2,10 @@
 from flask_wtf import FlaskForm
 from wtforms import (
     SubmitField, StringField, PasswordField, BooleanField, ValidationError,
-    RadioField)
+    RadioField, TextField, SelectMultipleField)
 from wtforms.validators import (
     Required, Length, Email, EqualTo, DataRequired)
+from wtforms import widgets
 from ..database import User
 
 
@@ -94,4 +95,41 @@ class ChangeGroupForm(FlaskForm):
 
     groups = RadioField('', validators=[DataRequired()])
     submit = SubmitField('Submit')
+    cancel = SubmitField('Cancel')
+
+
+class ModifyGroupNameForm(FlaskForm):
+    """Modify group form."""
+
+    group_name = TextField('Group Name:', validators=[DataRequired()])
+    modify = SubmitField('Modify')
+    cancel = SubmitField('Cancel')
+
+
+class MultiCheckboxField(SelectMultipleField):
+    """
+    A multiple-select, except displays a list of checkboxes.
+
+    Iterating the field will produce subfields, allowing custom rendering of
+    the enclosed checkbox fields.
+    """
+
+    widget = widgets.ListWidget(prefix_label=False)
+    option_widget = widgets.CheckboxInput()
+
+
+class DeleteGroupMemberForm(FlaskForm):
+    """Delete group member form."""
+
+    del_email = MultiCheckboxField('')
+    delete = SubmitField('Delete')
+    cancel = SubmitField('Cancel')
+
+
+class AddGroupMemberForm(FlaskForm):
+    """Delete group member form."""
+
+    email_validators = [DataRequired(), Length(0, 64), Email()]
+    add_email = StringField('Email:', validators=email_validators)
+    add = SubmitField('Add')
     cancel = SubmitField('Cancel')

@@ -8,7 +8,8 @@ from ..database import User, Group, MemberShip
 from .forms import (
     LoginForm, RegistrationForm, ChangeEmailForm, ChangePasswordForm,
     PasswordResetForm, PasswordResetRequestForm, DeleteUserForm,
-    ChangeGroupForm)
+    ChangeGroupForm, ModifyGroupNameForm, DeleteGroupMemberForm,
+    AddGroupMemberForm)
 from ..database import db
 from ..email import send_email
 
@@ -246,8 +247,89 @@ def change_group():
         form=form, menu="myaccount")
 
 
-@auth.route('/modify_group', methods=['GET', 'POST'])
+@auth.route('/modify_group/<int:group_id>/', methods=['GET', 'POST'])
 @login_required
-def modify_group():
-    """Modify group."""
-    pass
+def modify_group_name(group_id):
+    """Modify group name."""
+    group = None
+    form = ModifyGroupNameForm()
+    memberships = current_user.memberships
+    for membership in memberships:
+        if membership.group_id == group_id:
+            group = membership.group
+            break
+    form.group_name.default = group.name
+    if form.validate_on_submit():
+        if form.modify.data:
+            group.name = form.group_name.data
+            db.session.add(group)
+            db.session.commit()
+        if form.cancel.data:
+            pass
+        return redirect(url_for('auth.change_group'))
+
+    form.process()  # Do this after validate_on_submit or breaks CSRF token
+
+    return render_template(
+        'auth/modify_group_name.html', form=form, menu="myaccount")
+
+
+@auth.route('/delete_group_member/<int:group_id>/', methods=['GET', 'POST'])
+@login_required
+def delete_group_member(group_id):
+    """Delete group member."""
+    group = None
+    form = DeleteGroupMemberForm()
+    memberships = current_user.memberships
+    for membership in memberships:
+        if membership.group_id == group_id:
+            group = membership.group
+            break
+    members = MemberShip.query.filter_by(group=group)
+    form.del_email.choices = []
+    for member in members:
+        if member.user != current_user:
+            email = member.user.email
+            form.del_email.choices.append((email, email))
+    if form.validate_on_submit():
+        if form.delete.data:
+            for member in members:
+                if member.user.email in form.del_email.data:
+                    db.session.delete(member)
+            db.session.commit()
+        if form.cancel.data:
+            pass
+        return redirect(url_for('auth.change_group'))
+
+    form.process()  # Do this after validate_on_submit or breaks CSRF token
+
+    return render_template(
+        'auth/delete_group_member.html', form=form, menu="myaccount")
+
+
+@auth.route('/add_group_member/<int:group_id>/', methods=['GET', 'POST'])
+@login_required
+def add_group_member(group_id):
+    """Add group member."""
+    group = None
+    form = AddGroupMemberForm()
+    memberships = current_user.memberships
+    for membership in memberships:
+        if membership.group_id == group_id:
+            group = membership.group
+            break
+    form.add_email.default = 'newemail@email.com'
+    if form.validate_on_submit():
+        if form.add.data:
+            new_user = User.query.filter_by(email=form.add_email.data).one()
+            new_member = MemberShip(user=new_user, group=group, active=False)
+            db.session.add(new_member)
+            db.session.commit()
+        if form.cancel.data:
+            pass
+        return redirect(url_for('auth.change_group'))
+
+    form.process()  # Do this after validate_on_submit or breaks CSRF token
+
+    return render_template(
+        'auth/add_group_member.html', form=form, menu="myaccount")
