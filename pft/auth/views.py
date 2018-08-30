@@ -243,7 +243,7 @@ def change_group():
 
     return render_template(
         'auth/change_group.html', memberships=memberships,
-        form=form, menu="home")
+        form=form, menu="myaccount")
 
 
 @auth.route('/modify_group', methods=['GET', 'POST'])
