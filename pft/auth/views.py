@@ -4,6 +4,8 @@ from flask import render_template, url_for, request, redirect, session, flash,\
 from flask_login import login_required, login_user, logout_user, current_user
 from werkzeug.urls import url_parse
 from datetime import datetime
+from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import IntegrityError
 from ..database import User, Group, MemberShip
 from .forms import (
     LoginForm, RegistrationForm, ChangeEmailForm, ChangePasswordForm,
@@ -247,17 +249,20 @@ def change_group():
         form=form, menu="myaccount")
 
 
-@auth.route('/modify_group/<int:group_id>/', methods=['GET', 'POST'])
+@auth.route('/modify_group_name/<int:group_id>/', methods=['GET', 'POST'])
 @login_required
 def modify_group_name(group_id):
     """Modify group name."""
-    group = None
     form = ModifyGroupNameForm()
-    memberships = current_user.memberships
-    for membership in memberships:
-        if membership.group_id == group_id:
-            group = membership.group
-            break
+    try:
+        group = (
+            db.session.query(Group)
+            .filter(Group.group_id == group_id)
+            .filter(MemberShip.id == current_user.id)
+            .one())
+    except NoResultFound:
+        flash('Invalid group.')
+        return redirect(url_for('auth.change_group'))
     form.group_name.default = group.name
     if form.validate_on_submit():
         if form.modify.data:
@@ -278,14 +283,19 @@ def modify_group_name(group_id):
 @login_required
 def delete_group_member(group_id):
     """Delete group member."""
-    group = None
     form = DeleteGroupMemberForm()
-    memberships = current_user.memberships
-    for membership in memberships:
-        if membership.group_id == group_id:
-            group = membership.group
-            break
-    members = MemberShip.query.filter_by(group=group)
+    try:
+        group = (
+            db.session.query(Group)
+            .filter(Group.group_id == group_id)
+            .filter(MemberShip.id == current_user.id)
+            .one())
+        members = (
+            MemberShip.query.filter(MemberShip.group_id == group.group_id)
+            .all())
+    except NoResultFound:
+        flash('Invalid group.')
+        return redirect(url_for('auth.change_group'))
     form.del_email.choices = []
     for member in members:
         if member.user != current_user:
@@ -311,20 +321,36 @@ def delete_group_member(group_id):
 @login_required
 def add_group_member(group_id):
     """Add group member."""
-    group = None
     form = AddGroupMemberForm()
-    memberships = current_user.memberships
-    for membership in memberships:
-        if membership.group_id == group_id:
-            group = membership.group
-            break
+    try:
+        group = (
+            db.session.query(Group)
+            .filter(Group.group_id == group_id)
+            .filter(MemberShip.id == current_user.id)
+            .one())
+    except NoResultFound:
+        flash('Invalid group.')
+        return redirect(url_for('auth.change_group'))
+
     form.add_email.default = 'newemail@email.com'
     if form.validate_on_submit():
         if form.add.data:
-            new_user = User.query.filter_by(email=form.add_email.data).one()
-            new_member = MemberShip(user=new_user, group=group, active=False)
-            db.session.add(new_member)
-            db.session.commit()
+            try:
+                new_user = (
+                    User.query.filter_by(email=form.add_email.data).one())
+            except NoResultFound:
+                flash('Email does not belong to an existing user.')
+                return redirect(url_for('auth.change_group'))
+            try:
+                new_member = MemberShip(
+                    user=new_user, group=group, active=False)
+                db.session.add(new_member)
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
+                flash('Email is already a member.')
+                return redirect(url_for('auth.change_group'))
+
         if form.cancel.data:
             pass
         return redirect(url_for('auth.change_group'))
