@@ -2,6 +2,7 @@
 from flask import (
     render_template, url_for, redirect, session, Blueprint, flash, request)
 from flask_login import login_required, current_user
+from sqlalchemy.orm.exc import NoResultFound
 from .database import Transaction, Account, Category
 from .forms import (
     ModifyTransactionForm, AddTransactionForm, SearchTransactionsForm,
@@ -53,10 +54,13 @@ def modify_account(accno):
     Return a form for modifying accounts or process submitted
     form and redirect to Accounts HTML page.
     """
-    account = (
-        Account.query.filter_by(group=current_user.group(), accno=accno).one())
+    group = current_user.group()
+    try:
+        account = Account.query.filter_by(group=group, accno=accno).one()
+    except NoResultFound:
+        flash('Invalid account.')
+        return redirect(url_for('.accounts_page'))
     accounts = current_user.group().accounts
-
     form = ModifyAccountForm()
     form.account_name.default = account.accname
 
@@ -276,9 +280,13 @@ def modify_transaction(transno):
     Return a form for modifying transactions or process submitted
     form and redirect to Transactions HTML page.
     """
-    transaction = (
-        Transaction.query.filter_by(
-            group=current_user.group(), transno=transno).one())
+    group = current_user.group()
+    try:
+        transaction = (
+            Transaction.query.filter_by(group=group, transno=transno).one())
+    except NoResultFound:
+        flash('Invalid transaction.')
+        return redirect(url_for('.transactions_page'))
     categories = transaction.group.categories
     accounts = transaction.group.accounts
 
@@ -569,9 +577,12 @@ def modify_category(catno):
     Return a form for modifying categories or process submitted
     form and redirect to Categories HTML page.
     """
-    category = (
-        Category.query.filter_by(
-            group=current_user.group(), catno=catno).one())
+    group = current_user.group()
+    try:
+        category = Category.query.filter_by(group=group, catno=catno).one()
+    except NoResultFound:
+        flash('Invalid category.')
+        return redirect(url_for('.categories_page'))
     unspecified_expense = (Category.query.filter_by(
         group=current_user.group(), catname='Unspecified Expense').one())
     unspecified_income = (Category.query.filter_by(
