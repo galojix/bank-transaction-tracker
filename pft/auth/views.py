@@ -258,6 +258,7 @@ def modify_group_name(group_id):
         group = (
             db.session.query(Group)
             .filter(Group.group_id == group_id)
+            .filter(MemberShip.group_id == Group.group_id)
             .filter(MemberShip.id == current_user.id)
             .one())
     except NoResultFound:
@@ -288,6 +289,7 @@ def delete_group_member(group_id):
         group = (
             db.session.query(Group)
             .filter(Group.group_id == group_id)
+            .filter(MemberShip.group_id == Group.group_id)
             .filter(MemberShip.id == current_user.id)
             .one())
         members = (
@@ -326,6 +328,7 @@ def add_group_member(group_id):
         group = (
             db.session.query(Group)
             .filter(Group.group_id == group_id)
+            .filter(MemberShip.group_id == Group.group_id)
             .filter(MemberShip.id == current_user.id)
             .one())
     except NoResultFound:
