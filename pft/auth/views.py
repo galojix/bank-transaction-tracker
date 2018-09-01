@@ -60,12 +60,12 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
         if user is not None and user.verify_password(form.password.data):
             login_user(user, form.remember_me.data)
+            session['login_time'] = datetime.utcnow()
             next_page = request.args.get('next')
             if not next_page or url_parse(next_page).netloc != '':
                 next_page = url_for('web.home_page')
             return redirect(next_page)
         flash('Invalid email or password.')
-    session['login_time'] = datetime.utcnow()
     return render_template('auth/login.html', form=form)
 
 
