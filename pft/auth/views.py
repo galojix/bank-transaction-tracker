@@ -61,6 +61,9 @@ def login():
         if user is not None and user.verify_password(form.password.data):
             login_user(user, form.remember_me.data)
             session['login_time'] = datetime.utcnow()
+            # Need this because login_user/remember_me is ignored
+            # when using server side sessions
+            session.permanent = form.remember_me.data
             next_page = request.args.get('next')
             if not next_page or url_parse(next_page).netloc != '':
                 next_page = url_for('web.home_page')

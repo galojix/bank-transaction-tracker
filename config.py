@@ -23,7 +23,6 @@ class Config:
     MAIL_SENDER = 'PFT Admin <pft@galojix.com>'
 
     SESSION_TYPE = 'filesystem'
-    PERMANENT_SESSION_LIFETIME = 3600
 
     @staticmethod
     def init_app(app):
