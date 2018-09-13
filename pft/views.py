@@ -143,6 +143,25 @@ def transactions_page():
         menu="transactions")
 
 
+@web.route('/transactions/delete/<int:transno>/')
+@login_required
+def delete_transaction(transno):
+    """Delete transaction."""
+    group = current_user.group()
+    try:
+        transaction_to_delete = (
+            Transaction.query.filter_by(group=group, transno=transno).one())
+    except NoResultFound:
+        flash('Invalid transaction.')
+        return redirect(url_for('.transactions_page'))
+    db.session.delete(transaction_to_delete)
+    db.session.commit()
+    flash('Transaction deleted.')
+    if transno in session.get('transactions', (-1,)):
+        session['transactions'].remove(transno)
+    return redirect(url_for('.transactions_page'))
+
+
 @web.route('/transactions/search', methods=['GET', 'POST'])
 @login_required
 def search_transactions():

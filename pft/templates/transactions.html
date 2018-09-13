@@ -16,6 +16,7 @@
         <th>Account</th>
         <th class="text-center">Amount</th>
         <th>Action</th>
+        <th>Action</th>
     </tr>
 
    {% for transaction in transactions %}
@@ -28,6 +29,7 @@
        <td>{{transaction.account.accname}}</td>
        <td class="text-right">{{'{:,.2f}'.format(transaction.amount / 100.0)}}</td>
        <td><a href="{{url_for('.modify_transaction', transno=transaction.transno)}}">Modify</a></td>
+       <td><a href="{{url_for('.delete_transaction', transno=transaction.transno)}}">Delete</a></td>
    </tr>
 
    {% endfor %}
