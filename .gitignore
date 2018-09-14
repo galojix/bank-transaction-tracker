@@ -4,3 +4,4 @@ pft/__pycache__/
 venv/
 flask_session/
 .flaskenv
+.pytest_cache

@@ -22,6 +22,7 @@ scipy = "*"
 "psycopg2-binary" = "*"
 flask-migrate = "*"
 python-dotenv = "*"
+pytest = "*"
 
 [dev-packages]
 
