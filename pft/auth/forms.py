@@ -3,8 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import (
     SubmitField, StringField, PasswordField, BooleanField, ValidationError,
     RadioField, TextField)
-from wtforms.validators import (
-    Required, Length, Email, EqualTo, DataRequired)
+from wtforms.validators import Length, Email, EqualTo, DataRequired
 from ..database import User
 from ..forms import MultiCheckboxField
 
@@ -29,7 +28,7 @@ class RegistrationForm(FlaskForm):
         DataRequired(), EqualTo('password2', message='Passwords must match.'),
         Length(4, 64)]
     password = PasswordField('Password', validators=password_validators)
-    password2 = PasswordField('Confirm password', validators=[Required()])
+    password2 = PasswordField('Confirm password', validators=[DataRequired()])
     submit = SubmitField('Register')
 
     def validate_email(self, field):
