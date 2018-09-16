@@ -23,6 +23,7 @@ scipy = "*"
 flask-migrate = "*"
 python-dotenv = "*"
 pytest = "*"
+gunicorn = "*"
 
 [dev-packages]
 
