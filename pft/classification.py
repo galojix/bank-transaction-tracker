@@ -14,9 +14,12 @@ from dateutil.parser import parse
 import string
 
 
-def classification_score(user_name):
-    """Calculate transaction classification score for user."""
-    feature_data, label_data = collect_data_for_user(user_name)
+def classification_score(group_id):
+    """Calculate transaction classification score for group.
+
+    This is used for checking algorithm from command line.
+    """
+    feature_data, label_data = collect_data_for_group(group_id)
     data_size = len(feature_data)
     features_train, features_test, labels_train, labels_test = split_data(
         feature_data, label_data)
@@ -24,9 +27,8 @@ def classification_score(user_name):
         features_train, features_test)
     features_train, features_test = feature_selection(
         features_train, features_test, labels_train)
-    # predict = svm_predict(features_train, labels_train, features_test)
-    predict = naive_bayes_predict(features_train, labels_train, features_test)
-    score = accuracy(labels_test, predict)
+    predict = svm_predict(features_train, labels_train, features_test)
+    score = accuracy_score(labels_test, predict)
     return score, data_size, num_features
 
 
@@ -41,7 +43,7 @@ def predict_categories():
         features_train, features_test)
     features_train, features_test = feature_selection(
         features_train, features_test, labels_train)
-    predict = naive_bayes_predict(features_train, labels_train, features_test)
+    predict = svm_predict(features_train, labels_train, features_test)
     return predict
 
 
@@ -106,6 +108,11 @@ def collect_data():
         description = stem_description(transaction.description)
         feature_data.append(description)
         label_data.append(transaction.category.catname)
+    # print('*******************************************************')
+    # for num, feature in enumerate(feature_data):
+    #     if 'myer' in feature:
+    #         print(feature, label_data[num])
+    # print('*******************************************************')
     return feature_data, label_data
 
 
@@ -117,10 +124,15 @@ def get_test_features():
         description = " ".join(transaction)
         description = stem_description(description)
         features_test.append(description)
+    # print('*******************************************************')
+    # for num, feature in enumerate(features_test):
+    #     if 'myer' in feature:
+    #         print(num, ':', feature)
+    # print('*******************************************************')
     return features_test
 
 
-def collect_data_for_user(group_id):
+def collect_data_for_group(group_id):
     """Read transactions (descriptions and categories) from database.
 
     Add string of space separated stemmed words to feature_data list
@@ -211,9 +223,3 @@ def svm_predict(features_train, labels_train, features_test):
     predict = clf.predict(features_test)
     # print("predict time:", round(time() - t0, 3), "s")
     return predict
-
-
-def accuracy(labels_test, predict):
-    """Accuracy."""
-    score = accuracy_score(labels_test, predict)
-    return score
