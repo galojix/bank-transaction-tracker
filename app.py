@@ -40,10 +40,10 @@ def newdb():
 
 
 @app.cli.command()
-@click.argument('name')
-def classify(name):
-    """Test transaction categorization for user name."""
-    score, data_size, num_features = classification_score(name)
+@click.argument('email')
+def classify(email):
+    """Test transaction categorization for email."""
+    score, data_size, num_features = classification_score(email)
     print('Score: ', score)
     print('Data Size: ', data_size)
     print('Number of Features: ', num_features)

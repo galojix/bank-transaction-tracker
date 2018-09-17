@@ -120,7 +120,7 @@ def get_test_features():
     return features_test
 
 
-def collect_data_for_user(user_name):
+def collect_data_for_user(user_email):
     """Read transactions (descriptions and categories) from database.
 
     Add string of space separated stemmed words to feature_data list
@@ -130,7 +130,7 @@ def collect_data_for_user(user_name):
     label_data = []
     transactions = (
         db.session.query(Transaction, Category, User)
-        .filter(User.name == user_name)
+        .filter(User.email == user_email)
         .filter(Transaction.id == User.id)
         .filter(Transaction.catno == Category.catno)
         .all())
