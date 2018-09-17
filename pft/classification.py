@@ -1,6 +1,6 @@
 """Module that uses machine learning techniques to categorise transactions."""
 from nltk.stem.snowball import SnowballStemmer
-from .database import db, Transaction, Category, User
+from .database import db, Transaction, Category
 from sklearn import model_selection
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_selection import SelectPercentile, f_classif
@@ -120,7 +120,7 @@ def get_test_features():
     return features_test
 
 
-def collect_data_for_user(user_email):
+def collect_data_for_user(group_id):
     """Read transactions (descriptions and categories) from database.
 
     Add string of space separated stemmed words to feature_data list
@@ -129,9 +129,8 @@ def collect_data_for_user(user_email):
     feature_data = []
     label_data = []
     transactions = (
-        db.session.query(Transaction, Category, User)
-        .filter(User.email == user_email)
-        .filter(Transaction.id == User.id)
+        db.session.query(Transaction, Category)
+        .filter(Transaction.group_id == group_id)
         .filter(Transaction.catno == Category.catno)
         .all())
     for transaction, category, user in transactions:
