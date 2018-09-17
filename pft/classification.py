@@ -133,7 +133,7 @@ def collect_data_for_user(group_id):
         .filter(Transaction.group_id == group_id)
         .filter(Transaction.catno == Category.catno)
         .all())
-    for transaction, category, user in transactions:
+    for transaction, category in transactions:
         description = stem_description(transaction.description)
         feature_data.append(description)
         label_data.append(category.catname)
