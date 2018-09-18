@@ -56,6 +56,7 @@ class SearchTransactionsForm(FlaskForm):
         'Start Date:', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
     end_date = DateTimeLocalField(
         'End Date:', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
+    description = TextField('Description contains (optional):')
     category_names_selectall = BooleanField(
         'Select/Unselect All', default=True)
     category_names = MultiCheckboxField(

@@ -204,9 +204,15 @@ def search_transactions():
             category_names = form.category_names.data
             category_types = form.category_types.data
             account_names = form.account_names.data
+            description = form.description.data
+            if description:
+                description = description.lower()
             transactions = current_user.group().transactions
             selected_transactions = []
             for transaction in transactions:
+                trans_description = transaction.description.lower()
+                if description and description not in trans_description:
+                    continue
                 if (
                     transaction.date >= start_date
                     and transaction.date <= end_date
