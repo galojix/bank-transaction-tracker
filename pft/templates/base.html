@@ -6,12 +6,12 @@
 {{ super() }}
 <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico', v=8) }}" type="image/x-icon">
 <link rel="icon" href="{{ url_for('static', filename='favicon.ico', v=8) }}" type="image/x-icon">
-<link rel="stylesheet" href="{{url_for('static', filename='sitestyle.css', v=53)}}">
+<link rel="stylesheet" href="{{url_for('static', filename='sitestyle.css', v=55)}}">
 {% endblock %}
 
 {% block navbar %}
 
-<nav class="navbar navbar-default" role="navigation">
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
     <div class="container-fluid">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-1">
@@ -100,7 +100,9 @@
     </div>
     {% endfor %}
 
+    <div class="top-buffer">
     {% block page_content %}{% endblock %}
+    </div>
 </div>
 {% endblock %}
 

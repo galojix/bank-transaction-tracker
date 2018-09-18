@@ -51,3 +51,8 @@
 [class*="col-"] {
     margin-bottom: 15px;
 }
+
+/* Add a top margin to allow for fixed navbar */
+.top-buffer {
+   margin-top: 60px;
+}
