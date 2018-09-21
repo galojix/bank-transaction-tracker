@@ -6,11 +6,11 @@
 {% block page_content %}
 
 <h2>Groups:</h2>
+<div class="col-md-9">
 <form class="form form-horizontal" method="post" role="form" enctype="multipart/form-data">
   {{ form.hidden_tag() }}
   {{ wtf.form_errors(form, hiddens="only") }}
 
-<div class="col-md-6 table-responsive">
 <table class="table table-striped table-bordered table-hover">
     <tr>
         <th>Group Name</th>
@@ -34,14 +34,12 @@
    {% endfor %}
 
 </table>
-</div>
 
-<div class="col-md-12">
 {{ wtf.form_field(form.submit) }}
 {{ wtf.form_field(form.cancel) }}
 </div>
 
 </form>
-
+</div>
 
 {% endblock %}
