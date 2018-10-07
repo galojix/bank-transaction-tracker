@@ -1,6 +1,7 @@
 """Module that handles auth views."""
-from flask import render_template, url_for, request, redirect, session, flash,\
-    Blueprint
+from flask import (
+    render_template, url_for, request, redirect, session, flash, Blueprint,
+    current_app)
 from flask_login import login_required, login_user, logout_user, current_user
 from werkzeug.urls import url_parse
 from datetime import datetime
@@ -56,10 +57,12 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for('web.home_page'))
     form = LoginForm()
+    app = current_app._get_current_object()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user is not None and user.verify_password(form.password.data):
             login_user(user, form.remember_me.data)
+            app.logger.info('%s logged in successfully', user.email)
             session['login_time'] = datetime.utcnow()
             # Need this because login_user/remember_me is ignored
             # when using server side sessions
@@ -68,6 +71,7 @@ def login():
             if not next_page or url_parse(next_page).netloc != '':
                 next_page = url_for('web.home_page')
             return redirect(next_page)
+        app.logger.info('%s failed to log in', user.email)
         flash('Invalid email or password.')
     return render_template('auth/login.html', form=form)
 
@@ -75,6 +79,8 @@ def login():
 @auth.route('/logout')
 def logout():
     """Log out and return login form."""
+    app = current_app._get_current_object()
+    app.logger.info('%s logged out', current_user.email)
     logout_user()
     flash('You have been logged out.')
     return redirect(url_for('auth.login'))

@@ -22,6 +22,7 @@ class Config:
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     MAIL_SUBJECT_PREFIX = '[PFT]'
     MAIL_SENDER = 'PFT Admin <pft@galojix.com>'
+    ADMINS = ['pft@galojix.com']
 
     SESSION_TYPE = 'filesystem'
 
