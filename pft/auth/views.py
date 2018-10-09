@@ -71,7 +71,7 @@ def login():
             if not next_page or url_parse(next_page).netloc != '':
                 next_page = url_for('web.home_page')
             return redirect(next_page)
-        app.logger.info('%s failed to log in', user.email)
+        app.logger.info('%s failed to log in', form.email.data)
         flash('Invalid email or password.')
     return render_template('auth/login.html', form=form)
 
