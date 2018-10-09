@@ -61,13 +61,21 @@ def predict_columns():
         elif 'description' in value.lower() or 'narration' in value.lower():
             result[i] = 'description'
             header_row = True
-        elif 'dr' in value.lower() and 'cr' in value.lower():
+        elif (
+            'dr' in value.lower() and 'cr' in value.lower() and len(value) < 6
+        ):
             result[i] = 'drcr'
             header_row = True
-        elif 'debit' in value.lower() or 'dr' in value.lower():
+        elif 'debit' in value.lower():
             result[i] = 'dr'
             header_row = True
-        elif 'credit' in value.lower() or 'cr' in value.lower():
+        elif 'dr' in value.lower() and len(value) < 5:
+            result[i] = 'dr'
+            header_row = True
+        elif 'credit' in value.lower():
+            result[i] = 'cr'
+            header_row = True
+        elif 'cr' in value.lower() and len(value) < 5:
             result[i] = 'cr'
             header_row = True
     if not header_row:
