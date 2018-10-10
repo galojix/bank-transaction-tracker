@@ -217,6 +217,10 @@ def delete_user():
     form = DeleteUserForm()
     if form.validate_on_submit():
         if form.yes.data:
+            for membership in current_user.memberships:
+                group = membership.group
+                if len(group.memberships) == 1:  # Last member of group
+                    db.session.delete(group)
             db.session.delete(current_user)
             db.session.commit()
         elif form.no.data:
