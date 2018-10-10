@@ -316,6 +316,12 @@ def delete_group_member(group_id):
         if form.delete.data:
             for member in members:
                 if member.user.email in form.del_email.data:
+                    other_membership = (
+                        MemberShip.query
+                        .filter(MemberShip.id == member.user.id)
+                        .filter(MemberShip.group_id != group.group_id)
+                        .first())
+                    other_membership.active = True
                     db.session.delete(member)
             db.session.commit()
         if form.cancel.data:
