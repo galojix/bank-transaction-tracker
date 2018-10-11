@@ -23,7 +23,8 @@ class Config:
     MAIL_SUBJECT_PREFIX = '[PFT]'
     MAIL_SENDER = 'PFT Admin <pft@galojix.com>'
     ADMINS = ['pft@galojix.com']
-
+    SESSION_COOKIE_HTTPONLY = True
+    REMEMBER_COOKIE_HTTPONLY = True
     SESSION_TYPE = 'filesystem'
 
     @staticmethod
@@ -54,6 +55,8 @@ class ProductionConfig(Config):
 
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'data.sqlite')
+    SESSION_COOKIE_SECURE = True
+    REMEMBER_COOKIE_SECURE = True
 
 
 config = {

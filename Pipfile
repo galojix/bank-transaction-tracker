@@ -24,6 +24,7 @@ flask-migrate = "*"
 python-dotenv = "*"
 pytest = "*"
 gunicorn = "*"
+flask-paranoid = "*"
 
 [dev-packages]
 
