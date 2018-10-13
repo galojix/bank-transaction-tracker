@@ -7,7 +7,7 @@ from flask_moment import Moment
 from flask_login import LoginManager
 from flask_session import Session
 from flask_migrate import Migrate
-from flask_paranoid import Paranoid
+# from flask_paranoid import Paranoid
 from logging.handlers import SMTPHandler, RotatingFileHandler
 from .database import db, User
 from .views import web
@@ -24,7 +24,7 @@ login_manager = LoginManager()
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'
 migrate = Migrate()
-paranoid = Paranoid()
+# paranoid = Paranoid()
 
 
 @login_manager.user_loader
@@ -48,8 +48,8 @@ def create_app(config_name):
     app.register_blueprint(web)
     app.register_blueprint(error)
     app.register_blueprint(auth)
-    paranoid.init_app(app)
-    paranoid.redirect_view = '/'
+    # paranoid.init_app(app)
+    # paranoid.redirect_view = '/'
     if not app.debug:
         if app.config['MAIL_SERVER']:
             authentication = None
