@@ -78,6 +78,7 @@ class PieGraph():
         pie_chart.sizing_mode = 'scale_width'
         pie_chart.toolbar_location = 'below'
         pie_chart.toolbar.active_drag = None
+        pie_chart.toolbar.logo = None
 
         raw_data = []
 
@@ -195,6 +196,7 @@ class LineGraph():
         plot.legend.background_fill_alpha = 0.3
         plot.toolbar_location = 'below'
         plot.toolbar.active_drag = None
+        plot.toolbar.logo = None
 
         script, div = components(plot)
         return script, div
