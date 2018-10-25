@@ -69,7 +69,7 @@ class PieGraph():
         num_colors = len(labels)
         colors = (Category20[20] + Category20b[20]) * int(num_colors / 20 + 1)
         pie_chart = figure(
-            x_range=(-1, 1), y_range=(-1, 1), logo=None, plot_width=300,
+            x_range=(-1, 1), y_range=(-1, 1), plot_width=300,
             plot_height=300, toolbar_location='right',
             tools="wheel_zoom,save, reset")
         pie_chart.axis.visible = False
@@ -171,7 +171,7 @@ class LineGraph():
         plot = figure(
             x_axis_type='datetime', x_axis_label='Date', y_axis_label='Amount',
             plot_width=300, plot_height=300, toolbar_location='right',
-            tools="pan,wheel_zoom,box_zoom, save, reset", logo=None)
+            tools="pan,wheel_zoom,box_zoom, save, reset")
 
         DATE_TIME_FORMAT = {
             'days': ['%d/%m/%y'], 'months': ['%m/%Y']}
