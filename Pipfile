@@ -25,7 +25,7 @@ python-dotenv = "*"
 pytest = "*"
 gunicorn = "*"
 flask-paranoid = "*"
-itsdangerous = "<1.0.0"
+itsdangerous = "*"
 
 [dev-packages]
 
