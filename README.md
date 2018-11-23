@@ -12,6 +12,6 @@ framework.
 automatically
 
 ## More Information
-Visit [Personal Finance Tracker](https://www.galojix.com/services/personal-finance-tracker-pft/)
+Visit [Personal Finance Tracker](https://www.galojix.com/personal-finance-tracker-pft/)
 
 ![PFT](https://www.galojix.com/static/media/uploads/.thumbnails/pft.png/pft-300x300.png)
