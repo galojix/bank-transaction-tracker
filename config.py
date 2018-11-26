@@ -20,9 +20,9 @@ class Config:
         ['true', 'on', '1']
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    MAIL_SUBJECT_PREFIX = '[PFT]'
-    MAIL_SENDER = 'PFT Admin <pft@galojix.com>'
-    ADMINS = ['pft@galojix.com']
+    MAIL_SUBJECT_PREFIX = '[BTT]'
+    MAIL_SENDER = 'BTT Admin <btt@galojix.com>'
+    ADMINS = ['btt@galojix.com']
     SESSION_COOKIE_HTTPONLY = True
     REMEMBER_COOKIE_HTTPONLY = True
     SESSION_TYPE = 'filesystem'

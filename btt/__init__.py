@@ -69,7 +69,7 @@ def create_app(config_name):
         if not os.path.exists('logs'):
             os.mkdir('logs')
             file_handler = RotatingFileHandler(
-                'logs/pft.log', maxBytes=10240, backupCount=10)
+                'logs/btt.log', maxBytes=10240, backupCount=10)
             formatter = (
                 '%(asctime)s %(levelname)s: %(message)s '
                 '[in %(pathname)s:%(lineno)d]'
