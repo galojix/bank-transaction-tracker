@@ -1,11 +1,11 @@
-BTT{% extends "bootstrap/base.html" %}
+{% extends "bootstrap/base.html" %}
 
 {% block title %}BTT{% endblock %}
 
 {% block head %}
 {{ super() }}
-<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico', v=8) }}" type="image/x-icon">
-<link rel="icon" href="{{ url_for('static', filename='favicon.ico', v=8) }}" type="image/x-icon">
+<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico', v=9) }}" type="image/x-icon">
+<link rel="icon" href="{{ url_for('static', filename='favicon.ico', v=9) }}" type="image/x-icon">
 <link rel="stylesheet" href="{{url_for('static', filename='sitestyle.css', v=55)}}">
 {% endblock %}
 
