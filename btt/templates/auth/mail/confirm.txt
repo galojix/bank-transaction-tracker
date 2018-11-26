@@ -1,6 +1,6 @@
 Dear {{ user.name }},
 
-Welcome to PFT!
+Welcome to BTT!
 
 To confirm your account please click on the following link:
 
@@ -8,6 +8,6 @@ To confirm your account please click on the following link:
 
 Sincerely,
 
-The PFT Team
+The BTT Team
 
 Note: replies to this email address are not monitored.
