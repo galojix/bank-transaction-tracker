@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}BTT{% endblock %}
+
+{% block page_content %}
+
+<h2>Groups:</h2>
+<div class="row">
+<div class="col-md-9">
+<form class="form form-horizontal" method="post" role="form" enctype="multipart/form-data">
+  {{ form.hidden_tag() }}
+  {{ wtf.form_errors(form, hiddens="only") }}
+
+<table class="table table-striped table-bordered table-hover">
+    <tr>
+        <th>Group Name</th>
+        <th>Action</th>
+        <th>Action</th>
+        <th>Action</th>
+        <th>Active</th>
+    </tr>
+
+   {% for subfield in form.groups %}
+
+   <tr>
+       <td>{{ memberships[loop.index-1].group.name}}</td>
+       <td><a href="{{url_for('.modify_group_name', group_id=memberships[loop.index-1].group.group_id)}}">Change Name</a></td>
+       <td><a href="{{url_for('.add_group_member', group_id=memberships[loop.index-1].group.group_id)}}">Add Member</a></td>
+       <td><a href="{{url_for('.delete_group_member', group_id=memberships[loop.index-1].group.group_id)}}">Delete Member</a></td>
+       <td>{{ subfield }}</td>
+   </tr>
+
+
+   {% endfor %}
+
+</table>
+
+{{ wtf.form_field(form.submit) }}
+{{ wtf.form_field(form.cancel) }}
+</div>
+
+</form>
+</div>
+</div>
+
+{% endblock %}

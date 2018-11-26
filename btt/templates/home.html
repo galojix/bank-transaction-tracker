@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}BTT{% endblock %}
+
+{% block page_content %}
+
+<h2>Welcome to Bank Transaction Tracker (BTT)</h2>
+    {% if current_user.is_authenticated %}
+        <div class="row">
+        <div class="col-md-4">
+        <table class="table table-striped table-bordered table-hover">
+            <tr>
+               <td>You are logged in as:</td>
+               <td>{{ current_user.email }}</td>
+            </tr>
+            <tr>
+                <td>Your current group is:</td>
+                <td>{{ current_user.group().name }}</td>
+            </tr>
+            <tr>
+              <td>Login time:</td>
+              <td>{{ moment(login_time).format('MMMM Do YYYY, h:mm a') }}</td>
+            </tr>
+            <tr>
+               <td>You logged in:</td>
+               <td>{{ moment(login_time).fromNow(refresh=True) }}</td>
+            </tr>
+        </table>
+    {% else %}
+        <p>Bank Transaction Tracker (BTT) is an application for tracking income and expenditure.</p>
+        <p>To login or register, <a href="{{ url_for('auth.login') }}">please click here.</a></p>
+    {% endif %}
+        </div>
+        </div>
+{% endblock %}

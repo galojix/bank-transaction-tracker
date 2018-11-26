@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <!-- Set width of the page to width of device screen and set initial zoom level -->
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+   <!-- Enable style sheet -->
+   <link rel="stylesheet" title="Site Style" href="/static/style.css" type="text/css"/>
+   <!-- jQuery -->
+   <script src="jquery-3.1.0.min.js"></script>
+   <script src="jquery-funcs.js"></script>
+   <!-- Set title for browser toolbar etc -->
+   <title>PFT</title>
+</head>
+<body>
+   <!-- Heading banner with logo, text and buttons -->
+   <header>
+      <h1>
+         <img class="logo" src="/static/logo.png" width="30" height="28" alt="$"/>
+         Bank Transaction Tracker
+         <a href="/logout"><button class="banner">Log Out</button></a>
+<!--
+        Put something here to indicate which user is logged in and any demo account restrictions.
+-->
+      </h1>
+   </header>
+
+<!-- Navigation menu -->
+<div class="row">
+<nav>
+<ul class="menu">
+    <li class="col-1"><a {% if menu == "home" %} class="active" {% endif %} href="/home">Home</a></li>
+    <li class="col-1"><a {% if menu == "accounts" %} class="active" {% endif %} href="/accounts">Accounts</a></li>
+    <li class="col-1"><a {% if menu == "transactions" %} class="active" {% endif %} href="/transactions">Transactions</a></li>
+    <li class="col-1"><a {% if menu == "categories" %} class="active" {% endif %} href="/categories">Categories</a></li>
+    <li class="col-1"><a {% if menu == "reports" %} class="active" {% endif %} href="/reports">Reports</a></li>
+</ul>
+</nav>
+</div>

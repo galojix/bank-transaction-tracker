@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}BTT{% endblock %}
+
+{% block page_content %}
+
+<h2>Transactions:</h2>
+
+
+<table class="table table-striped table-bordered table-hover">
+    <tr>
+        <th>Date</th>
+        <th>Description</th>
+        <th>Category</th>
+        <th>Type</th>
+        <th>Account</th>
+        <th class="text-center">Amount</th>
+        <th>Action</th>
+        <th>Action</th>
+    </tr>
+
+   {% for transaction in transactions %}
+
+   <tr>
+       <td>{{transaction.date}}</td>
+       <td>{{transaction.description}}</td>
+       <td>{{transaction.category.catname}}</td>
+       <td>{{transaction.category.cattype}}</td>
+       <td>{{transaction.account.accname}}</td>
+       <td class="text-right">{{'{:,.2f}'.format(transaction.amount / 100.0)}}</td>
+       <td><a href="{{url_for('.modify_transaction', transno=transaction.transno)}}">Modify</a></td>
+       <td><a href="{{url_for('.delete_transaction', transno=transaction.transno)}}">Delete</a></td>
+   </tr>
+
+   {% endfor %}
+
+</table>
+
+{% endblock %}

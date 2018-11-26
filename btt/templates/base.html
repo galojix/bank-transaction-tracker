@@ -1,0 +1,112 @@
+BTT{% extends "bootstrap/base.html" %}
+
+{% block title %}BTT{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico', v=8) }}" type="image/x-icon">
+<link rel="icon" href="{{ url_for('static', filename='favicon.ico', v=8) }}" type="image/x-icon">
+<link rel="stylesheet" href="{{url_for('static', filename='sitestyle.css', v=55)}}">
+{% endblock %}
+
+{% block navbar %}
+
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{url_for('web.home_page')}}">BTT</a>
+        </div>
+    <div class="collapse navbar-collapse" id="navbar-collapse-1">
+        <ul class="nav navbar-nav">
+            <li {% if menu == "home" %}class="active"{% endif %}><a href="{{url_for('web.home_page')}}">Home</a></li>
+
+            <li {% if menu == "accounts" %}class="active"{% endif %} class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Accounts<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{url_for('web.accounts_page')}}">Search/Modify</a></li>
+                        <li><a href="{{url_for('web.add_account')}}">Add</a></li>
+                    </ul>
+            </li>
+
+            <li {% if menu == "categories" %}class="active"{% endif %} class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Categories<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{url_for('web.categories_page')}}">Search/Modify</a></li>
+                        <li><a href="{{url_for('web.add_category')}}">Add</a></li>
+                    </ul>
+            </li>
+
+            <li {% if menu == "transactions" %}class="active"{% endif %} class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Transactions<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{url_for('web.search_transactions')}}">Search/Modify</a></li>
+                        <li><a href="{{url_for('web.add_transaction')}}">Add</a></li>
+                        <li><a href="{{url_for('web.upload_transactions')}}">Upload</a></li>
+                    </ul>
+            </li>
+
+
+            <li {% if menu == "reports" %}class="active"{% endif %} class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Reports
+                    <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{url_for('web.reports_page', report_name="Expenses by Category" )}}">Expenses by Category</a></li>
+                        <li><a href="{{url_for('web.reports_page', report_name="Income by Category" )}}">Income by Category</a></li>
+                        <li><a href="{{url_for('web.reports_page', report_name="Cash Flow" )}}">Cash Flow</a></li>
+                        <li><a href="{{url_for('web.reports_page', report_name="Account Balances" )}}">Account Balances</a></li>
+                    </ul>
+            </li>
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+            {% if current_user.is_authenticated %}
+            <li {% if menu == "myaccount" %}class="active"{% endif %} class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    My Account <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ url_for('auth.change_password') }}">Change Password</a></li>
+                    <li><a href="{{ url_for('auth.change_email_request') }}">Change Email</a></li>
+                    <li><a href="{{ url_for('auth.change_group') }}">Change Group</a></li>
+                    <li><a href="{{ url_for('auth.delete_user') }}">Delete My Account</a></li>
+                    <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
+                </ul>
+            </li>
+            {% else %}
+            <li><a href="{{ url_for('auth.login') }}">Log In</a></li>
+            {% endif %}
+        </ul>
+
+    </div>
+
+    </div>
+
+</nav>
+
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="top-buffer">
+        {% for message in get_flashed_messages() %}
+        <div class="alert alert-warning">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ message }}
+        </div>
+        {% endfor %}
+
+        {% block page_content %}{% endblock %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{{ moment.include_moment() }}
+{% endblock %}

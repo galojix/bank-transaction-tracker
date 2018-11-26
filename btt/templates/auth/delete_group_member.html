@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}BTT{% endblock %}
+
+{% block page_content %}
+
+<h2>Delete Group Members: </h2>
+
+    <form class="form form-horizontal" method="post" role="form">
+        {{ form.hidden_tag() }}
+        {{ wtf.form_errors(form, hiddens="only") }}
+
+
+        <div class="row">
+        <div class="col-md-6">
+        {% for subfield in form.del_email %}
+            {{ wtf.form_field(subfield) }}
+        {% endfor %}
+        </div>
+        </div>
+
+        <div class="row">
+        <div class="col-md-12">
+        {{ wtf.form_field(form.delete) }}
+        {{ wtf.form_field(form.cancel) }}
+        </div>
+        </div>
+
+    </form>
+
+{% endblock %}

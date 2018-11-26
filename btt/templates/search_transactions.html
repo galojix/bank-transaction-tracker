@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}BTT{% endblock %}
+
+{% block page_content %}
+
+<h2>Search Transactions: </h2>
+
+
+    <form class="form form-horizontal" method="post" role="form">
+        {{ form.hidden_tag() }}
+        {{ wtf.form_errors(form, hiddens="only") }}
+
+        <div class="row">
+        <div class="col-md-3">
+        {{ wtf.form_field(form.start_date) }}
+        </div>
+        <div class="col-md-3">
+        {{ wtf.form_field(form.end_date) }}
+        </div>
+        <div class="col-md-3">
+        {{ wtf.form_field(form.description) }}
+        </div>
+        </div>
+
+        <div class="row">
+        <div class="col-md-3">
+        {{ form.category_names.label }}
+        {{ wtf.form_field(form.category_names_selectall) }}
+        {% for subfield in form.category_names %}
+            {{ wtf.form_field(subfield) }}
+        {% endfor %}
+        </div>
+
+        <div class="col-md-3">
+        {{ form.category_types.label }}
+        {{ wtf.form_field(form.category_types_selectall) }}
+        {% for subfield in form.category_types %}
+            {{ wtf.form_field(subfield) }}
+        {% endfor %}
+        </div>
+
+        <div class="col-md-3">
+        {{ form.account_names.label }}
+        {{ wtf.form_field(form.account_names_selectall) }}
+        {% for subfield in form.account_names %}
+            {{ wtf.form_field(subfield) }}
+        {% endfor %}
+        </div>
+        </div>
+
+        <div class="row">
+        <div class="col-md-12">
+        {{ wtf.form_field(form.search) }}
+        {{ wtf.form_field(form.cancel) }}
+        </div>
+        </div>
+
+    </form>
+
+
+
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{url_for('static', filename='selectall.js', v=7)}}"></script>
+{% endblock %}

@@ -1,11 +1,11 @@
 """Module that runs application in development mode."""
 import os
 import click
-from pft import create_app
-from pft.database import (
+from btt import create_app
+from btt.database import (
     db, User, Category, Account, Transaction, Group, MemberShip, create_db)
 import unittest
-from pft.classification import classification_score
+from btt.classification import classification_score
 
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
@@ -21,7 +21,7 @@ def make_shell_context():
 @app.cli.command()
 def test():
     """Run the unit tests."""
-    tests = unittest.TestLoader().discover('pft.tests')
+    tests = unittest.TestLoader().discover('btt.tests')
     unittest.TextTestRunner(verbosity=2).run(tests)
 
 

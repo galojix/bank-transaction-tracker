@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}BTT{% endblock %}
+
+{% block page_content %}
+
+<h2>Upload Transactions: </h2>
+<div class="row">
+<div class="col-md-3">
+<form class="form form-horizontal" method="post" role="form" enctype="multipart/form-data">
+  {{ form.hidden_tag() }}
+  {{ wtf.form_errors(form, hiddens="only") }}
+
+  <div class="col-md-12">
+  {{ wtf.form_field(form.transactions_file)}}
+  </div>
+
+  <div class="col-md-12">
+  {{ wtf.form_field(form.account)}}
+  </div>
+
+  <div class="col-md-12">
+  {{ wtf.form_field(form.upload) }}
+  <a href="{{url_for('.transactions_page')}}"><button type="button" class="btn btn-default">Cancel</button></a>
+  </div>
+
+</form>
+</div>
+</div>
+
+{% endblock %}

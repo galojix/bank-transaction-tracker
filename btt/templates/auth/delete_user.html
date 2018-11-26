@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}BTT{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Warning!!!</h1>
+    <p>This will delete your user account and all of your data.</p>
+    <p>This can NOT be reversed.</p>
+    <p>Are you sure you want to do this ?</p>
+</div>
+<div class="col-md-4">
+    {{ wtf.quick_form(form) }}
+</div>
+{% endblock %}
