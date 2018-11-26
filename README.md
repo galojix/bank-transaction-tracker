@@ -12,4 +12,4 @@ expenditure. It has been developed using Python 3 and the Flask web framework.
 ## More Information
 Visit [Bank Transaction Tracker](https://www.galojix.com/bank-transaction-tracker/)
 
-![BTT](https://www.galojix.com/static/media/uploads/.thumbnails/pft.png/pft-300x300.png)
+![BTT](https://www.galojix.com/static/media/uploads/btt.png)
