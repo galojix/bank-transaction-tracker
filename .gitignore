@@ -6,3 +6,4 @@ flask_session/
 .flaskenv
 .env
 .pytest_cache
+.vscode
