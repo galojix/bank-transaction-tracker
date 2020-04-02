@@ -89,7 +89,7 @@ class PieGraph():
                 pie_chart.wedge(
                     x=0, y=0, radius=0.9, start_angle=start_angles[num],
                     end_angle=end_angles[num], color=colors[num],
-                    legend=legend)
+                    legend_label=legend)
             else:
                 pie_chart.wedge(
                     x=0, y=0, radius=0.9, start_angle=start_angles[num],
@@ -187,7 +187,7 @@ class LineGraph():
                 amounts = list(self.data[label].values())
                 plot.step(
                     dates, amounts, line_color=colors[num], line_width=3,
-                    mode='after', legend=label)
+                    mode='after', legend_label=label)
                 plot.sizing_mode = 'scale_width'
 
         plot.legend.click_policy = 'hide'

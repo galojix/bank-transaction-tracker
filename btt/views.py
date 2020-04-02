@@ -10,7 +10,7 @@ from .forms import (
     ModifyCategoryForm, AddCategoryForm, ProcessUploadedTransactionsForm,
     ClassifyTransactionColumnsForm, ClassifyTransactionRowsForm, ReportForm)
 from .classification import predict_categories, predict_columns
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 from .database import db
 from .reports import graph
 from tempfile import mkdtemp
