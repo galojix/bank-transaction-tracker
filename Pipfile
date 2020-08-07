@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-Werkzeug = "==0.16.1"
+Werkzeug = "*"
 flask = "*"
 bokeh = "*"
 flask-script = "*"
@@ -27,6 +27,7 @@ pytest = "*"
 gunicorn = "*"
 flask-paranoid = "*"
 itsdangerous = "*"
+email-validator = "*"
 
 [dev-packages]
 
