@@ -30,6 +30,9 @@ itsdangerous = "*"
 email-validator = "*"
 
 [dev-packages]
+flake8 = "*"
+pydocstyle = "*"
+black = "*"
 
 [requires]
 python_version = "3.8"
