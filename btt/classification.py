@@ -22,11 +22,14 @@ def classification_score(group_id):
     feature_data, label_data = collect_data_for_group(group_id)
     data_size = len(feature_data)
     features_train, features_test, labels_train, labels_test = split_data(
-        feature_data, label_data)
+        feature_data, label_data
+    )
     features_train, features_test, num_features = vectorize_data(
-        features_train, features_test)
+        features_train, features_test
+    )
     features_train, features_test = feature_selection(
-        features_train, features_test, labels_train)
+        features_train, features_test, labels_train
+    )
     predict = svm_predict(features_train, labels_train, features_test)
     score = accuracy_score(labels_test, predict)
     return score, data_size, num_features
@@ -37,55 +40,55 @@ def predict_categories():
     features_train, labels_train = collect_data()
     features_test = get_test_features()
     if len(features_train) == 0:
-        predict = ['Unspecified Expense' for _ in features_test]
+        predict = ["Unspecified Expense" for _ in features_test]
         return predict
     features_train, features_test, num_features = vectorize_data(
-        features_train, features_test)
+        features_train, features_test
+    )
     features_train, features_test = feature_selection(
-        features_train, features_test, labels_train)
+        features_train, features_test, labels_train
+    )
     predict = svm_predict(features_train, labels_train, features_test)
     return predict
 
 
 def predict_columns():
     """Predict transaction column labels."""
-    result = []
-    transactions = session['uploaded_transactions']
-    for _ in range(len(transactions[0])):
-        result.append('ignore')
+    transactions = session["uploaded_transactions"]
+    result = ["ignore" for _ in range(len(transactions[0]))]
     header_row = False
     for i, value in enumerate(transactions[0]):
-        if 'date' in value.lower():
-            result[i] = 'date'
+        if "date" in value.lower():
+            result[i] = "date"
             header_row = True
-        elif 'description' in value.lower() or 'narration' in value.lower():
-            result[i] = 'description'
+        elif "description" in value.lower() or "narration" in value.lower():
+            result[i] = "description"
             header_row = True
         elif (
-            'dr' in value.lower() and 'cr' in value.lower() and len(value) < 6
+            "dr" in value.lower() and "cr" in value.lower() and len(value) < 6
         ):
-            result[i] = 'drcr'
+            result[i] = "drcr"
             header_row = True
-        elif 'debit' in value.lower():
-            result[i] = 'dr'
+        elif "debit" in value.lower():
+            result[i] = "dr"
             header_row = True
-        elif 'dr' in value.lower() and len(value) < 5:
-            result[i] = 'dr'
+        elif "dr" in value.lower() and len(value) < 5:
+            result[i] = "dr"
             header_row = True
-        elif 'credit' in value.lower():
-            result[i] = 'cr'
+        elif "credit" in value.lower():
+            result[i] = "cr"
             header_row = True
-        elif 'cr' in value.lower() and len(value) < 5:
-            result[i] = 'cr'
+        elif "cr" in value.lower() and len(value) < 5:
+            result[i] = "cr"
             header_row = True
     if not header_row:
         for i, value in enumerate(transactions[1]):
             if is_number(value):
-                result[i] = 'drcr'
+                result[i] = "drcr"
             elif is_date(value):
-                result[i] = 'date'
+                result[i] = "date"
             elif len(value) > 10:
-                result[i] = 'description'
+                result[i] = "description"
     return result, header_row
 
 
@@ -127,7 +130,7 @@ def collect_data():
 def get_test_features():
     """Get test features from uploaded transactions."""
     features_test = []
-    transactions = session['uploaded_transactions']
+    transactions = session["uploaded_transactions"]
     for transaction in transactions:
         description = " ".join(transaction)
         description = stem_description(description)
@@ -152,7 +155,8 @@ def collect_data_for_group(group_id):
         db.session.query(Transaction, Category)
         .filter(Transaction.group_id == group_id)
         .filter(Transaction.catno == Category.catno)
-        .all())
+        .all()
+    )
     for transaction, category in transactions:
         description = stem_description(transaction.description)
         feature_data.append(description)
@@ -162,22 +166,24 @@ def collect_data_for_group(group_id):
 
 def stem_description(description):
     """Stem the transaction description."""
-    translator = str.maketrans('', '', string.punctuation)
+    translator = str.maketrans("", "", string.punctuation)
     description = description.translate(translator)  # Remove punctuation
     stemmer = SnowballStemmer("english")
     description_list = description.split()
-    stemmed_list = []
-    for word in description_list:
-        stemmed_list.append(stemmer.stem(word))
-    stemmed_description = " ".join(stemmed_list)
-    return stemmed_description
+    stemmed_list = [stemmer.stem(word) for word in description_list]
+    return " ".join(stemmed_list)
 
 
 def split_data(feature_data, label_data):
     """Split data into train and test."""
-    features_train, features_test, labels_train, labels_test = (
-        model_selection.train_test_split(
-            feature_data, label_data, test_size=0.1, random_state=42))
+    (
+        features_train,
+        features_test,
+        labels_train,
+        labels_test,
+    ) = model_selection.train_test_split(
+        feature_data, label_data, test_size=0.1, random_state=42
+    )
     return features_train, features_test, labels_train, labels_test
 
 
@@ -189,8 +195,9 @@ def vectorize_data(features_train, features_test):
      vectorizer.get_feature_names()[word_no] is feature name
 
     """
-    vectorizer = TfidfVectorizer(sublinear_tf=True, max_df=0.5,
-                                 stop_words='english')
+    vectorizer = TfidfVectorizer(
+        sublinear_tf=True, max_df=0.5, stop_words="english"
+    )
     features_train_transformed = vectorizer.fit_transform(features_train)
     features_test_transformed = vectorizer.transform(features_test)
     num_features = len(vectorizer.get_feature_names())

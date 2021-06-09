@@ -15,9 +15,9 @@ import datetime
 
 def graph(report_name):
     """Report graph."""
-    start_date = session.get('start_date', None)
-    end_date = session.get('end_date', None)
-    account_name = session.get('account_name', None)
+    start_date = session.get("start_date", None)
+    end_date = session.get("end_date", None)
+    account_name = session.get("account_name", None)
     if report_name == "Expenses by Category":
         graph = ExpensesByCategoryPieGraph(start_date, end_date)
     elif report_name == "Income by Category":
@@ -29,7 +29,7 @@ def graph(report_name):
     return graph.get_html()
 
 
-class PieGraph():
+class PieGraph:
     """Pie graph."""
 
     def __init__(self, start_date=None, end_date=None):
@@ -39,10 +39,9 @@ class PieGraph():
             self.start_date = datetime.datetime(year=1, month=1, day=1)
         else:
             self.start_date = start_date
-        if end_date is None:
-            self.end_date = datetime.datetime.now()
-        else:
-            self.end_date = end_date
+        self.end_date = (
+            datetime.datetime.now() if end_date is None else end_date
+        )
 
     def get_html(self):
         """Get HTML components."""
@@ -57,46 +56,58 @@ class PieGraph():
             amounts = [0, 100]
         total = sum(amounts)
         amounts = [value / total for value in amounts]
-        running_totals = []
-        running_totals.append(amounts[0])
-        running_totals.append(amounts[1])
+        running_totals = [amounts[0], amounts[1]]
         for num, value in enumerate(amounts):
-            if num == 0 or num == 1:
+            if num in [0, 1]:
                 continue
-            running_totals.append(sum(amounts[0:num + 1]))
+            running_totals.append(sum(amounts[0 : num + 1]))
         start_angles = [2 * pi * value for value in running_totals[:-1]]
         end_angles = [2 * pi * value for value in running_totals[1:]]
         num_colors = len(labels)
         colors = (Category20[20] + Category20b[20]) * int(num_colors / 20 + 1)
         pie_chart = figure(
-            x_range=(-1, 1), y_range=(-1, 1), plot_width=300,
-            plot_height=300, toolbar_location='right',
-            tools="wheel_zoom,save, reset")
+            x_range=(-1, 1),
+            y_range=(-1, 1),
+            plot_width=300,
+            plot_height=300,
+            toolbar_location="right",
+            tools="wheel_zoom,save, reset",
+        )
         pie_chart.axis.visible = False
         pie_chart.grid.visible = False
         pie_chart.outline_line_color = None
-        pie_chart.sizing_mode = 'scale_width'
-        pie_chart.toolbar_location = 'below'
+        pie_chart.sizing_mode = "scale_width"
+        pie_chart.toolbar_location = "below"
         pie_chart.toolbar.active_drag = None
         pie_chart.toolbar.logo = None
 
         raw_data = []
 
         for num, label in enumerate(labels):
-            percent = ' ' + str(round(amounts[num+1] * 100, 1)) + '%'
+            percent = " " + str(round(amounts[num + 1] * 100, 1)) + "%"
             legend = label + percent
             if num <= 10:
                 pie_chart.wedge(
-                    x=0, y=0, radius=0.9, start_angle=start_angles[num],
-                    end_angle=end_angles[num], color=colors[num],
-                    legend_label=legend)
+                    x=0,
+                    y=0,
+                    radius=0.9,
+                    start_angle=start_angles[num],
+                    end_angle=end_angles[num],
+                    color=colors[num],
+                    legend_label=legend,
+                )
             else:
                 pie_chart.wedge(
-                    x=0, y=0, radius=0.9, start_angle=start_angles[num],
-                    end_angle=end_angles[num], color=colors[num])
+                    x=0,
+                    y=0,
+                    radius=0.9,
+                    start_angle=start_angles[num],
+                    end_angle=end_angles[num],
+                    color=colors[num],
+                )
             raw_data.append((label, percent))
 
-        pie_chart.legend.label_text_font_size = '10pt'
+        pie_chart.legend.label_text_font_size = "10pt"
         pie_chart.legend.location = "bottom_left"
         pie_chart.legend.background_fill_alpha = 0.3
         pie_chart.legend.glyph_height = 15
@@ -118,12 +129,13 @@ class ExpensesByCategoryPieGraph(PieGraph):
             db.session.query(Category.catname, func.sum(Transaction.amount))
             .filter(Transaction.group_id == current_user.group().group_id)
             .filter(Transaction.catno == Category.catno)
-            .filter(Category.cattype == 'Expense')
+            .filter(Category.cattype == "Expense")
             .filter(Transaction.date >= self.start_date)
             .filter(Transaction.date <= self.end_date)
             .group_by(Category.catname)
             .order_by(func.sum(Transaction.amount).desc())
-            .all())
+            .all()
+        )
 
 
 class IncomeByCategoryPieGraph(PieGraph):
@@ -136,15 +148,16 @@ class IncomeByCategoryPieGraph(PieGraph):
             db.session.query(Category.catname, func.sum(Transaction.amount))
             .filter(Transaction.group_id == current_user.group().group_id)
             .filter(Transaction.catno == Category.catno)
-            .filter(Category.cattype == 'Income')
+            .filter(Category.cattype == "Income")
             .filter(Transaction.date >= self.start_date)
             .filter(Transaction.date <= self.end_date)
             .group_by(Category.catname)
             .order_by(func.sum(Transaction.amount).desc())
-            .all())
+            .all()
+        )
 
 
-class LineGraph():
+class LineGraph:
     """
     Line graph.
 
@@ -160,41 +173,49 @@ class LineGraph():
             self.start_date = datetime.datetime(year=1, month=1, day=1)
         else:
             self.start_date = start_date
-        if end_date is None:
-            self.end_date = datetime.datetime.now()
-        else:
-            self.end_date = end_date
+        self.end_date = (
+            datetime.datetime.now() if end_date is None else end_date
+        )
         if account_name is None:
-            self.account_name = 'All'
+            self.account_name = "All"
 
     def get_html(self):
         """Get HTML components."""
         plot = figure(
-            x_axis_type='datetime', x_axis_label='Date', y_axis_label='Amount',
-            plot_width=300, plot_height=300, toolbar_location='right',
-            tools="pan,wheel_zoom,box_zoom, save, reset")
+            x_axis_type="datetime",
+            x_axis_label="Date",
+            y_axis_label="Amount",
+            plot_width=300,
+            plot_height=300,
+            toolbar_location="right",
+            tools="pan,wheel_zoom,box_zoom, save, reset",
+        )
 
-        DATE_TIME_FORMAT = {
-            'days': ['%d/%m/%y'], 'months': ['%m/%Y']}
+        DATE_TIME_FORMAT = {"days": ["%d/%m/%y"], "months": ["%m/%Y"]}
         plot.xaxis.formatter = DatetimeTickFormatter(**DATE_TIME_FORMAT)
         plot.yaxis.formatter = NumeralTickFormatter(format="$0,0")
 
-        num_colors = len(self.data)
-        colors = Category10[10] * int(num_colors / 10 + 1)
         if self.data:
+            num_colors = len(self.data)
+            colors = Category10[10] * int(num_colors / 10 + 1)
             for num, label in enumerate(self.data):
                 dates = list(self.data[label].keys())
                 amounts = list(self.data[label].values())
                 plot.step(
-                    dates, amounts, line_color=colors[num], line_width=3,
-                    mode='after', legend_label=label)
-                plot.sizing_mode = 'scale_width'
+                    dates,
+                    amounts,
+                    line_color=colors[num],
+                    line_width=3,
+                    mode="after",
+                    legend_label=label,
+                )
+                plot.sizing_mode = "scale_width"
 
-        plot.legend.click_policy = 'hide'
-        plot.legend.label_text_font_size = '8pt'
+        plot.legend.click_policy = "hide"
+        plot.legend.label_text_font_size = "8pt"
         plot.legend.location = "top_right"
         plot.legend.background_fill_alpha = 0.3
-        plot.toolbar_location = 'below'
+        plot.toolbar_location = "below"
         plot.toolbar.active_drag = None
         plot.toolbar.logo = None
 
@@ -210,14 +231,18 @@ class AccountBalancesLineGraph(LineGraph):
         super().__init__(start_date, end_date, account_name)
 
         accounts = []
-        if account_name == 'All':
+        if account_name == "All":
             accounts = [
-                account for account in current_user.group().accounts
-                if account.accname != 'Unknown']
+                account
+                for account in current_user.group().accounts
+                if account.accname != "Unknown"
+            ]
         else:
             accounts = [
-                account for account in current_user.group().accounts
-                if account.accname == account_name]
+                account
+                for account in current_user.group().accounts
+                if account.accname == account_name
+            ]
 
         for account in accounts:
             balance = 0
@@ -226,10 +251,7 @@ class AccountBalancesLineGraph(LineGraph):
             transactions = account.transactions
             balance_data = OrderedDict()
             for transaction in transactions:
-                if (
-                    transaction.category.cattype == 'Expense'
-                    or transaction.category.cattype == 'Transfer Out'
-                ):
+                if transaction.category.cattype in ["Expense", "Transfer Out"]:
                     balance -= transaction.amount / 100.0
                 else:
                     balance += transaction.amount / 100.0
@@ -269,10 +291,7 @@ class CashFlowLineGraph(LineGraph):
         cash_flow_data = OrderedDict()
 
         for transaction in transactions:
-            if (
-                transaction.category.cattype == 'Expense'
-                or transaction.category.cattype == 'Transfer Out'
-            ):
+            if transaction.category.cattype in ["Expense", "Transfer Out"]:
                 balance -= transaction.amount / 100.0
             else:
                 balance += transaction.amount / 100.0
@@ -293,4 +312,4 @@ class CashFlowLineGraph(LineGraph):
         else:
             cash_flow_data[end_date] = end_balance
 
-        self.data['Total Cash'] = cash_flow_data
+        self.data["Total Cash"] = cash_flow_data
