@@ -7,3 +7,12 @@ flask_session/
 .env
 .pytest_cache
 .vscode
+*.pyc
+*.pyo
+*.db
+.env*
+.vscode
+.coverage
+htmlcov
+pytest.log
+docker-compose.override.yml

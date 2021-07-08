@@ -1,0 +1,41 @@
+version: "2.4"
+
+services:
+  db:
+    image: postgres:11
+    volumes:
+      - db:/var/lib/postgresql/data/
+    networks:
+      - net
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "5"
+        max-size: "10m"
+
+  web:
+    image: galojix/btt:latest
+    networks:
+      - net
+    ports:
+      - 8000:8000
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "5"
+        max-size: "10m"
+    depends_on:
+      - db
+
+volumes:
+  db:
+
+networks:
+  net:
+    enable_ipv6: true
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: fd01::/64
+          gateway: fd01::1

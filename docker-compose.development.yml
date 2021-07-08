@@ -1,0 +1,14 @@
+version: "2.4"
+
+services:
+  db:
+    env_file:
+      - .env_dev_db
+
+  web:
+    env_file:
+      - .env_dev_web
+    build: .
+    command: flask run -h 0.0.0.0 -p 8000
+    volumes:
+      - .:/btt

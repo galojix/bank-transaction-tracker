@@ -32,10 +32,7 @@ email-validator = "*"
 [dev-packages]
 flake8 = "*"
 pydocstyle = "*"
-black = "*"
+black = "==21.6b0"
 
 [requires]
-python_version = "3.8"
-
-[pipenv]
-allow_prereleases = true
+python_version = "3.9"
