@@ -11,7 +11,7 @@ from wtforms import (
     FormField,
     BooleanField,
 )
-from wtforms.fields.html5 import DateTimeLocalField
+from wtforms.fields import DateTimeLocalField
 from wtforms.validators import DataRequired, InputRequired
 from flask_wtf.file import FileField, FileRequired
 from wtforms import widgets
