@@ -5,7 +5,7 @@ expenditure. It has been developed using Python 3 and the Flask web framework.
 
 ## How it Works
 
-- Download your bank transactions as CSV files via your Internet banking
+- Download your bank transactions as CSV files via your Internet banking website
 - Upload the CSV files into BTT
 - Tell BTT how you want to classify your transactions
 - Track income and expenditure using the charts and graphs
