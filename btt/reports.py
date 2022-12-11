@@ -68,8 +68,8 @@ class PieGraph:
         pie_chart = figure(
             x_range=(-1, 1),
             y_range=(-1, 1),
-            plot_width=300,
-            plot_height=300,
+            outer_width=300,
+            outer_height=300,
             toolbar_location="right",
             tools="wheel_zoom,save, reset",
         )
@@ -185,8 +185,8 @@ class LineGraph:
             x_axis_type="datetime",
             x_axis_label="Date",
             y_axis_label="Amount",
-            plot_width=300,
-            plot_height=300,
+            outer_width=300,
+            outer_height=300,
             toolbar_location="right",
             tools="pan,wheel_zoom,box_zoom, save, reset",
         )
