@@ -4,7 +4,7 @@ from flask import current_app
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 
-from itsdangerous import BadSignature, Serializer
+from itsdangerous import BadSignature, Serializer, TimedSerializer
 from .password import hash_password, password_verified
 
 db = SQLAlchemy()
@@ -39,16 +39,16 @@ class User(UserMixin, db.Model):
         """Instance method that verifies password is correct."""
         return password_verified(password, self.password_hash)
 
-    def generate_confirmation_token(self, expiration=3600):
+    def generate_confirmation_token(self):
         """Generate confirmation token."""
-        s = Serializer(current_app.config["SECRET_KEY"], expiration)
-        return s.dumps({"confirm": self.id}).decode("utf-8")
+        s = TimedSerializer(current_app.secret_key, "confirmation")
+        return s.dumps({"confirm": self.id})
 
-    def confirm(self, token):
+    def confirm(self, token, max_age=3600):
         """Confirm token."""
-        s = Serializer(current_app.config["SECRET_KEY"])
+        s = TimedSerializer(current_app.secret_key, "confirmation")
         try:
-            data = s.loads(token.encode("utf-8"))
+            data = s.loads(token, max_age=max_age)
         except BadSignature:
             return False
         if data.get("confirm") != self.id:
@@ -57,18 +57,16 @@ class User(UserMixin, db.Model):
         db.session.add(self)
         return True
 
-    def generate_email_change_token(self, new_email, expiration=3600):
+    def generate_email_change_token(self, new_email):
         """Generate email change token."""
-        s = Serializer(current_app.config["SECRET_KEY"], expiration)
-        return s.dumps(
-            {"change_email": self.id, "new_email": new_email}
-        ).decode("utf-8")
+        s = TimedSerializer(current_app.secret_key, "confirmation")
+        return s.dumps({"change_email": self.id, "new_email": new_email})
 
-    def change_email(self, token):
+    def change_email(self, token, max_age=3600):
         """Change email address."""
-        s = Serializer(current_app.config["SECRET_KEY"])
+        s = TimedSerializer(current_app.secret_key, "confirmation")
         try:
-            data = s.loads(token.encode("utf-8"))
+            data = s.loads(token, max_age=max_age)
         except BadSignature:
             return False
         if data.get("change_email") != self.id:
@@ -82,10 +80,10 @@ class User(UserMixin, db.Model):
         db.session.add(self)
         return True
 
-    def generate_reset_token(self, expiration=3600):
+    def generate_reset_token(self):
         """Generate password reset token."""
-        s = Serializer(current_app.config["SECRET_KEY"], expiration)
-        return s.dumps({"reset": self.id}).decode("utf-8")
+        s = TimedSerializer(current_app.secret_key, "confirmation")
+        return s.dumps({"reset": self.id})
 
     @staticmethod
     def reset_password(token, new_password):
