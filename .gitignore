@@ -16,3 +16,4 @@ flask_session/
 htmlcov
 pytest.log
 docker-compose.override.yml
+logs
