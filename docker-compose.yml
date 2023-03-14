@@ -14,7 +14,7 @@ services:
         max-size: "10m"
 
   web:
-    image: galojix/btt:latest
+    image: gregcowell/btt:latest
     networks:
       - net
     ports:
