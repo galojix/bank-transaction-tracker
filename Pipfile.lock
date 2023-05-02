@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "ada6d0d92e237c98efec47f0e12b02aec47b06dbbb62d49eb6769c3fe83563fc"
+            "sha256": "1662188dc6c255a99bbe9bc85419b1af1bf1d81fed185343b507beb36ea040e7"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -42,11 +42,11 @@
         },
         "cachelib": {
             "hashes": [
-                "sha256:42d49f2fad9310dd946d7be73d46776bcd4d5fde4f49ad210cfdd447fbdfc346",
-                "sha256:593faeee62a7c037d50fc835617a01b887503f972fb52b188ae7e50e9cb69740"
+                "sha256:38222cc7c1b79a23606de5c2607f4925779e37cdcea1c2ad21b8bae94b5425a5",
+                "sha256:811ceeb1209d2fe51cd2b62810bd1eccf70feba5c52641532498be5c675493b3"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==0.10.2"
+            "version": "==0.9.0"
         },
         "click": {
             "hashes": [
@@ -210,13 +210,13 @@
             "index": "pypi",
             "version": "==2.0.6"
         },
-        "flask-session": {
+        "flask-session2": {
             "hashes": [
-                "sha256:1e3f8a317005db72c831f85d884a5a9d23145f256c730d80b325a3150a22c3db",
-                "sha256:c9ed54321fa8c4ca0132ffd3369582759eda7252fb4b3bee480e690d1ba41f46"
+                "sha256:171e986d4e314795f448a527095e42df6abfba76c3e4ce5c8e4c61c857c59cb2",
+                "sha256:6d1615dfc4b247759f31f89bf16aba96fa1294077e700771875abe952f291959"
             ],
             "index": "pypi",
-            "version": "==0.4.0"
+            "version": "==1.3.1"
         },
         "flask-sqlalchemy": {
             "hashes": [
@@ -690,10 +690,10 @@
         },
         "pytz": {
             "hashes": [
-                "sha256:1d8ce29db189191fb55338ee6d0387d82ab59f3d00eac103412d64e0ebd0c588",
-                "sha256:a151b3abb88eda1d4e34a9814df37de2a80e301e68ba0fd856fb9b46bfbbbffb"
+                "sha256:01a0681c4b9684a28304615eba55d1ab31ae00bf68ec157ec3708a8182dbbcd0",
+                "sha256:78f4f37d8198e0627c5f1143240bb0206b8691d8d7ac6d78fee88b78733f8c4a"
             ],
-            "version": "==2023.3"
+            "version": "==2022.7.1"
         },
         "pyyaml": {
             "hashes": [
