@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-Werkzeug = "*"
+Werkzeug = "==2.3.7"
 flask = "*"
 bokeh = "*"
 flask-script = "*"
