@@ -1,6 +1,7 @@
 services:
   db:
     image: postgres:11
+    user: ${USERID}:${GROUPID}
     volumes:
       - db:/var/lib/postgresql/data/
     networks:
@@ -13,6 +14,7 @@ services:
 
   web:
     image: gregcowell/btt:latest
+    user: ${USERID}:${GROUPID}
     networks:
       - net
     ports:

@@ -1,17 +1,16 @@
 # Pull base image
-FROM python:3.9
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+FROM python:3.12
+# Compile Python files to bytecode after installation
+ENV UV_COMPILE_BYTECODE=1
 # Set work directory
-WORKDIR /btt
-# Install dependencies
-COPY Pipfile Pipfile.lock /btt/
-RUN python -m pip install --upgrade pip && \
-    python -m pip install pipenv && \
-    pipenv requirements --dev > requirements.txt && \
-    pip uninstall --yes pipenv && \
-    pip install -r requirements.txt
+WORKDIR /btt_app/btt
+# Install uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+COPY pyproject.toml uv.lock /btt_app
+# Install virtual environment
+RUN uv sync --locked
+# Set uv cache directory for subsequent uses of uv by container user
+ENV UV_CACHE_DIR=/tmp/uv_cache
 # Copy project
-COPY . /btt/
-RUN mkdir -p /btt/webserver/static
+COPY ./btt /btt_app/btt
+RUN mkdir -p /btt_app/btt/webserver/static

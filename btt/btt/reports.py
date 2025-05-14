@@ -1,4 +1,5 @@
 """Module that generates report graphs."""
+
 from bokeh.plotting import figure
 from bokeh.embed import components
 from bokeh.models import DatetimeTickFormatter, NumeralTickFormatter
@@ -39,9 +40,7 @@ class PieGraph:
             self.start_date = datetime.datetime(year=1, month=1, day=1)
         else:
             self.start_date = start_date
-        self.end_date = (
-            datetime.datetime.now() if end_date is None else end_date
-        )
+        self.end_date = datetime.datetime.now() if end_date is None else end_date
 
     def get_html(self):
         """Get HTML components."""
@@ -171,9 +170,7 @@ class LineGraph:
             self.start_date = datetime.datetime(year=1, month=1, day=1)
         else:
             self.start_date = start_date
-        self.end_date = (
-            datetime.datetime.now() if end_date is None else end_date
-        )
+        self.end_date = datetime.datetime.now() if end_date is None else end_date
         if account_name is None:
             self.account_name = "All"
 
@@ -187,7 +184,7 @@ class LineGraph:
             tools="pan,wheel_zoom,box_zoom, save, reset",
         )
 
-        DATE_TIME_FORMAT = {"days": ["%d/%m/%y"], "months": ["%m/%Y"]}
+        DATE_TIME_FORMAT = {"days": "%d/%m/%y", "months": "%m/%Y"}
         plot.xaxis.formatter = DatetimeTickFormatter(**DATE_TIME_FORMAT)
         plot.yaxis.formatter = NumeralTickFormatter(format="$0,0")
 

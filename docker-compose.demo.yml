@@ -6,4 +6,4 @@ services:
   web:
     env_file:
       - .env_demo_web
-    command: flask run -h 0.0.0.0 -p 8000
+    command: uv run flask run -h 0.0.0.0 -p 8000
