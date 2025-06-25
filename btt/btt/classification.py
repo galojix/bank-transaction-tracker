@@ -49,7 +49,7 @@ def predict_categories():
     features_train, features_test = feature_selection(
         features_train, features_test, labels_train
     )
-    predict = svm_predict(features_train, labels_train, features_test)
+    predict = naive_bayes_predict(features_train, labels_train, features_test)
     return predict
 
 
