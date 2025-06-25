@@ -118,11 +118,6 @@ def collect_data():
         description = stem_description(transaction.description)
         feature_data.append(description)
         label_data.append(transaction.category.catname)
-    # print('*******************************************************')
-    # for num, feature in enumerate(feature_data):
-    #     if 'myer' in feature:
-    #         print(feature, label_data[num])
-    # print('*******************************************************')
     return feature_data, label_data
 
 
@@ -134,11 +129,6 @@ def get_test_features():
         description = " ".join(transaction)
         description = stem_description(description)
         features_test.append(description)
-    # print('*******************************************************')
-    # for num, feature in enumerate(features_test):
-    #     if 'myer' in feature:
-    #         print(num, ':', feature)
-    # print('*******************************************************')
     return features_test
 
 
