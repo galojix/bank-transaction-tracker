@@ -1,4 +1,5 @@
 """Module that handles the forms."""
+
 from flask_wtf import FlaskForm
 from wtforms.form import Form
 from wtforms import (
@@ -68,22 +69,12 @@ class SearchTransactionsForm(FlaskForm):
         "End Date:", format="%Y-%m-%dT%H:%M", validators=[DataRequired()]
     )
     description = StringField("Description contains (optional):")
-    category_names_selectall = BooleanField(
-        "Select/Unselect All", default=True
-    )
-    category_names = MultiCheckboxField(
-        "Category Names:", validators=[DataRequired()]
-    )
-    category_types_selectall = BooleanField(
-        "Select/Unselect All", default=True
-    )
-    category_types = MultiCheckboxField(
-        "Category Types:", validators=[DataRequired()]
-    )
+    category_names_selectall = BooleanField("Select/Unselect All", default=True)
+    category_names = MultiCheckboxField("Category Names:")
+    category_types_selectall = BooleanField("Select/Unselect All", default=True)
+    category_types = MultiCheckboxField("Category Types:")
     account_names_selectall = BooleanField("Select/Unselect All", default=True)
-    account_names = MultiCheckboxField(
-        "Account Names:", validators=[DataRequired()]
-    )
+    account_names = MultiCheckboxField("Account Names:")
     search = SubmitField("Search")
     cancel = SubmitField("Cancel")
 
