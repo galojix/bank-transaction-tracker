@@ -462,8 +462,6 @@ def process_transactions():
             subform.form.action.default = "Keep"
 
     if form.validate_on_submit():
-        print(f"Transactions 3:{transactions}")
-        print(f"Date 3:{form.date_format.data}")
         if form.add.data:
             if not classifications_valid(form.col_classifications.data):
                 flash("Invalid classifications, please try again.")
@@ -493,9 +491,6 @@ def process_transactions():
                         amount = abs(float(transaction[fieldno]) * 100)
                 catname = form.row_classifications.data[transno]["category_name"]
                 accname = session["upload_account"]
-                print(
-                    f"Transaction Details:{amount} {date} {catname} {accname} {description}"
-                )
                 if form.date_format.data == "DMY":
                     print("Adding transaction")
                     current_user.group().add_transaction(
