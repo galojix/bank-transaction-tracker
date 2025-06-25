@@ -492,7 +492,6 @@ def process_transactions():
                 catname = form.row_classifications.data[transno]["category_name"]
                 accname = session["upload_account"]
                 if form.date_format.data == "DMY":
-                    print("Adding transaction")
                     current_user.group().add_transaction(
                         amount=amount,
                         date=date,
