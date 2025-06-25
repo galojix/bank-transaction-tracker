@@ -1,6 +1,8 @@
 """Module that uses machine learning techniques to categorise transactions."""
+
+import string
+from dateutil.parser import parse
 from nltk.stem.snowball import SnowballStemmer
-from .database import db, Transaction, Category
 from sklearn import model_selection
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_selection import SelectPercentile, f_classif
@@ -10,8 +12,7 @@ from sklearn import preprocessing
 from sklearn import svm
 from flask_login import current_user
 from flask import session
-from dateutil.parser import parse
-import string
+from .database import db, Transaction, Category
 
 
 def classification_score(group_id):
@@ -64,9 +65,7 @@ def predict_columns():
         elif "description" in value.lower() or "narration" in value.lower():
             result[i] = "description"
             header_row = True
-        elif (
-            "dr" in value.lower() and "cr" in value.lower() and len(value) < 6
-        ):
+        elif "dr" in value.lower() and "cr" in value.lower() and len(value) < 6:
             result[i] = "drcr"
             header_row = True
         elif "debit" in value.lower():
@@ -92,10 +91,10 @@ def predict_columns():
     return result, header_row
 
 
-def is_date(string):
+def is_date(a_string):
     """Is string a date."""
     try:
-        parse(string)
+        parse(a_string)
         return True
     except ValueError:
         return False
@@ -195,12 +194,10 @@ def vectorize_data(features_train, features_test):
      vectorizer.get_feature_names()[word_no] is feature name
 
     """
-    vectorizer = TfidfVectorizer(
-        sublinear_tf=True, max_df=0.5, stop_words="english"
-    )
+    vectorizer = TfidfVectorizer(sublinear_tf=True, max_df=0.5, stop_words="english")
     features_train_transformed = vectorizer.fit_transform(features_train)
     features_test_transformed = vectorizer.transform(features_test)
-    num_features = len(vectorizer.get_feature_names())
+    num_features = len(vectorizer.get_feature_names_out())
     return features_train_transformed, features_test_transformed, num_features
 
 
