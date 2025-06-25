@@ -1,4 +1,5 @@
 """Module that handles the database."""
+
 import dateutil.parser
 from flask import current_app
 from flask_sqlalchemy import SQLAlchemy
@@ -205,12 +206,10 @@ class Group(db.Model):
         yearfirst=False,
     ):
         """Instance method that adds a user transaction."""
-        date = dateutil.parser.parse(
-            date, dayfirst=dayfirst, yearfirst=yearfirst
-        )
+        date = dateutil.parser.parse(date, dayfirst=dayfirst, yearfirst=yearfirst)
         category = [c for c in self.categories if c.catname == catname][0]
         account = [a for a in self.accounts if a.accname == accname][0]
-        Transaction(
+        transaction = Transaction(
             amount=amount,
             date=date,
             group=self,
@@ -218,6 +217,7 @@ class Group(db.Model):
             description=description,
             account=account,
         )
+        db.session.add(transaction)
 
     def __repr__(self):
         """Represent groups as group_id and name."""
@@ -229,9 +229,7 @@ class MemberShip(db.Model):
 
     __tablename__ = "memberships"
     id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
-    group_id = db.Column(
-        db.Integer, db.ForeignKey("groups.group_id"), primary_key=True
-    )
+    group_id = db.Column(db.Integer, db.ForeignKey("groups.group_id"), primary_key=True)
     active = db.Column(db.Boolean, default=False)
     user = db.relationship(User, back_populates="memberships")
     group = db.relationship(Group, back_populates="memberships")
@@ -284,22 +282,16 @@ class Transaction(db.Model):
     amount = db.Column(db.Integer, nullable=False)
     date = db.Column(db.DateTime, nullable=False, index=True)
     description = db.Column(db.String(250))
-    catno = db.Column(
-        db.Integer, db.ForeignKey("categories.catno"), nullable=False
-    )
+    catno = db.Column(db.Integer, db.ForeignKey("categories.catno"), nullable=False)
     category = db.relationship(Category, back_populates="transactions")
-    accno = db.Column(
-        db.Integer, db.ForeignKey("accounts.accno"), nullable=False
-    )
+    accno = db.Column(db.Integer, db.ForeignKey("accounts.accno"), nullable=False)
     account = db.relationship(Account, back_populates="transactions")
     group_id = db.Column(db.Integer, db.ForeignKey("groups.group_id"))
     group = db.relationship(Group, back_populates="transactions")
 
     def __repr__(self):
         """Represent transaction as transaction number and group name."""
-        return "<Trans:{num},{name}>".format(
-            num=self.transno, name=self.group.name
-        )
+        return "<Trans:{num},{name}>".format(num=self.transno, name=self.group.name)
 
 
 def empty_database():

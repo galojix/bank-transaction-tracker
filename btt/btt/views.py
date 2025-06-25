@@ -1,4 +1,5 @@
 """Module that handles web views."""
+
 from flask import (
     render_template,
     url_for,
@@ -55,12 +56,8 @@ def accounts_page():
     #     if membership.active:
     #         accounts = membership.group.accounts
     accounts = current_user.group().accounts
-    known_accounts = [
-        account for account in accounts if account.accname != "Unknown"
-    ]
-    return render_template(
-        "accounts.html", accounts=known_accounts, menu="accounts"
-    )
+    known_accounts = [account for account in accounts if account.accname != "Unknown"]
+    return render_template("accounts.html", accounts=known_accounts, menu="accounts")
 
 
 @web.route("/accounts/modify/<int:accno>/", methods=["GET", "POST"])
@@ -209,9 +206,7 @@ def search_transactions():
     form.category_types.choices = [
         (category_type, category_type) for category_type in category_types
     ]
-    form.category_types.default = [
-        category_type for category_type in category_types
-    ]
+    form.category_types.default = [category_type for category_type in category_types]
     form.account_names.choices = [
         (account.accname, account.accname) for account in accounts
     ]
@@ -255,9 +250,7 @@ def search_transactions():
 
     form.process()  # Do this after validate_on_submit or breaks CSRF token
 
-    return render_template(
-        "search_transactions.html", form=form, menu="transactions"
-    )
+    return render_template("search_transactions.html", form=form, menu="transactions")
 
 
 @web.route("/transactions/add", methods=["GET", "POST"])
@@ -272,12 +265,8 @@ def add_transaction():
     categories = current_user.group().categories
     accounts = current_user.group().accounts
 
-    category_names = [
-        (category.catname, category.catname) for category in categories
-    ]
-    account_names = [
-        (account.accname, account.accname) for account in accounts
-    ]
+    category_names = [(category.catname, category.catname) for category in categories]
+    account_names = [(account.accname, account.accname) for account in accounts]
 
     form = AddTransactionForm()
     form.date.default = datetime.datetime.now()
@@ -312,16 +301,13 @@ def add_transaction():
         if "transactions" in session:
             del session["transactions"]
         session["transactions"] = [
-            transaction.transno
-            for transaction in current_user.group().transactions
+            transaction.transno for transaction in current_user.group().transactions
         ]
         return redirect(url_for(".transactions_page"))
 
     form.process()  # Do this after validate_on_submit or breaks CSRF token
 
-    return render_template(
-        "add_transaction.html", form=form, menu="transactions"
-    )
+    return render_template("add_transaction.html", form=form, menu="transactions")
 
 
 @web.route("/transactions/modify/<int:transno>/", methods=["GET", "POST"])
@@ -335,21 +321,15 @@ def modify_transaction(transno):
     """
     group = current_user.group()
     try:
-        transaction = Transaction.query.filter_by(
-            group=group, transno=transno
-        ).one()
+        transaction = Transaction.query.filter_by(group=group, transno=transno).one()
     except NoResultFound:
         flash("Invalid transaction.")
         return redirect(url_for(".transactions_page"))
     categories = transaction.group.categories
     accounts = transaction.group.accounts
 
-    category_names = [
-        (category.catname, category.catname) for category in categories
-    ]
-    account_names = [
-        (account.accname, account.accname) for account in accounts
-    ]
+    category_names = [(category.catname, category.catname) for category in categories]
+    account_names = [(account.accname, account.accname) for account in accounts]
 
     form = ModifyTransactionForm()
     form.date.default = transaction.date
@@ -399,9 +379,7 @@ def upload_transactions():
     """
     form = UploadTransactionsForm()
     accounts = current_user.group().accounts
-    account_names = [
-        (account.accname, account.accname) for account in accounts
-    ]
+    account_names = [(account.accname, account.accname) for account in accounts]
     form.account.choices = account_names
     form.account.default = accounts[0].accname
 
@@ -426,9 +404,7 @@ def upload_transactions():
 
         return redirect(url_for(".process_transactions"))
 
-    return render_template(
-        "upload_transactions.html", form=form, menu="transactions"
-    )
+    return render_template("upload_transactions.html", form=form, menu="transactions")
 
 
 @web.route("/transactions/process", methods=["GET", "POST"])
@@ -473,9 +449,7 @@ def process_transactions():
         for _ in range(len(transactions)):
             form.row_classifications.append_entry(classify_rows_form)
     categories = current_user.group().categories
-    category_names = [
-        (category.catname, category.catname) for category in categories
-    ]
+    category_names = [(category.catname, category.catname) for category in categories]
     actions = [("Keep", "Keep"), ("Ignore", "Ignore")]
     for num, subform in enumerate(form.row_classifications):
         subform.form.category_name.choices = category_names
@@ -488,6 +462,8 @@ def process_transactions():
             subform.form.action.default = "Keep"
 
     if form.validate_on_submit():
+        print(f"Transactions 3:{transactions}")
+        print(f"Date 3:{form.date_format.data}")
         if form.add.data:
             if not classifications_valid(form.col_classifications.data):
                 flash("Invalid classifications, please try again.")
@@ -515,11 +491,13 @@ def process_transactions():
                         description = transaction[fieldno]
                     elif classification in ["dr", "cr", "drcr"]:
                         amount = abs(float(transaction[fieldno]) * 100)
-                catname = form.row_classifications.data[transno][
-                    "category_name"
-                ]
+                catname = form.row_classifications.data[transno]["category_name"]
                 accname = session["upload_account"]
+                print(
+                    f"Transaction Details:{amount} {date} {catname} {accname} {description}"
+                )
                 if form.date_format.data == "DMY":
+                    print("Adding transaction")
                     current_user.group().add_transaction(
                         amount=amount,
                         date=date,
@@ -555,11 +533,12 @@ def process_transactions():
                         description=description,
                         yearfirst=True,
                     )
+                else:
+                    print("no valid date format")
 
         db.session.commit()  # So that transactions get numbers
         session["transactions"] = [
-            transaction.transno
-            for transaction in current_user.group().transactions
+            transaction.transno for transaction in current_user.group().transactions
         ]
         return redirect(url_for(".transactions_page"))
 
@@ -607,8 +586,7 @@ def categories_page():
     known_categories = [
         category
         for category in categories
-        if category.catname
-        not in ["Unspecified Expense", "Unspecified Income"]
+        if category.catname not in ["Unspecified Expense", "Unspecified Income"]
     ]
 
     return render_template(
@@ -730,9 +708,7 @@ def reports_page(report_name):
     """Return reports HTML page."""
     accounts = current_user.group().accounts
 
-    account_names = [
-        (account.accname, account.accname) for account in accounts
-    ]
+    account_names = [(account.accname, account.accname) for account in accounts]
     account_names.append(("All", "All"))
 
     form = ReportForm()
