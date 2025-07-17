@@ -1,4 +1,5 @@
 """Module that handles the authorization forms."""
+
 from flask_wtf import FlaskForm
 from wtforms import (
     SubmitField,
@@ -16,12 +17,8 @@ from ..forms import MultiCheckboxField
 class LoginForm(FlaskForm):
     """Login form."""
 
-    email = StringField(
-        "Email", validators=[DataRequired(), Length(1, 64), Email()]
-    )
-    password = PasswordField(
-        "Password", validators=[DataRequired(), Length(4, 64)]
-    )
+    email = StringField("Email", validators=[DataRequired(), Length(1, 64), Email()])
+    password = PasswordField("Password", validators=[DataRequired(), Length(4, 64)])
     remember_me = BooleanField("Keep me logged in")
     submit = SubmitField("Log In")
 
@@ -58,18 +55,14 @@ class ChangePasswordForm(FlaskForm):
             Length(4, 64),
         ],
     )
-    password2 = PasswordField(
-        "Confirm new password", validators=[DataRequired()]
-    )
+    password2 = PasswordField("Confirm new password", validators=[DataRequired()])
     submit = SubmitField("Update Password")
 
 
 class PasswordResetRequestForm(FlaskForm):
     """Password reset request form."""
 
-    email = StringField(
-        "Email", validators=[DataRequired(), Length(1, 64), Email()]
-    )
+    email = StringField("Email", validators=[DataRequired(), Length(1, 64), Email()])
     submit = SubmitField("Reset Password")
 
 
@@ -94,9 +87,7 @@ class ChangeEmailForm(FlaskForm):
     email = StringField(
         "New Email", validators=[DataRequired(), Length(1, 64), Email()]
     )
-    password = PasswordField(
-        "Password", validators=[DataRequired(), Length(4, 64)]
-    )
+    password = PasswordField("Password", validators=[DataRequired(), Length(4, 64)])
     submit = SubmitField("Update Email Address")
 
     def validate_email(self, field):

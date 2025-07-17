@@ -1,4 +1,5 @@
 """Module that contains password functions."""
+
 from passlib.hash import pbkdf2_sha256
 
 

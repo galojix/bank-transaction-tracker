@@ -1,4 +1,5 @@
 """Module that handles auth views."""
+
 from urllib.parse import urlparse
 from flask import (
     render_template,
@@ -185,10 +186,7 @@ def password_reset_request():
                 token=token,
                 next=request.args.get("next"),
             )
-        flash(
-            "An email with instructions to reset your password has been "
-            "sent to you."
-        )
+        flash("An email with instructions to reset your password has been sent to you.")
         return redirect(url_for("auth.login"))
     return render_template("auth/reset_password.html", form=form)
 
@@ -330,9 +328,7 @@ def modify_group_name(group_id):
 
     form.process()  # Do this after validate_on_submit or breaks CSRF token
 
-    return render_template(
-        "auth/modify_group_name.html", form=form, menu="myaccount"
-    )
+    return render_template("auth/modify_group_name.html", form=form, menu="myaccount")
 
 
 @auth.route("/delete_group_member/<int:group_id>/", methods=["GET", "POST"])
@@ -348,9 +344,7 @@ def delete_group_member(group_id):
             .filter(MemberShip.id == current_user.id)
             .one()
         )
-        members = MemberShip.query.filter(
-            MemberShip.group_id == group.group_id
-        ).all()
+        members = MemberShip.query.filter(MemberShip.group_id == group.group_id).all()
     except NoResultFound:
         flash("Invalid group.")
         return redirect(url_for("auth.change_group"))
@@ -364,9 +358,7 @@ def delete_group_member(group_id):
             for member in members:
                 if member.user.email in form.del_email.data:
                     other_membership = (
-                        MemberShip.query.filter(
-                            MemberShip.id == member.user.id
-                        )
+                        MemberShip.query.filter(MemberShip.id == member.user.id)
                         .filter(MemberShip.group_id != group.group_id)
                         .first()
                     )
@@ -379,9 +371,7 @@ def delete_group_member(group_id):
 
     form.process()  # Do this after validate_on_submit or breaks CSRF token
 
-    return render_template(
-        "auth/delete_group_member.html", form=form, menu="myaccount"
-    )
+    return render_template("auth/delete_group_member.html", form=form, menu="myaccount")
 
 
 @auth.route("/add_group_member/<int:group_id>/", methods=["GET", "POST"])
@@ -405,16 +395,12 @@ def add_group_member(group_id):
     if form.validate_on_submit():
         if form.add.data:
             try:
-                new_user = User.query.filter_by(
-                    email=form.add_email.data
-                ).one()
+                new_user = User.query.filter_by(email=form.add_email.data).one()
             except NoResultFound:
                 flash("Email does not belong to an existing user.")
                 return redirect(url_for("auth.change_group"))
             try:
-                new_member = MemberShip(
-                    user=new_user, group=group, active=False
-                )
+                new_member = MemberShip(user=new_user, group=group, active=False)
                 db.session.add(new_member)
                 db.session.commit()
             except IntegrityError:
@@ -428,6 +414,4 @@ def add_group_member(group_id):
 
     form.process()  # Do this after validate_on_submit or breaks CSRF token
 
-    return render_template(
-        "auth/add_group_member.html", form=form, menu="myaccount"
-    )
+    return render_template("auth/add_group_member.html", form=form, menu="myaccount")

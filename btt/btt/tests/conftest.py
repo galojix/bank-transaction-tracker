@@ -1,4 +1,5 @@
 """Fixture for pytest."""
+
 import pytest
 from .. import create_app, db
 
@@ -6,7 +7,7 @@ from .. import create_app, db
 @pytest.fixture()
 def testing_db():
     """Create database before testing, delete after."""
-    app = create_app('testing')
+    app = create_app("testing")
     app_context = app.app_context()
     app_context.push()
     db.create_all()
