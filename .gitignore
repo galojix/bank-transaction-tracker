@@ -17,3 +17,5 @@ htmlcov
 pytest.log
 docker-compose.override.yml
 logs
+.venv
+.ruff_cache
